@@ -58,10 +58,10 @@ public class Rigatoni extends OpMode
             rightRearPower /= max;
         }
 
-        hardware.leftFront.setPower(leftFrontPower * slowConstant);
-        hardware.leftRear.setPower(leftRearPower * slowConstant);
-        hardware.rightFront.setPower(rightFrontPower * slowConstant);
-        hardware.rightRear.setPower(rightRearPower * slowConstant);
+        hardware.motorLeftFront.setPower(leftFrontPower * slowConstant);
+        hardware.motorLeftRear.setPower(leftRearPower * slowConstant);
+        hardware.motorRightFront.setPower(rightFrontPower * slowConstant);
+        hardware.motorRightRear.setPower(rightRearPower * slowConstant);
     }
 
     public void stop()

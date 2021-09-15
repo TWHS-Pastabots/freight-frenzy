@@ -7,12 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
+/* All basic drive code for all robots */
+
 @TeleOp
 public class Drive extends OpMode {
-    private DcMotorEx frontLeftMotor;
-    private DcMotorEx backLeftMotor;
-    private DcMotorEx frontRightMotor;
-    private DcMotorEx backRightMotor;
 
     RobotHardware robot;
 
@@ -51,9 +49,9 @@ public class Drive extends OpMode {
             backRightPower /= max;
         }
 
-        frontLeftMotor.setPower(frontLeftPower);
-        backLeftMotor.setPower(backLeftPower);
-        frontRightMotor.setPower(frontRightPower);
-        backRightMotor.setPower(backRightPower);
+        robot.motorLeftFront.setPower(frontLeftPower);
+        robot.motorLeftRear.setPower(backLeftPower);
+        robot.motorRightFront.setPower(frontRightPower);
+        robot.motorRightRear.setPower(backRightPower);
     }
 }

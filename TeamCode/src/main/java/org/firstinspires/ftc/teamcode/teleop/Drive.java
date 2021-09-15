@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
+
 @TeleOp
 public class Drive extends OpMode {
     private DcMotorEx frontLeftMotor;
@@ -12,34 +14,18 @@ public class Drive extends OpMode {
     private DcMotorEx frontRightMotor;
     private DcMotorEx backRightMotor;
 
+    RobotHardware robot;
+
     @Override
     public void init() {
-        frontLeftMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
-        backLeftMotor = hardwareMap.get(DcMotorEx.class, "backLeft");
-        frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRight");
-        backRightMotor = hardwareMap.get(DcMotorEx.class, "backRight");
-
-        // Set zero power behavior for drive train motors
-        frontLeftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        backLeftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        frontRightMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        backRightMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-
-        // Set correct direction for drive train motors
-        frontLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
-
-        // Set drive train to zero power
-        frontLeftMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
-        backRightMotor.setPower(0);
+        robot = new RobotHardware();
+        robot.init(hardwareMap, true);
     }
 
     @Override
     public void loop() {
+
+        // Mecanum drivecode
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;

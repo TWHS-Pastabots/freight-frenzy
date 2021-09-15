@@ -21,6 +21,7 @@ public class RobotHardware {
     public DcMotorEx motorLeftRear = null;
     public DcMotorEx motorRightFront = null;
     public DcMotorEx motorRightRear = null;
+
     public DcMotorEx[] wheels = null;
     public List<DcMotorEx> motors = new ArrayList<>();
 

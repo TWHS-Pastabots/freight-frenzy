@@ -50,10 +50,10 @@ public class Linguine extends LinearOpMode {
                 backRightPower /= max;
             }
 
-            robot.motorLeftFront.setPower(frontLeftPower);
-            robot.motorLeftRear.setPower(backLeftPower);
-            robot.motorRightFront.setPower(frontRightPower);
-            robot.motorRightRear.setPower(backRightPower);
+            robot.leftFront.setPower(frontLeftPower);
+            robot.leftRear.setPower(backLeftPower);
+            robot.rightFront.setPower(frontRightPower);
+            robot.rightRear.setPower(backRightPower);
 
         }
     }

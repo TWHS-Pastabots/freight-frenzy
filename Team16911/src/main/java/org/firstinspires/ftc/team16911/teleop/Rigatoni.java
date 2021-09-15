@@ -1,28 +1,32 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.team16911.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
-/* All basic drive code for all robots */
-
-@TeleOp
-public class Drive extends OpMode {
-
-    RobotHardware robot;
-
-    @Override
-    public void init() {
-        robot = new RobotHardware();
-        robot.init(hardwareMap, true);
+@TeleOp(name = "Rigatoni")
+public class Rigatoni extends OpMode
+{
+    RobotHardware hardware;
+    public void init()
+    {
+        hardware = new RobotHardware();
+        hardware.init(hardwareMap, true);
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
     }
 
-    @Override
-    public void loop() {
+    public void start()
+    {
+        telemetry.addData("Status", "Started");
+        telemetry.update();
+    }
 
+    public void loop()
+    {
         // Mecanum drivecode
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x; // Counteract imperfect strafing
@@ -49,9 +53,15 @@ public class Drive extends OpMode {
             backRightPower /= max;
         }
 
-        robot.leftFront.setPower(frontLeftPower);
-        robot.leftRear.setPower(backLeftPower);
-        robot.rightFront.setPower(frontRightPower);
-        robot.rightRear.setPower(backRightPower);
+        hardware.leftFront.setPower(frontLeftPower);
+        hardware.leftRear.setPower(backLeftPower);
+        hardware.rightFront.setPower(frontRightPower);
+        hardware.rightRear.setPower(backRightPower);
+    }
+
+    public void stop()
+    {
+        telemetry.addData("Status", "Stopped");
+        telemetry.update();
     }
 }

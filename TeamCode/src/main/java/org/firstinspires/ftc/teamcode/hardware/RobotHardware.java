@@ -17,10 +17,10 @@ import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.*;
 
 public class RobotHardware {
     // Primary wheel motors
-    public DcMotorEx leftFront = null;
-    public DcMotorEx leftRear = null;
-    public DcMotorEx rightFront = null;
-    public DcMotorEx rightRear = null;
+    public DcMotorEx motorLeftFront = null;
+    public DcMotorEx motorLeftRear = null;
+    public DcMotorEx motorRightFront = null;
+    public DcMotorEx motorRightRear = null;
     public DcMotorEx[] wheels = null;
     public List<DcMotorEx> motors = new ArrayList<>();
 
@@ -49,13 +49,13 @@ public class RobotHardware {
         this.hardwareMap = hardwareMap;
 
         // Initialize wheels
-        leftFront = hardwareMap.get(DcMotorEx.class, LEFT_FRONT_MOTOR);
-        rightFront = hardwareMap.get(DcMotorEx.class, RIGHT_FRONT_MOTOR);
-        leftRear = hardwareMap.get(DcMotorEx.class, LEFT_REAR_MOTOR);
-        rightRear = hardwareMap.get(DcMotorEx.class, RIGHT_REAR_MOTOR);
+        motorLeftFront = hardwareMap.get(DcMotorEx.class, LEFT_FRONT_MOTOR);
+        motorRightFront = hardwareMap.get(DcMotorEx.class, RIGHT_FRONT_MOTOR);
+        motorLeftRear = hardwareMap.get(DcMotorEx.class, LEFT_REAR_MOTOR);
+        motorRightRear = hardwareMap.get(DcMotorEx.class, RIGHT_REAR_MOTOR);
 
         // Prepare wheel and motor collections
-        wheels = new DcMotorEx[]{leftFront, rightFront, leftRear, rightRear};
+        wheels = new DcMotorEx[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
 //        motors.addAll(Arrays.asList(wheels));
 
         // Initialize encoders
@@ -70,10 +70,10 @@ public class RobotHardware {
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // Prepare motor directions
-//        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-//        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-//        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-//        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+//        motorLeftFront.setDirection(DcMotorEx.Direction.FORWARD);
+//        motorLeftRear.setDirection(DcMotorEx.Direction.FORWARD);
+//        motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
+//        motorRightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Initialize the components if it is specified
         if (shouldInitializeComponents) {

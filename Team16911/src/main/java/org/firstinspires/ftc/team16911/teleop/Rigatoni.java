@@ -30,7 +30,7 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         // Max slow when right trigger fully pressed
-        int slowConstant = (int)Math.max(1 - gamepad1.right_trigger, .1);
+        double slowConstant = -.5 * gamepad1.right_trigger + 1;
 
         // Mecanum drivecode
         double y = gamepad1.left_stick_y; // Remember, this is reversed!
@@ -43,7 +43,8 @@ public class Rigatoni extends OpMode
         double rightRearPower = y + x - rx;
 
         if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
-                Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1 ) {
+                Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1 )
+        {
             // Find the largest power
             double max;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));

@@ -22,6 +22,8 @@ public class Linguine extends LinearOpMode {
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap, true);
 
+        waitForStart();
+
         // Loop
         while (isActive()) {
             // Mecanum drivecode

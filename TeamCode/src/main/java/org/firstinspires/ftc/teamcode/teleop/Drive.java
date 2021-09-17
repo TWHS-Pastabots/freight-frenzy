@@ -49,9 +49,9 @@ public class Drive extends OpMode {
             backRightPower /= max;
         }
 
-        robot.leftFront.setPower(frontLeftPower);
-        robot.leftRear.setPower(backLeftPower);
-        robot.rightFront.setPower(frontRightPower);
-        robot.rightRear.setPower(backRightPower);
+        robot.motorLeftFront.setPower(frontLeftPower);
+        robot.motorLeftRear.setPower(backLeftPower);
+        robot.motorRightFront.setPower(frontRightPower);
+        robot.motorRightRear.setPower(backRightPower);
     }
 }

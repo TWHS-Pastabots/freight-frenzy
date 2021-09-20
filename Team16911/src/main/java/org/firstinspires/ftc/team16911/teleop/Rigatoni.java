@@ -7,22 +7,30 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 @TeleOp(name = "Rigatoni")
 public class Rigatoni extends OpMode
 {
-    RobotHardware hardware;
+    RigatoniHardware hardware;
+
     public void init()
     {
-        hardware = new RobotHardware();
-        hardware.init(hardwareMap, true);
+        // Initialize Hardware
+        hardware = new RigatoniHardware();
+        hardware.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
 
     public void start()
     {
+        // Set motors to Run in Right Direction
+        hardware.leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        hardware.leftRear.setDirection(DcMotorEx.Direction.FORWARD);
+        hardware.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        hardware.rightRear.setDirection(DcMotorEx.Direction.REVERSE);
         telemetry.addData("Status", "Started");
         telemetry.update();
     }
@@ -30,17 +38,17 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         // Max slow when right trigger fully pressed
-        double slowConstant = -.5 * gamepad1.right_trigger + 1;
+        double slowConstant = -.75 * gamepad1.right_trigger + 1;
 
         // Mecanum drivecode
         double y = gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;
 
-        double leftFrontPower = y + x + rx;
-        double leftRearPower = y - x + rx;
-        double rightFrontPower = y - x - rx;
-        double rightRearPower = y + x - rx;
+        double leftFrontPower = y - x + rx;
+        double leftRearPower = y + x + rx;
+        double rightFrontPower = y + x - rx;
+        double rightRearPower = y - x - rx;
 
         if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
                 Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1 )
@@ -59,10 +67,10 @@ public class Rigatoni extends OpMode
             rightRearPower /= max;
         }
 
-        hardware.motorLeftFront.setPower(leftFrontPower * slowConstant);
-        hardware.motorLeftRear.setPower(leftRearPower * slowConstant);
-        hardware.motorRightFront.setPower(rightFrontPower * slowConstant);
-        hardware.motorRightRear.setPower(rightRearPower * slowConstant);
+        hardware.leftFront.setPower(leftFrontPower * slowConstant);
+        hardware.leftRear.setPower(leftRearPower * slowConstant);
+        hardware.rightFront.setPower(rightFrontPower * slowConstant);
+        hardware.rightRear.setPower(rightRearPower * slowConstant);
     }
 
     public void stop()

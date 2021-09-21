@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.team16911.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
-import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 @TeleOp(name = "Rigatoni")
 public class Rigatoni extends OpMode

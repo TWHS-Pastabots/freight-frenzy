@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
@@ -28,19 +29,7 @@ public class Test extends OpMode
 
     public void start()
     {
-        // Set motors to Run in Right Direction
-        hardware.leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        hardware.leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        hardware.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        hardware.rightRear.setDirection(DcMotorEx.Direction.REVERSE);
-        motors = motors = new DcMotorEx[]{hardware.leftFront, hardware.leftRear,
-                hardware.rightFront, hardware.rightRear};;
-
-        // Sets ZeroPowerBehavior
-        for (DcMotorEx motor : motors)
-        {
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        }
+        hardware.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addData("Status", "Started");
         telemetry.update();
@@ -50,12 +39,16 @@ public class Test extends OpMode
     {
 
         // Runs driver controlled code when not busy
-        if (!isBusy())
+        if (!hardware.leftFront.isBusy())
         {
-            for (DcMotorEx motor : motors)
+            hardware.leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            if (gamepad1.right_trigger > 0)
             {
-                motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                motor.setPower(gamepad1.left_stick_y);
+                hardware.leftFront.setPower(gamepad1.right_trigger * .5);
+            }
+            else
+            {
+                hardware.leftFront.setPower(-gamepad1.left_trigger * .5);
             }
         }
 
@@ -65,27 +58,21 @@ public class Test extends OpMode
             telemetry.addData("Status", "Pressed");
             telemetry.update();
 
-
-            for (DcMotorEx motor : motors)
-            {
-                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                motor.setTargetPosition(maxPosition);
-            }
-
-            for (DcMotorEx motor : motors)
-            {
-                motor.setPower(.1);
-                motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            }
+            // Moves to maximum position
+            hardware.leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            hardware.leftFront.setTargetPosition(maxPosition);
+            hardware.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hardware.leftFront.setPower(.3);
 
             telemetry.addData("Status", "Run");
             telemetry.update();
         }
-    }
 
-    private boolean isBusy()
-    {
-        return hardware.leftFront.isBusy() || hardware.leftRear.isBusy() ||
-                hardware.rightFront.isBusy() || hardware.rightRear.isBusy();
+        // Displays current position
+        if (gamepad1.circle)
+        {
+            telemetry.addData("Current Position", hardware.leftFront.getCurrentPosition());
+            telemetry.update();
+        }
     }
 }

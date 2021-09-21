@@ -33,6 +33,18 @@ public class Rigatoni extends OpMode
 
     public void loop()
     {
+        drive();
+        moveArm();
+    }
+
+    public void stop()
+    {
+        telemetry.addData("Status", "Stopped");
+        telemetry.update();
+    }
+
+    private void drive()
+    {
         // Max slow when right trigger fully pressed
         double slowConstant = -.75 * gamepad1.right_trigger + 1;
 
@@ -69,9 +81,8 @@ public class Rigatoni extends OpMode
         hardware.rightRear.setPower(rightRearPower * slowConstant);
     }
 
-    public void stop()
+    private void moveArm()
     {
-        telemetry.addData("Status", "Stopped");
-        telemetry.update();
+
     }
 }

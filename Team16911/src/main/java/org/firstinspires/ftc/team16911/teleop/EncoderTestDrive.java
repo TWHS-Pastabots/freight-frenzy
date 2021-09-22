@@ -44,7 +44,8 @@ public class EncoderTestDrive extends OpMode
     public void loop() {
 
         // Runs driver controlled code when not busy
-        if (!hardware.leftFront.isBusy() && !hardware.rightFront.isBusy() && !hardware.leftRear.isBusy() && !hardware.rightRear.isBusy())
+        if (!hardware.leftFront.isBusy() && !hardware.rightFront.isBusy() &&
+                !hardware.leftRear.isBusy() && !hardware.rightRear.isBusy())
         {
             for (DcMotorEx motor : motors)
             {

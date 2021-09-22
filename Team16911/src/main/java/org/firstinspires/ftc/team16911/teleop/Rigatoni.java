@@ -106,5 +106,10 @@ public class Rigatoni extends OpMode
             hardware.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hardware.armMotor.setPower(.3);
         }
+
+        if (gamepad1.dpad_down)
+        {
+            hardware.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
 }

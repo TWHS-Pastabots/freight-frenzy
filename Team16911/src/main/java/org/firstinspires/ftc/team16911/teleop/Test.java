@@ -73,5 +73,10 @@ public class Test extends OpMode
             telemetry.addData("Current Position", hardware.leftFront.getCurrentPosition());
             telemetry.update();
         }
+
+        if (gamepad1.dpad_down)
+        {
+            hardware.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
 }

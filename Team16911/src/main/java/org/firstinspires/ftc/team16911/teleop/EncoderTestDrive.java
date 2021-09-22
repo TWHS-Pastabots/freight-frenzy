@@ -13,7 +13,7 @@ public class EncoderTestDrive extends OpMode
     // Standard Variables
     RigatoniHardware hardware;
     DcMotorEx[] motors;
-    int maxPosition= 1500;
+    int maxPosition= 2300;
 
     public void init()
     {
@@ -52,11 +52,11 @@ public class EncoderTestDrive extends OpMode
                 motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
                 if (gamepad1.right_trigger > 0)
                 {
-                    motor.setPower(gamepad1.right_trigger);
+                    motor.setPower(.5 * gamepad1.right_trigger);
                 }
                 else
                 {
-                    motor.setPower(-gamepad1.left_trigger);
+                    motor.setPower(.5 * -gamepad1.left_trigger);
                 }
             }
         }
@@ -73,7 +73,7 @@ public class EncoderTestDrive extends OpMode
                 motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
                 motor.setTargetPosition(maxPosition);
                 motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motor.setVelocity(1200);
+                motor.setVelocity(1000);
             }
 
             telemetry.addData("Status", "Run");
@@ -85,6 +85,14 @@ public class EncoderTestDrive extends OpMode
         {
             telemetry.addData("Current Position", hardware.leftFront.getCurrentPosition());
             telemetry.update();
+        }
+
+        if (gamepad1.dpad_down)
+        {
+            for (DcMotorEx motor : motors)
+            {
+                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
         }
     }
 }

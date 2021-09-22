@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team16911.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 public class Rigatoni extends OpMode
 {
     RigatoniHardware hardware;
+    int maxPosition = 200;
 
     public void init()
     {
@@ -34,7 +36,7 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         drive();
-        moveArm();
+        //moveArm();
     }
 
     public void stop()
@@ -45,9 +47,6 @@ public class Rigatoni extends OpMode
 
     private void drive()
     {
-        // Max slow when right trigger fully pressed
-        double slowConstant = -.75 * gamepad1.right_trigger + 1;
-
         // Mecanum drivecode
         double y = gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x; // Counteract imperfect strafing
@@ -75,14 +74,37 @@ public class Rigatoni extends OpMode
             rightRearPower /= max;
         }
 
-        hardware.leftFront.setPower(leftFrontPower * slowConstant);
-        hardware.leftRear.setPower(leftRearPower * slowConstant);
-        hardware.rightFront.setPower(rightFrontPower * slowConstant);
-        hardware.rightRear.setPower(rightRearPower * slowConstant);
+        hardware.leftFront.setPower(leftFrontPower);
+        hardware.leftRear.setPower(leftRearPower);
+        hardware.rightFront.setPower(rightFrontPower);
+        hardware.rightRear.setPower(rightRearPower);
     }
 
     private void moveArm()
     {
 
+        // Runs driver controlled code when not busy
+        if (!hardware.armMotor.isBusy())
+        {
+            hardware.armMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            if (gamepad1.right_trigger > 0)
+            {
+                hardware.armMotor.setPower(gamepad1.right_trigger * .5);
+            }
+            else
+            {
+                hardware.armMotor.setPower(-gamepad1.left_trigger * .5);
+            }
+        }
+
+        // Runs to highest position
+        if (gamepad1.triangle)
+        {
+            // Moves to maximum position
+            hardware.armMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            hardware.armMotor.setTargetPosition(maxPosition);
+            hardware.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hardware.armMotor.setPower(.3);
+        }
     }
 }

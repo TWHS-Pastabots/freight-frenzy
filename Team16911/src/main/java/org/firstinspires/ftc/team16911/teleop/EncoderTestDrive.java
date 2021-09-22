@@ -4,32 +4,39 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-@TeleOp(name = "Test")
-
-public class Test extends OpMode
+@TeleOp(name = "EncoderTestDrive")
+public class EncoderTestDrive extends OpMode
 {
     // Standard Variables
     RigatoniHardware hardware;
-    int maxPosition= 50;
+    DcMotorEx[] motors;
+    int maxPosition= 1500;
 
     public void init()
     {
         // Initialize Hardware
         hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
+        motors = new DcMotorEx[]{hardware.leftFront, hardware.rightFront, hardware.leftRear, hardware.rightRear};
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
 
     public void start()
     {
-        hardware.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hardware.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.leftFront.setDirection(DcMotorEx.Direction.REVERSE);
+        hardware.leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        hardware.rightFront.setDirection(DcMotorEx.Direction.FORWARD);
+        hardware.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        for (DcMotorEx motor : motors)
+        {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
 
         telemetry.addData("Status", "Started");
         telemetry.update();
@@ -40,14 +47,17 @@ public class Test extends OpMode
         // Runs driver controlled code when not busy
         if (!hardware.leftFront.isBusy())
         {
-            hardware.leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            if (gamepad1.right_trigger > 0)
+            for (DcMotorEx motor : motors)
             {
-                hardware.leftFront.setPower(gamepad1.right_trigger * .5);
-            }
-            else
-            {
-                hardware.leftFront.setPower(-gamepad1.left_trigger * .5);
+                motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+                if (gamepad1.right_trigger > 0)
+                {
+                    motor.setPower(gamepad1.right_trigger);
+                }
+                else
+                {
+                    motor.setPower(-gamepad1.left_trigger);
+                }
             }
         }
 
@@ -58,10 +68,13 @@ public class Test extends OpMode
             telemetry.update();
 
             // Moves to maximum position
-            hardware.leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            hardware.leftFront.setTargetPosition(maxPosition);
-            hardware.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hardware.leftFront.setPower(.3);
+            for (DcMotorEx motor : motors)
+            {
+                motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+                motor.setTargetPosition(maxPosition);
+                motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motor.setVelocity(1200);
+            }
 
             telemetry.addData("Status", "Run");
             telemetry.update();

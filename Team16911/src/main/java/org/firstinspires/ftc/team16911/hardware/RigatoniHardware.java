@@ -21,6 +21,7 @@ public class RigatoniHardware
     public DcMotorEx leftRear = null;
     public DcMotorEx rightFront = null;
     public DcMotorEx rightRear = null;
+    public DcMotorEx armMotor = null;
     public DcMotorEx[] motors;
 
     public void init(HardwareMap hardwareMap)

@@ -34,7 +34,6 @@ public class EncoderTestDrive extends OpMode
         hardware.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
         for (DcMotorEx motor : motors)
         {
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
@@ -45,7 +44,7 @@ public class EncoderTestDrive extends OpMode
     public void loop() {
 
         // Runs driver controlled code when not busy
-        if (!hardware.leftFront.isBusy())
+        if (!hardware.leftFront.isBusy() && !hardware.rightFront.isBusy() && !hardware.leftRear.isBusy() && !hardware.rightRear.isBusy())
         {
             for (DcMotorEx motor : motors)
             {

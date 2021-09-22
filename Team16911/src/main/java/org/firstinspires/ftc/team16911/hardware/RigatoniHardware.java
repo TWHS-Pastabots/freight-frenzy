@@ -34,7 +34,7 @@ public class RigatoniHardware
         leftRear = hardwareMap.get(DcMotorEx.class, RigatoniIds.LEFT_Rear_MOTOR);
         rightFront = hardwareMap.get(DcMotorEx.class, RigatoniIds.RIGHT_FRONT_MOTOR);
         rightRear = hardwareMap.get(DcMotorEx.class, RigatoniIds.RIGHT_REAR_MOTOR);
-        armMotor = hardwareMap.get(DcMotorEx.class, RigatoniIds.ARM_MOTOR);
+        //armMotor = hardwareMap.get(DcMotorEx.class, RigatoniIds.ARM_MOTOR);
         motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear};
 
         // Set Zero Power Behavior and Initialize

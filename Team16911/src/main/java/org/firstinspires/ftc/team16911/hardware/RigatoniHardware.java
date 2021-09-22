@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.LEFT_REAR_MOT
 import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.RIGHT_FRONT_MOTOR;
 import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.RIGHT_REAR_MOTOR;
 
+import com.qualcomm.hardware.motors.RevRoboticsCoreHexMotor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -33,6 +34,7 @@ public class RigatoniHardware
         leftRear = hardwareMap.get(DcMotorEx.class, RigatoniIds.LEFT_Rear_MOTOR);
         rightFront = hardwareMap.get(DcMotorEx.class, RigatoniIds.RIGHT_FRONT_MOTOR);
         rightRear = hardwareMap.get(DcMotorEx.class, RigatoniIds.RIGHT_REAR_MOTOR);
+        armMotor = hardwareMap.get(DcMotorEx.class, RigatoniIds.ARM_MOTOR);
         motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear};
 
         // Set Zero Power Behavior and Initialize

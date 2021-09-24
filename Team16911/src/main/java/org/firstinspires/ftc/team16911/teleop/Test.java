@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team16911.teleop;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
+import org.firstinspires.ftc.team16911.hardware.RigatoniIds;
 
 @TeleOp(name = "Test")
 
@@ -35,8 +38,13 @@ public class Test extends OpMode
         telemetry.update();
     }
 
-    public void loop() {
+    public void loop()
+    {
+        hardware.encoderTest.getCurrentPosition();
+    }
 
+
+/*      Initial prototype Code for Arm
         // Runs driver controlled code when not busy
         if (!hardware.leftFront.isBusy())
         {
@@ -77,6 +85,5 @@ public class Test extends OpMode
         if (gamepad1.dpad_down)
         {
             hardware.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
-    }
+        }*/
 }

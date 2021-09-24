@@ -104,12 +104,19 @@ public class Rigatoni extends OpMode
             hardware.armMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotor.setTargetPosition(maxPosition);
             hardware.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hardware.armMotor.setPower(.3);
+            hardware.armMotor.setVelocity(600);
         }
 
         if (gamepad1.dpad_down)
         {
             hardware.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
+        // Displays current position for development purposes
+        if (gamepad1.circle)
+        {
+            telemetry.addData("Current Position", hardware.leftFront.getCurrentPosition());
+            telemetry.update();
         }
     }
 }

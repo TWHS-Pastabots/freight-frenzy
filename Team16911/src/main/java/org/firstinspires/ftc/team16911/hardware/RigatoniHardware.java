@@ -28,9 +28,9 @@ public class RigatoniHardware
     public DcMotorEx armMotor = null;
     public DcMotorEx[] motors;
 
+    //public Servo servoTest = null;
     public ServoImplEx servoTest = null;
     public Encoder encoderTest = null;
-
 
     public void init(HardwareMap hardwareMap)
     {
@@ -46,7 +46,7 @@ public class RigatoniHardware
 
         // Test Code
         servoTest = hardwareMap.get(ServoImplEx.class, RigatoniIds.SERVO_TEST);
-        encoderTest = hardwareMap.get(Encoder.class, RigatoniIds.ENCODER_TEST);
+        encoderTest = new Encoder(hardwareMap.get(DcMotorEx.class, RigatoniIds.ENCODER_TEST));
 
         // Set Zero Power Behavior and Initialize
         for (DcMotorEx motor : motors)

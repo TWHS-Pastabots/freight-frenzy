@@ -13,7 +13,7 @@ public class EncoderTestDrive extends OpMode
     // Standard Variables
     RigatoniHardware hardware;
     DcMotorEx[] motors;
-    int maxPosition= 2300;
+    int targetPosition = 2000;
 
     public void init()
     {
@@ -32,32 +32,23 @@ public class EncoderTestDrive extends OpMode
         hardware.leftRear.setDirection(DcMotorEx.Direction.REVERSE);
         hardware.rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         hardware.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
-        for (DcMotorEx motor : motors)
-        {
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
 
         telemetry.addData("Status", "Started");
         telemetry.update();
     }
 
-    public void loop() {
-
-        // Runs driver controlled code when not busy
-        if (!hardware.leftFront.isBusy() && !hardware.rightFront.isBusy() &&
-                !hardware.leftRear.isBusy() && !hardware.rightRear.isBusy())
+    public void loop()
+    {
+        for (DcMotorEx motor : motors)
         {
-            for (DcMotorEx motor : motors)
+            motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            if (gamepad1.right_trigger > 0)
             {
-                motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-                if (gamepad1.right_trigger > 0)
-                {
-                    motor.setPower(.5 * gamepad1.right_trigger);
-                }
-                else
-                {
-                    motor.setPower(.5 * -gamepad1.left_trigger);
-                }
+                motor.setPower(.5 * gamepad1.right_trigger);
+            }
+            else
+            {
+                motor.setPower(.5 * -gamepad1.left_trigger);
             }
         }
 
@@ -67,15 +58,39 @@ public class EncoderTestDrive extends OpMode
             telemetry.addData("Status", "Pressed");
             telemetry.update();
 
-            // Moves to maximum position
-            for (DcMotorEx motor : motors)
+            while (!reachedPos(targetPosition))
             {
-                motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                motor.setTargetPosition(maxPosition);
-                motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motor.setVelocity(1000);
-            }
+                double y = targetPosition - hardware.encoderTest.getCurrentPosition();
+                double x = gamepad1.left_stick_x; // Counteract imperfect strafing
+                double rx = gamepad1.right_stick_x;
 
+                double leftFrontPower = y - x - rx;
+                double leftRearPower = y + x - rx;
+                double rightFrontPower = y + x + rx;
+                double rightRearPower = y - x + rx;
+
+                if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
+                        Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1 )
+                {
+                    // Find the largest power
+                    double max;
+                    max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));
+                    max = Math.max(Math.abs(rightFrontPower), max);
+                    max = Math.max(Math.abs(rightRearPower), max);
+
+                    // Divide everything by max (it's positive so we don't need to worry
+                    // about signs)
+                    leftFrontPower /= max;
+                    leftRearPower /= max;
+                    rightFrontPower /= max;
+                    rightRearPower /= max;
+                }
+
+                hardware.leftFront.setPower(leftFrontPower);
+                hardware.leftRear.setPower(leftRearPower);
+                hardware.rightFront.setPower(rightFrontPower);
+                hardware.rightRear.setPower(rightRearPower);
+            }
             telemetry.addData("Status", "Run");
             telemetry.update();
         }
@@ -83,16 +98,13 @@ public class EncoderTestDrive extends OpMode
         // Displays current position
         if (gamepad1.circle)
         {
-            telemetry.addData("Current Position", hardware.leftFront.getCurrentPosition());
+            telemetry.addData("Current Position", hardware.encoderTest.getCurrentPosition());
             telemetry.update();
         }
+    }
 
-        if (gamepad1.dpad_down)
-        {
-            for (DcMotorEx motor : motors)
-            {
-                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
-        }
+    private Boolean reachedPos(int targetPosition)
+    {
+        return hardware.encoderTest.getCurrentPosition() == targetPosition;
     }
 }

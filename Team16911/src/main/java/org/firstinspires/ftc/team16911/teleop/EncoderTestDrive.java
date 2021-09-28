@@ -6,19 +6,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
+import org.firstinspires.ftc.team16911.hardware.TestHardware;
 
 @TeleOp(name = "EncoderTestDrive")
 public class EncoderTestDrive extends OpMode
 {
     // Standard Variables
-    RigatoniHardware hardware;
+    TestHardware hardware;
     DcMotorEx[] motors;
     int maxPosition= 2300;
 
     public void init()
     {
         // Initialize Hardware
-        hardware = new RigatoniHardware();
+        hardware = new TestHardware();
         hardware.init(hardwareMap);
         motors = new DcMotorEx[]{hardware.leftFront, hardware.rightFront, hardware.leftRear, hardware.rightRear};
 

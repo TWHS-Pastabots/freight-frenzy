@@ -6,14 +6,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
+import org.firstinspires.ftc.team16911.hardware.TestHardware;
 
 @TeleOp(name = "ServoTest")
 public class ServoTest extends OpMode
 {
-    RigatoniHardware hardware = new RigatoniHardware();
+    TestHardware hardware;
 
     public void init()
     {
+        hardware = new TestHardware();
         hardware.init(hardwareMap);
         hardware.servoTest.setPwmRange(PwmControl.PwmRange.defaultRange);
         hardware.servoTest.setPwmEnable();

@@ -13,5 +13,4 @@ public class RigatoniIds
     public static final String FRONT_ENCODER = "leftFront";
 
     public static final String SERVO_TEST = "servoTest";
-    public static final String ENCODER_TEST = "encoderTest";
 }

@@ -40,7 +40,7 @@ public class Test extends OpMode
 
     public void loop()
     {
-        hardware.encoderTest.getCurrentPosition();
+        //hardware.encoderTest.getCurrentPosition();
     }
 
 

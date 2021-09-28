@@ -13,12 +13,10 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 import org.firstinspires.ftc.team16911.hardware.RigatoniIds;
 
 @TeleOp(name = "Test")
-
 public class Test extends OpMode
 {
     // Standard Variables
     RigatoniHardware hardware;
-    int maxPosition= 50;
 
     public void init()
     {
@@ -31,8 +29,7 @@ public class Test extends OpMode
 
     public void start()
     {
-        hardware.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hardware.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("Status", "Started");
         telemetry.update();
@@ -40,7 +37,15 @@ public class Test extends OpMode
 
     public void loop()
     {
-        //hardware.encoderTest.getCurrentPosition();
+        // Carousel Code
+        if (gamepad1.right_bumper)
+        {
+            hardware.leftFront.setPower(.4);
+        }
+        else
+        {
+            hardware.leftFront.setPower(0);
+        }
     }
 
 

@@ -37,6 +37,7 @@ public class Rigatoni extends OpMode
     {
         drive();
         //moveArm();
+        //spinCarousel();
     }
 
     public void stop()
@@ -82,19 +83,16 @@ public class Rigatoni extends OpMode
 
     private void moveArm()
     {
-
-        // Runs driver controlled code when not busy
-        if (!hardware.armMotor.isBusy())
+        // Runs driver controlled code
+        if (gamepad1.right_trigger > 0)
         {
             hardware.armMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            if (gamepad1.right_trigger > 0)
-            {
-                hardware.armMotor.setPower(gamepad1.right_trigger * .5);
-            }
-            else
-            {
-                hardware.armMotor.setPower(-gamepad1.left_trigger * .5);
-            }
+            hardware.armMotor.setPower(gamepad1.right_trigger * .5);
+        }
+        else
+        {
+            hardware.armMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            hardware.armMotor.setPower(-gamepad1.left_trigger * .5);
         }
 
         // Runs to highest position
@@ -107,6 +105,7 @@ public class Rigatoni extends OpMode
             hardware.armMotor.setVelocity(600);
         }
 
+        // Resets zero position for calibration
         if (gamepad1.dpad_down)
         {
             hardware.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -117,6 +116,19 @@ public class Rigatoni extends OpMode
         {
             telemetry.addData("Current Position", hardware.leftFront.getCurrentPosition());
             telemetry.update();
+        }
+    }
+
+    public void spinCarousel()
+    {
+        // Carousel Motor Code
+        if (gamepad1.right_bumper)
+        {
+            hardware.carouselMotor.setPower(.4);
+        }
+        else
+        {
+            hardware.carouselMotor.setPower(0);
         }
     }
 }

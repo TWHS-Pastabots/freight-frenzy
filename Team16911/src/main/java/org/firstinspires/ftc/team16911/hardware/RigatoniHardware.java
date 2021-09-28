@@ -26,12 +26,10 @@ public class RigatoniHardware
     public DcMotorEx rightFront = null;
     public DcMotorEx rightRear = null;
     public DcMotorEx armMotor = null;
+    public DcMotorEx carouselMotor = null;
     public DcMotorEx[] motors;
 
-    public ServoImplEx servoTest = null;
-    public Encoder encoderTest = null;
-
-
+    // TODO: Add carousel and arm motor when mechanical finished
     public void init(HardwareMap hardwareMap)
     {
         Assert.assertNotNull(hardwareMap);

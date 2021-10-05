@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
-public class Fettuccine extends LinearOpMode
+public class FettuccineNormal extends LinearOpMode
 {
     // Checks if running
     private boolean isActive() {

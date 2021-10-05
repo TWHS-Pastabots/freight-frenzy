@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
@@ -11,24 +12,21 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 public class Rigatoni extends OpMode
 {
     RigatoniHardware hardware;
-    int maxPosition = 300;
+    int maxPosition = 90;
+    boolean justMoved = false;
 
     public void init()
     {
         // Initialize Hardware
         hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
 
     public void start()
     {
-        // Set motors to Run in Right Direction
-        hardware.leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        hardware.leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        hardware.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        hardware.rightRear.setDirection(DcMotorEx.Direction.REVERSE);
         telemetry.addData("Status", "Started");
         telemetry.update();
     }
@@ -42,6 +40,8 @@ public class Rigatoni extends OpMode
 
     public void stop()
     {
+        resetArmPosition();
+
         telemetry.addData("Status", "Stopped");
         telemetry.update();
     }
@@ -86,46 +86,82 @@ public class Rigatoni extends OpMode
         // Runs driver controlled code
         if (gamepad1.right_trigger > 0)
         {
-            hardware.armMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.armMotor.setPower(gamepad1.right_trigger * .75);
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            hardware.armMotorOne.setPower(gamepad1.right_trigger * .5);
+            hardware.armMotorTwo.setPower(gamepad1.right_trigger * .5);
+            justMoved = true;
         }
         else if (gamepad1.left_trigger > 0)
         {
-            hardware.armMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.armMotor.setPower(-gamepad1.left_trigger * .75);
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            hardware.armMotorOne.setPower(-gamepad1.left_trigger * .5);
+            hardware.armMotorTwo.setPower(-gamepad1.left_trigger * .5);
+            justMoved = true;
         }
-        else
+        else if (justMoved)
         {
-            hardware.armMotor.setTargetPosition(hardware.armMotor.getCurrentPosition());
-            hardware.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hardware.armMotor.setPower(1.0);
+            hardware.armMotorOne.setTargetPosition(hardware.armMotorOne.getCurrentPosition());
+            hardware.armMotorTwo.setTargetPosition(hardware.armMotorTwo.getCurrentPosition());
+
+            hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            hardware.armMotorOne.setPower(1.0);
+            hardware.armMotorTwo.setPower(1.0);
         }
 
         // Runs to highest position
         if (gamepad1.triangle)
         {
-            hardware.armMotor.setTargetPosition(maxPosition);
-            hardware.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hardware.armMotor.setPower(.75);
+            hardware.armMotorOne.setTargetPosition(maxPosition);
+            hardware.armMotorTwo.setTargetPosition(maxPosition);
+
+            hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            hardware.armMotorOne.setPower(.5);
+            hardware.armMotorTwo.setPower(.5);
+            justMoved = true;
         }
 
         // Resets zero position for calibration
         if (gamepad1.dpad_down)
         {
-            hardware.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            hardware.armMotorOne.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         // Displays current position for development purposes
         if (gamepad1.circle)
         {
-            telemetry.addData("Current Position", hardware.armMotor.getCurrentPosition());
+            telemetry.addData("Current Position", hardware.armMotorOne.getCurrentPosition());
             telemetry.update();
         }
     }
 
-    public void spinCarousel()
+    private void resetArmPosition()
+    {
+        hardware.armMotorOne.setTargetPosition(0);
+        hardware.armMotorTwo.setTargetPosition(0);
+
+        hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        hardware.armMotorOne.setVelocity(100);
+        hardware.armMotorTwo.setVelocity(100);
+    }
+
+    private void spinCarousel()
     {
         // Carousel Motor Code
         if (gamepad1.right_bumper)
@@ -134,7 +170,7 @@ public class Rigatoni extends OpMode
         }
         else
         {
-            hardware.carouselMotor.setPower(0);
+            hardware.carouselMotor.setPower(0.0);
         }
     }
 }

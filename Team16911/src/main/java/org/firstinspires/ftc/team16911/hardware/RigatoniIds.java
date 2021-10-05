@@ -11,6 +11,7 @@ public class RigatoniIds
     public static final String LEFT_ENCODER = "leftRear";
     public static final String RIGHT_ENCODER = "rightRear";
     public static final String FRONT_ENCODER = "leftFront";
+    public static final String CAROUSEL_WHEEL = "carouselWheel";
 
     public static final String SERVO_TEST = "servoTest";
 }

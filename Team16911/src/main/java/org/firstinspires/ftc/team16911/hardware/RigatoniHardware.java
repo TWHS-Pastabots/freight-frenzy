@@ -24,7 +24,7 @@ public class RigatoniHardware
         Assert.assertNotNull(hardwareMap);
 
         initializePrimaryMotors(hardwareMap);
-        //initializeArmMotors(hardwareMap);
+        initializeArmMotors(hardwareMap);
     }
 
     private void initializePrimaryMotors(HardwareMap hardwareMap)
@@ -63,7 +63,7 @@ public class RigatoniHardware
         armMotorTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set Motors to Run in Right Direction
-        armMotorTwo.setDirection(DcMotorSimple.Direction.REVERSE);
+        armMotorOne.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);

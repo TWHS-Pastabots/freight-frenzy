@@ -21,7 +21,7 @@ public class Rigatoni extends OpMode
         hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
 
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Newest Code");
         telemetry.update();
     }
 
@@ -34,7 +34,7 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         drive();
-        //moveArm();
+        moveArm();
         //spinCarousel();
     }
 
@@ -92,8 +92,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad1.right_trigger * .5);
-            hardware.armMotorTwo.setPower(gamepad1.right_trigger * .5);
+            hardware.armMotorOne.setPower(gamepad1.right_trigger * .4);
+            hardware.armMotorTwo.setPower(gamepad1.right_trigger * .4);
             justMoved = true;
         }
         else if (gamepad1.left_trigger > 0)
@@ -104,8 +104,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(-gamepad1.left_trigger * .5);
-            hardware.armMotorTwo.setPower(-gamepad1.left_trigger * .5);
+            hardware.armMotorOne.setPower(-gamepad1.left_trigger * .1);
+            hardware.armMotorTwo.setPower(-gamepad1.left_trigger * .1);
             justMoved = true;
         }
         else if (justMoved)
@@ -129,8 +129,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            hardware.armMotorOne.setPower(.5);
-            hardware.armMotorTwo.setPower(.5);
+            hardware.armMotorOne.setVelocity(150);
+            hardware.armMotorTwo.setVelocity(150);
             justMoved = true;
         }
 

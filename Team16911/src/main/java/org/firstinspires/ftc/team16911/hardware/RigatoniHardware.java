@@ -24,7 +24,8 @@ public class RigatoniHardware
         Assert.assertNotNull(hardwareMap);
 
         initializePrimaryMotors(hardwareMap);
-        initializeArmMotors(hardwareMap);
+        //initializeArmMotors(hardwareMap);
+        initializeCarousel(hardwareMap);
     }
 
     private void initializePrimaryMotors(HardwareMap hardwareMap)
@@ -63,13 +64,14 @@ public class RigatoniHardware
         armMotorTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set Motors to Run in Right Direction
-        armMotorOne.setDirection(DcMotorSimple.Direction.REVERSE);
+        armMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
+        armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     private void initializeCarousel(HardwareMap hardwareMap)

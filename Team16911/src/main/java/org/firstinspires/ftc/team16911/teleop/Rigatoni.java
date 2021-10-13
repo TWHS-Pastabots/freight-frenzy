@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
@@ -34,14 +35,12 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         drive();
-        moveArm();
-        //spinCarousel();
+        //moveArm();
+        spinCarousel();
     }
 
     public void stop()
     {
-        resetArmPosition();
-
         telemetry.addData("Status", "Stopped");
         telemetry.update();
     }
@@ -92,8 +91,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad1.right_trigger * .4);
-            hardware.armMotorTwo.setPower(gamepad1.right_trigger * .4);
+            hardware.armMotorOne.setPower(gamepad1.right_trigger * .35);
+            hardware.armMotorTwo.setPower(gamepad1.right_trigger * .35);
             justMoved = true;
         }
         else if (gamepad1.left_trigger > 0)
@@ -110,14 +109,25 @@ public class Rigatoni extends OpMode
         }
         else if (justMoved)
         {
+            hardware.armMotorOne.setPower(0);
+            hardware.armMotorTwo.setPower(0);
+
             hardware.armMotorOne.setTargetPosition(hardware.armMotorOne.getCurrentPosition());
             hardware.armMotorTwo.setTargetPosition(hardware.armMotorTwo.getCurrentPosition());
+
+            hardware.armMotorOne.setTargetPositionTolerance(1000);
+            hardware.armMotorTwo.setTargetPositionTolerance(1000);
 
             hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+            //telemetry.addData("Target Position", hardware.armMotorOne.getTargetPosition());
+            //telemetry.update();
+
             hardware.armMotorOne.setPower(1.0);
             hardware.armMotorTwo.setPower(1.0);
+
+            justMoved = false;
         }
 
         // Runs to highest position
@@ -129,8 +139,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            hardware.armMotorOne.setVelocity(150);
-            hardware.armMotorTwo.setVelocity(150);
+            hardware.armMotorOne.setPower(.5);
+            hardware.armMotorTwo.setPower(.5);
             justMoved = true;
         }
 
@@ -141,24 +151,17 @@ public class Rigatoni extends OpMode
             hardware.armMotorTwo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        // Displays current position for development purposes
+        // Displays current position for development purpose
         if (gamepad1.circle)
         {
             telemetry.addData("Current Position", hardware.armMotorOne.getCurrentPosition());
             telemetry.update();
         }
-    }
-
-    private void resetArmPosition()
-    {
-        hardware.armMotorOne.setTargetPosition(0);
-        hardware.armMotorTwo.setTargetPosition(0);
-
-        hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        hardware.armMotorOne.setVelocity(100);
-        hardware.armMotorTwo.setVelocity(100);
+        else if (gamepad1.square)
+        {
+            telemetry.addData("Current Position", hardware.armMotorTwo.getCurrentPosition());
+            telemetry.update();
+        }
     }
 
     private void spinCarousel()
@@ -166,6 +169,12 @@ public class Rigatoni extends OpMode
         // Carousel Motor Code
         if (gamepad1.right_bumper)
         {
+            hardware.carouselMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            hardware.carouselMotor.setPower(.4);
+        }
+        else if (gamepad1.left_bumper)
+        {
+            hardware.carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             hardware.carouselMotor.setPower(.4);
         }
         else

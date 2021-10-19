@@ -98,26 +98,23 @@ public class Rigatoni extends OpMode
         else if (gamepad1.left_trigger > 0)
         {
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-            hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(getDownwardPowerOne(hardware.armMotorOne.getCurrentPosition()));
-            hardware.armMotorTwo.setPower(getDownwardPowerTwo(hardware.armMotorTwo.getCurrentPosition()));
+            hardware.armMotorOne.setPower(getDownwardPower(hardware.armMotorOne.getCurrentPosition()));
+            hardware.armMotorTwo.setPower(getDownwardPower(hardware.armMotorTwo.getCurrentPosition()));
 
             justMoved = true;
         }
         else if (justMoved)
         {
-            hardware.armMotorOne.setPower(0);
-            hardware.armMotorTwo.setPower(0);
-
             hardware.armMotorOne.setTargetPosition(hardware.armMotorOne.getCurrentPosition());
             hardware.armMotorTwo.setTargetPosition(hardware.armMotorTwo.getCurrentPosition());
 
-            hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
             hardware.armMotorOne.setPower(1.0);
             hardware.armMotorTwo.setPower(1.0);
@@ -131,8 +128,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setTargetPosition(maxPosition);
             hardware.armMotorTwo.setTargetPosition(maxPosition);
 
-            hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
             hardware.armMotorOne.setPower(.5);
             hardware.armMotorTwo.setPower(.5);
@@ -142,8 +139,8 @@ public class Rigatoni extends OpMode
         // Resets zero position for calibration
         if (gamepad1.dpad_down)
         {
-            hardware.armMotorOne.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         // Displays current position for development purpose
@@ -164,12 +161,12 @@ public class Rigatoni extends OpMode
         // Carousel Motor Code
         if (gamepad1.right_bumper)
         {
-            hardware.carouselMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            hardware.carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
             hardware.carouselMotor.setPower(.4);
         }
         else if (gamepad1.left_bumper)
         {
-            hardware.carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            hardware.carouselMotor.setDirection(DcMotorEx.Direction.REVERSE);
             hardware.carouselMotor.setPower(.4);
         }
         else
@@ -178,12 +175,7 @@ public class Rigatoni extends OpMode
         }
     }
 
-    private double getDownwardPowerOne(int currentPosition)
-    {
-        return -.000014 * currentPosition * currentPosition + currentPosition * .0016 - .02;
-    }
-
-    private double getDownwardPowerTwo(int currentPosition)
+    private double getDownwardPower(int currentPosition)
     {
         return -.000014 * currentPosition * currentPosition + currentPosition * .0016 - .02;
     }

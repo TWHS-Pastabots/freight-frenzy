@@ -2,10 +2,7 @@ package org.firstinspires.ftc.team16911.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
@@ -22,7 +19,7 @@ public class Rigatoni extends OpMode
         hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
 
-        telemetry.addData("Status", "Newest Code");
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
 
@@ -36,7 +33,7 @@ public class Rigatoni extends OpMode
     {
         drive();
         //moveArm();
-        spinCarousel();
+        //spinCarousel();
     }
 
     public void stop()
@@ -72,6 +69,21 @@ public class Rigatoni extends OpMode
             leftRearPower /= max;
             rightFrontPower /= max;
             rightRearPower /= max;
+        }
+
+        if (gamepad1.dpad_up || gamepad1.dpad_right)
+        {
+            leftFrontPower = -1;
+            rightRearPower = -1;
+            rightFrontPower = 1;
+            leftRearPower = 1;
+        }
+        else if (gamepad1.dpad_down || gamepad1.dpad_left)
+        {
+            leftFrontPower = 1;
+            rightRearPower = 1;
+            rightFrontPower = -1;
+            leftRearPower = -1;
         }
 
         hardware.leftFront.setPower(leftFrontPower);
@@ -175,8 +187,13 @@ public class Rigatoni extends OpMode
         }
     }
 
+    private double getUpwardPower(int currentPosition)
+    {
+        return -.00006 * currentPosition * currentPosition + currentPosition * .006 + .35;
+    }
+
     private double getDownwardPower(int currentPosition)
     {
-        return -.000014 * currentPosition * currentPosition + currentPosition * .0016 - .02;
+        return -.000026 * currentPosition * currentPosition + currentPosition * .0034 - .08;
     }
 }

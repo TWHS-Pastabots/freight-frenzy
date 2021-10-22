@@ -32,16 +32,6 @@ public class Linguine extends LinearOpMode {
         waitForStart();
 
         // Init
-        for (DcMotorEx motor : robot.motorArms) {
-            motor.setTargetPosition(100);
-            motor.setTargetPositionTolerance(5);
-        }
-
-        for (DcMotorEx motor: robot.motorArms) {
-            motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        }
-
-
 
         // Loop
         while (isActive()) {
@@ -86,7 +76,7 @@ public class Linguine extends LinearOpMode {
                 {
                     if (encToRad(motor.getCurrentPosition()) <= Math.toRadians(90))
                     {
-                        //motor.setPower(-.8 * Math.cos(encToRad(motor.getCurrentPosition())) - .3);
+                        motor.setPower(-.8 * Math.cos(encToRad(motor.getCurrentPosition())) - .3);
                         motor.setPower(-1);
                     }
 
@@ -101,8 +91,7 @@ public class Linguine extends LinearOpMode {
                 {
                     if (encToRad(motor.getCurrentPosition()) <= Math.toRadians(90))
                     {
-                        //motor.setPower(.2 * Math.cos(encToRad(motor.getCurrentPosition())) + .3);
-                        motor.setDirection(DcMotorEx.Direction.REVERSE);
+                        motor.setPower(.2 * Math.cos(encToRad(motor.getCurrentPosition())) + .3);
                         motor.setPower(-1);
                     }
 
@@ -114,16 +103,18 @@ public class Linguine extends LinearOpMode {
             }
 
             if (gamepad2.left_bumper) {
-                robot.cSpinner.setVelocity(5000);
+                robot.cSpinner.setVelocity(3000);
             }
 
             else if (gamepad2.right_bumper) {
-                robot.cSpinner.setVelocity(-5000);
+                robot.cSpinner.setVelocity(-3000);
             }
 
             else robot.cSpinner.setVelocity(0);
 
             telemetry.addData("Arm Position: ", encToRad(robot.motorArm1.getCurrentPosition()));
+            telemetry.addData("Motor Arm 1: ", robot.motorArm1.getDirection());
+            telemetry.addData("Motor Arm 2: ", robot.motorArm2.getDirection());
             telemetry.update();
         }
     }

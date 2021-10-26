@@ -2,7 +2,11 @@ package org.firstinspires.ftc.team16912.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.team16912.util.LinguineHardware;
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 @TeleOp(name = "Linguine")
@@ -15,17 +19,26 @@ public class Linguine extends LinearOpMode {
         return !isStopRequested() && opModeIsActive();
     }
 
+    // Converts encoder readings to radians
+    private double encToRad(int encVal) { return Math.abs(Math.toRadians(encVal * (145.0 / 112.0))); }
+
 
     // Runs once on start
     public void runOpMode() {
 
-        RobotHardware robot = new RobotHardware();
+        LinguineHardware robot = new LinguineHardware();
         robot.init(hardwareMap, true);
 
         waitForStart();
 
+        // Init
+
         // Loop
         while (isActive()) {
+            for(DcMotorEx motor : robot.motorArms)
+            {
+                motor.setPower(0);
+            }
             // Mecanum drivecode
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double x = gamepad1.left_stick_x; // Counteract imperfect strafing
@@ -57,6 +70,52 @@ public class Linguine extends LinearOpMode {
             robot.motorRightFront.setPower(frontRightPower);
             robot.motorRightRear.setPower(backRightPower);
 
+            if (gamepad2.dpad_up)
+            {
+                for (DcMotorEx motor : robot.motorArms)
+                {
+                    if (encToRad(motor.getCurrentPosition()) <= Math.toRadians(90))
+                    {
+                        motor.setPower(-.8 * Math.cos(encToRad(motor.getCurrentPosition())) - .3);
+                        motor.setPower(-1);
+                    }
+
+                    else if (encToRad(motor.getCurrentPosition()) >= 0)
+                        motor.setPower(-1);
+                }
+            }
+
+            else if (gamepad2.dpad_down)
+            {
+                for (DcMotorEx motor : robot.motorArms)
+                {
+                    if (encToRad(motor.getCurrentPosition()) <= Math.toRadians(90))
+                    {
+                        motor.setPower(.2 * Math.cos(encToRad(motor.getCurrentPosition())) + .3);
+                        motor.setPower(-1);
+                    }
+
+
+                    else if (encToRad(motor.getCurrentPosition()) >= 0) {
+                        motor.setPower(-1);
+                    }
+                }
+            }
+
+            if (gamepad2.left_bumper) {
+                robot.cSpinner.setVelocity(3000);
+            }
+
+            else if (gamepad2.right_bumper) {
+                robot.cSpinner.setVelocity(-3000);
+            }
+
+            else robot.cSpinner.setVelocity(0);
+
+            telemetry.addData("Arm Position: ", encToRad(robot.motorArm1.getCurrentPosition()));
+            telemetry.addData("Motor Arm 1: ", robot.motorArm1.getDirection());
+            telemetry.addData("Motor Arm 2: ", robot.motorArm2.getDirection());
+            telemetry.update();
         }
     }
 }

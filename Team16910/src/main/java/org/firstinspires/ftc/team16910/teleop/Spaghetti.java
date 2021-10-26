@@ -3,16 +3,17 @@ package org.firstinspires.ftc.team16910.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 @TeleOp(name = "Spaghetti")
 public class Spaghetti extends OpMode {
 
-    RobotHardware robot;
+    SpaghettiHardware robot;
 
     public void init() {
-        robot = new RobotHardware();
-        robot.init(hardwareMap, true);
+        robot = new SpaghettiHardware();
+        robot.init(hardwareMap);
     }
 
     public void start() {
@@ -20,6 +21,13 @@ public class Spaghetti extends OpMode {
     }
 
     public void loop() {
+
+        // Carousel Code
+        if (gamepad2.left_bumper) robot.spinnyWheel.setPower(-0.6);
+        else if (gamepad2.right_bumper) robot.spinnyWheel.setPower(0.6);
+        else robot.spinnyWheel.setPower(0.0);
+
+
         // Mecanum drivecode
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x; // Counteract imperfect strafing
@@ -46,10 +54,10 @@ public class Spaghetti extends OpMode {
             backRightPower /= max;
         }
 
-        robot.motorLeftFront.setPower(frontLeftPower);
-        robot.motorLeftRear.setPower(backLeftPower);
-        robot.motorRightFront.setPower(frontRightPower);
-        robot.motorRightRear.setPower(backRightPower);
+        robot.leftFront.setPower(frontLeftPower);
+        robot.leftRear.setPower(backLeftPower);
+        robot.rightFront.setPower(frontRightPower);
+        robot.rightRear.setPower(backRightPower);
     }
 
     public void stop() {

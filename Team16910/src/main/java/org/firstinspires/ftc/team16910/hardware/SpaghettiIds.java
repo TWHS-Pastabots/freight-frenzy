@@ -10,6 +10,8 @@ public class SpaghettiIds
 
     // Supplementary Motor
     public static final String SPINNY_WHEEL = "spinnyWheel";
+    public static final String ARM_MOTOR_ONE = "armMotorOne";
+    public static final String ARM_MOTOR_TWO = "armMotorTwo";
 
     public static final String LEFT_ENCODER = "leftRear";
     public static final String RIGHT_ENCODER = "rightRear";

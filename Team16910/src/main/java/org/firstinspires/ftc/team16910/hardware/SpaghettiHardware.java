@@ -15,6 +15,8 @@ public class SpaghettiHardware
     public DcMotorEx rightFront = null;
     public DcMotorEx rightRear = null;
     public DcMotorEx spinnyWheel = null;
+    public DcMotorEx armMotorOne = null;
+    public DcMotorEx armMotorTwo = null;
     public DcMotorEx[] motors;
 
 
@@ -28,6 +30,8 @@ public class SpaghettiHardware
 
         // Supplementary Motors
         spinnyWheel = hardwareMap.get(DcMotorEx.class, SpaghettiIds.SPINNY_WHEEL);
+        armMotorOne = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_ONE);
+        armMotorTwo = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_TWO);
 
         // Set Motors to Run in Right Direction
 //        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
@@ -44,6 +48,27 @@ public class SpaghettiHardware
             motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+    }
+
+    private void initializeArmMotors(HardwareMap hardwareMap)
+    {
+        // Maps Arm Motors
+        armMotorOne = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_ONE);
+        armMotorTwo = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_TWO);
+
+        // Sets ZeroPowerBehavior
+        armMotorOne.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armMotorTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Set Motors to Run in Right Direction
+        armMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
+        armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
+
+        // Reset Arm Motors
+        armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
 }

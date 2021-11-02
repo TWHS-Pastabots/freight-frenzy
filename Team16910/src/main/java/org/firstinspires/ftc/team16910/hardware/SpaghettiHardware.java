@@ -34,10 +34,10 @@ public class SpaghettiHardware
         armMotorTwo = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_TWO);
 
         // Set Motors to Run in Right Direction
-//        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-//        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-//        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-//        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear, spinnyWheel};
 

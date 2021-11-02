@@ -169,6 +169,32 @@ public class Spaghetti extends OpMode {
         }
     }
 
+    private void spinCarousel()
+    {
+        // Carousel Motor Code
+        if (gamepad1.right_bumper)
+        {
+            robot.spinnyWheel.setDirection(DcMotorEx.Direction.FORWARD);
+            robot.spinnyWheel.setPower(.6);
+
+            robot.spinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
+            robot.spinnyWheel.setPower(.6);
+        }
+        else if (gamepad1.left_bumper)
+        {
+            robot.spinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
+            robot.spinnyWheel.setPower(.6);
+
+            robot.spinnyWheel.setDirection(DcMotorEx.Direction.FORWARD);
+            robot.spinnyWheel.setPower(.6);
+        }
+        else
+        {
+            robot.spinnyWheel.setPower(0.0);
+            robot.spinnyWheel.setPower(0.0);
+        }
+    }
+
     private double getUpwardPower(int currentPosition)
     {
         return -.00006 * currentPosition * currentPosition + currentPosition * .006 + .35;

@@ -11,7 +11,8 @@ public class RigatoniIds
     // Arm Motors and Carousel Motor
     public static final String ARM_MOTOR_ONE = "armMotorOne";
     public static final String ARM_MOTOR_TWO = "armMotorTwo";
-    public static final String CAROUSEL_MOTOR = "carouselMotor";
+    public static final String CAROUSEL_MOTOR_ONE = "carouselMotorOne";
+    public static final String CAROUSEL_MOTOR_TWO = "carouselMotorTwo";
 
     public static final String LEFT_ENCODER = "leftRear";
     public static final String RIGHT_ENCODER = "rightRear";

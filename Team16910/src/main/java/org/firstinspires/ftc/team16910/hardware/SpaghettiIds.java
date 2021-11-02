@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.team16911.hardware;
+package org.firstinspires.ftc.team16910.hardware;
 
-public class RigatoniIds
+public class SpaghettiIds
 {
     // Primary Motors
     public static final String LEFT_FRONT_MOTOR = "leftFront";
@@ -8,11 +8,10 @@ public class RigatoniIds
     public static final String RIGHT_FRONT_MOTOR = "rightFront";
     public static final String RIGHT_REAR_MOTOR = "rightRear";
 
-    // Arm Motors and Carousel Motor
+    // Supplementary Motor
+    public static final String SPINNY_WHEEL = "spinnyWheel";
     public static final String ARM_MOTOR_ONE = "armMotorOne";
     public static final String ARM_MOTOR_TWO = "armMotorTwo";
-    public static final String CAROUSEL_MOTOR_ONE = "carouselMotorOne";
-    public static final String CAROUSEL_MOTOR_TWO = "carouselMotorTwo";
 
     public static final String LEFT_ENCODER = "leftRear";
     public static final String RIGHT_ENCODER = "rightRear";

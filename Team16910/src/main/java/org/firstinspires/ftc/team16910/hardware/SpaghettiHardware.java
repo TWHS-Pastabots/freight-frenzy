@@ -48,6 +48,8 @@ public class SpaghettiHardware
             motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+
+        initializeArmMotors(hardwareMap);
     }
 
     private void initializeArmMotors(HardwareMap hardwareMap)
@@ -61,8 +63,8 @@ public class SpaghettiHardware
         armMotorTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set Motors to Run in Right Direction
-        armMotorOne.setDirection(DcMotorEx.Direction.FORWARD);
-        armMotorTwo.setDirection(DcMotorEx.Direction.REVERSE);
+        armMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
+        armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);

@@ -176,7 +176,7 @@ public class Rigatoni extends OpMode
 
         if (canRun && currentPosition == lastPosition && armTime.milliseconds() >= 150)
         {
-            hardware.armMotorTwo.setTargetPosition(currentPosition);
+            hardware.armMotorOne.setTargetPosition(currentPosition);
             hardware.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);
 
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);

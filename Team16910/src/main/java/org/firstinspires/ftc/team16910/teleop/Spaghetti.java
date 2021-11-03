@@ -113,8 +113,8 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(getUpwardPower(currentPosition));
-            robot.armMotorTwo.setPower(getUpwardPower(currentPosition));
+            robot.armMotorOne.setPower(gamepad2.right_trigger * .5);
+            robot.armMotorTwo.setPower(gamepad2.right_trigger * .5);
 
             justMoved = true;
         }
@@ -126,8 +126,8 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(getDownwardPower(currentPosition));
-            robot.armMotorTwo.setPower(getDownwardPower(currentPosition));
+            robot.armMotorOne.setPower(gamepad2.left_trigger * -.1);
+            robot.armMotorTwo.setPower(gamepad2.left_trigger * -.1);
 
             justMoved = true;
         }
@@ -161,7 +161,7 @@ public class Spaghetti extends OpMode {
 
         if (canRun && currentPosition == lastPosition && armTime.milliseconds() >= 150)
         {
-            robot.armMotorTwo.setTargetPosition(currentPosition);
+            robot.armMotorOne.setTargetPosition(currentPosition);
             robot.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);
 
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -221,14 +221,5 @@ public class Spaghetti extends OpMode {
             robot.spinnyWheel.setPower(0.0);
             robot.spinnyWheel.setPower(0.0);
         }
-    }
-
-    private double getUpwardPower(int currentPosition)
-    {
-        return -.00006 * currentPosition * currentPosition + currentPosition * .006 + .35;
-    }
-
-    private double getDownwardPower(int currentPosition) {
-        return -.000026 * currentPosition * currentPosition + currentPosition * .0034 - .08;
     }
 }

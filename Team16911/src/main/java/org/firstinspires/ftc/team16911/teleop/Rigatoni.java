@@ -159,6 +159,7 @@ public class Rigatoni extends OpMode
             justMoved = false;
         }
 
+        // Eliminates Arm Oscillations
         if (currentPosition == lastPosition)
         {
             if (!canRun)
@@ -184,8 +185,6 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setPower(1);
             hardware.armMotorTwo.setPower(1);
         }
-
-
 
         // Runs to highest position
         if (gamepad2.triangle)

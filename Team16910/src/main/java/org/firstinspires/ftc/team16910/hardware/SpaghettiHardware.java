@@ -61,12 +61,13 @@ public class SpaghettiHardware
         armMotorTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set Motors to Run in Right Direction
-        armMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
-        armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
+        armMotorOne.setDirection(DcMotorEx.Direction.FORWARD);
+        armMotorTwo.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
         armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }

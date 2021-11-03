@@ -3,22 +3,28 @@ package org.firstinspires.ftc.team16910.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
-import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 @TeleOp(name = "Spaghetti")
 public class Spaghetti extends OpMode {
 
     SpaghettiHardware robot;
     int maxPosition = 100;
+    int currentPosition = 0;
+    int lastPosition = -100;
+    int armMotorTwoOffset = 0;
+    ElapsedTime armTime = null;
+    boolean canRun = false;
     boolean justMoved = false;
 
     public void init()
     {
-        // Initialize Hardware
+        // Initialize robot
         robot = new SpaghettiHardware();
         robot.init(hardwareMap);
+        armTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -33,8 +39,8 @@ public class Spaghetti extends OpMode {
     public void loop()
     {
         drive();
-        //moveArm();
-        //spinCarousel();
+        moveArm();
+        spinCarousel();
     }
 
     public void stop()
@@ -95,8 +101,11 @@ public class Spaghetti extends OpMode {
 
     private void moveArm()
     {
+        currentPosition = robot.armMotorOne.getCurrentPosition();
+        armMotorTwoOffset = robot.armMotorTwo.getCurrentPosition() - currentPosition;
+
         // Runs driver controlled code
-        if (gamepad1.right_trigger > 0)
+        if (gamepad2.right_trigger > 0)
         {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -104,11 +113,12 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(gamepad1.right_trigger * .5);
-            robot.armMotorTwo.setPower(gamepad1.right_trigger * .5);
+            robot.armMotorOne.setPower(getUpwardPower(currentPosition));
+            robot.armMotorTwo.setPower(getUpwardPower(currentPosition));
+
             justMoved = true;
         }
-        else if (gamepad1.left_trigger > 0)
+        else if (gamepad2.left_trigger > 0)
         {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -116,76 +126,94 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(getDownwardPower(robot.armMotorOne.getCurrentPosition()));
-            robot.armMotorTwo.setPower(getDownwardPower(robot.armMotorTwo.getCurrentPosition()));
+            robot.armMotorOne.setPower(getDownwardPower(currentPosition));
+            robot.armMotorTwo.setPower(getDownwardPower(currentPosition));
 
             justMoved = true;
         }
         else if (justMoved)
         {
-            robot.armMotorOne.setTargetPosition(robot.armMotorOne.getCurrentPosition());
-            robot.armMotorTwo.setTargetPosition(robot.armMotorTwo.getCurrentPosition());
+            robot.armMotorOne.setTargetPosition(currentPosition);
+            robot.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);
 
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-            robot.armMotorOne.setPower(1.0);
-            robot.armMotorTwo.setPower(1.0);
+            robot.armMotorOne.setPower(1);
+            robot.armMotorTwo.setPower(1);
 
             justMoved = false;
         }
 
-        // Runs to highest position
-        if (gamepad1.triangle)
+        if (currentPosition == lastPosition)
         {
-            robot.armMotorOne.setTargetPosition(maxPosition);
-            robot.armMotorTwo.setTargetPosition(maxPosition);
+            if (!canRun)
+            {
+                armTime.reset();
+            }
+            canRun = true;
+        }
+        else
+        {
+            lastPosition = currentPosition;
+            canRun = false;
+        }
+
+        if (canRun && currentPosition == lastPosition && armTime.milliseconds() >= 150)
+        {
+            robot.armMotorTwo.setTargetPosition(currentPosition);
+            robot.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);
 
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-            robot.armMotorOne.setPower(.5);
-            robot.armMotorTwo.setPower(.5);
+            robot.armMotorOne.setPower(1);
+            robot.armMotorTwo.setPower(1);
+        }
+
+
+
+        // Runs to highest position
+        if (gamepad2.triangle)
+        {
+            robot.armMotorOne.setTargetPosition(maxPosition);
+            robot.armMotorTwo.setTargetPosition(maxPosition + armMotorTwoOffset);
+
+            robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+            robot.armMotorOne.setPower(.7);
+            robot.armMotorTwo.setPower(.7);
+
             justMoved = false;
         }
 
         // Resets zero position for calibration
-        if (gamepad1.dpad_down)
+        if (gamepad2.dpad_down)
         {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        // Displays current position for development purpose
-        if (gamepad1.circle)
-        {
-            telemetry.addData("Current Position", robot.armMotorOne.getCurrentPosition());
-            telemetry.update();
-        }
-        else if (gamepad1.square)
-        {
-            telemetry.addData("Current Position", robot.armMotorTwo.getCurrentPosition());
-            telemetry.update();
-        }
+        telemetry.addData("Arm One Pos", robot.armMotorOne.getCurrentPosition());
+        telemetry.addData("Arm One Target", robot.armMotorOne.getTargetPosition());
+        telemetry.addData("Arm Two Pos", robot.armMotorTwo.getCurrentPosition());
+        telemetry.addData("Arm Two Target", robot.armMotorTwo.getTargetPosition());
+        telemetry.addData("Current Position", currentPosition);
+        telemetry.update();
     }
 
     private void spinCarousel()
     {
         // Carousel Motor Code
-        if (gamepad1.right_bumper)
+        if (gamepad2.right_bumper)
         {
             robot.spinnyWheel.setDirection(DcMotorEx.Direction.FORWARD);
-            robot.spinnyWheel.setPower(.6);
-
-            robot.spinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
             robot.spinnyWheel.setPower(.6);
         }
-        else if (gamepad1.left_bumper)
+        else if (gamepad2.left_bumper)
         {
             robot.spinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
-            robot.spinnyWheel.setPower(.6);
-
-            robot.spinnyWheel.setDirection(DcMotorEx.Direction.FORWARD);
             robot.spinnyWheel.setPower(.6);
         }
         else

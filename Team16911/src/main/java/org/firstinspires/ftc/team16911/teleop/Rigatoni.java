@@ -111,9 +111,6 @@ public class Rigatoni extends OpMode
         hardware.leftRear.setPower(leftRearPower * slowConstant);
         hardware.rightFront.setPower(rightFrontPower * slowConstant);
         hardware.rightRear.setPower(rightRearPower * slowConstant);
-
-        telemetry.addData("SlowConstant", slowConstant);
-        telemetry.update();
     }
 
     private void moveArm()

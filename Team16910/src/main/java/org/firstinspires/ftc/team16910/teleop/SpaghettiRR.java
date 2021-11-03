@@ -20,13 +20,11 @@ public class SpaghettiRR extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // All Motors
         SpaghettiHardware robot = new SpaghettiHardware();
         robot.init(hardwareMap);
 
-        // Drive Motors
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -34,13 +32,12 @@ public class SpaghettiRR extends LinearOpMode {
 
         while (!isStopRequested()) {
 
-            // CAROUSEL CODE
-            if (gamepad2.left_bumper) robot.spinnyWheel.setPower(-0.7);
-            if (gamepad2.right_bumper) robot.spinnyWheel.setPower(0.7);
+            // Carousel Code
+            if (gamepad2.left_bumper) robot.spinnyWheel.setPower(-0.6);
+            else if (gamepad2.right_bumper) robot.spinnyWheel.setPower(0.6);
             else robot.spinnyWheel.setPower(0.0);
 
-
-            // DRIVE TRAIN CODE
+            // SET DRIVE TRAIN POWER
             drive.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
@@ -56,25 +53,8 @@ public class SpaghettiRR extends LinearOpMode {
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
-
-            // ARM CODE
-            if(gamepad2.right_trigger > 0)
-            {
-                robot.leftArmMotor.setPower(-0.5);
-                robot.rightArmMotor.setPower(-0.5);
-            }
-
-            if(gamepad2.left_trigger > 0)
-            {
-                robot.leftArmMotor.setPower(0.5);
-                robot.rightArmMotor.setPower(0.5);
-            }
-            else
-            {
-                robot.leftArmMotor.setPower(0.0);
-                robot.rightArmMotor.setPower(0.0);
-            }
-
         }
     }
+
+
 }

@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.team16911.hardware;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
@@ -16,7 +14,8 @@ public class RigatoniHardware
     public DcMotorEx rightRear = null;
     public DcMotorEx armMotorOne = null;
     public DcMotorEx armMotorTwo = null;
-    public DcMotorEx carouselMotor = null;
+    public DcMotorEx carouselMotorOne = null;
+    public DcMotorEx carouselMotorTwo = null;
     public DcMotorEx[] motors;
 
     public void init(HardwareMap hardwareMap)
@@ -24,7 +23,7 @@ public class RigatoniHardware
         Assert.assertNotNull(hardwareMap);
 
         initializePrimaryMotors(hardwareMap);
-        //initializeArmMotors(hardwareMap);
+        initializeArmMotors(hardwareMap);
         initializeCarousel(hardwareMap);
     }
 
@@ -49,7 +48,7 @@ public class RigatoniHardware
         {
             motor.setPower(0);
             motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 
@@ -60,8 +59,8 @@ public class RigatoniHardware
         armMotorTwo = hardwareMap.get(DcMotorEx.class, RigatoniIds.ARM_MOTOR_TWO);
 
         // Sets ZeroPowerBehavior
-        armMotorOne.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotorTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armMotorOne.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        armMotorTwo.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         // Set Motors to Run in Right Direction
         armMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
@@ -76,9 +75,16 @@ public class RigatoniHardware
 
     private void initializeCarousel(HardwareMap hardwareMap)
     {
-        carouselMotor = hardwareMap.get(DcMotorEx.class, RigatoniIds.CAROUSEL_MOTOR);
-        carouselMotor.setPower(0);
-        carouselMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        carouselMotorOne = hardwareMap.get(DcMotorEx.class, RigatoniIds.CAROUSEL_MOTOR_ONE);
+        carouselMotorTwo = hardwareMap.get(DcMotorEx.class, RigatoniIds.CAROUSEL_MOTOR_TWO);
+
+        carouselMotorOne.setPower(0.0);
+        carouselMotorTwo.setPower(0.0);
+
+        carouselMotorOne.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        carouselMotorTwo.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+
+        carouselMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        carouselMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 }

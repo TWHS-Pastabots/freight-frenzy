@@ -41,6 +41,7 @@ public class Spaghetti extends OpMode {
         drive();
         moveArm();
         spinCarousel();
+        servos();
     }
 
     public void stop()
@@ -220,6 +221,29 @@ public class Spaghetti extends OpMode {
         {
             robot.spinnyWheel.setPower(0.0);
             robot.spinnyWheel.setPower(0.0);
+        }
+    }
+
+    private void servos()
+    {
+        if(gamepad2.right_trigger > 0)
+        {
+            robot.stabilizingServo.setPower(-1.0);
+        }
+
+        if(gamepad2.left_trigger > 0)
+        {
+            robot.stabilizingServo.setPower(1.0);
+        }
+
+        if(gamepad2.square)
+        {
+            robot.doorServo.setPosition(1);
+        }
+
+        if(gamepad2.circle)
+        {
+            robot.doorServo.setPosition(0);
         }
     }
 }

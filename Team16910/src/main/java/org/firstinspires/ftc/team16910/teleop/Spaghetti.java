@@ -114,8 +114,8 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(gamepad2.right_trigger * .5);
-            robot.armMotorTwo.setPower(gamepad2.right_trigger * .5);
+            robot.armMotorOne.setPower(gamepad2.right_trigger * .7);
+            robot.armMotorTwo.setPower(gamepad2.right_trigger * .7);
 
             justMoved = true;
         }
@@ -238,12 +238,12 @@ public class Spaghetti extends OpMode {
 
         if(gamepad2.square)
         {
-            robot.doorServo.setPosition(1);
+            robot.doorServo.setPosition(-1);
         }
 
         if(gamepad2.circle)
         {
-            robot.doorServo.setPosition(0);
+            robot.doorServo.setPosition(1);
         }
     }
 }

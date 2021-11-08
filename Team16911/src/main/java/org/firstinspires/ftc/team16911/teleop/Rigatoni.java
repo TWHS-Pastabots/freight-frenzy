@@ -42,7 +42,7 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         drive();
-        //moveArm();
+        moveArm();
         spinCarousel();
     }
 
@@ -127,8 +127,11 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
-            hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
+            hardware.armMotorOne.setPower(gamepad2.right_trigger * .7);
+            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .7);
+
+            //hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
+            //hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
 
             justMoved = true;
         }
@@ -140,8 +143,11 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(getDownwardPower(currentPosition));
-            hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
+            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.1);
+            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.1);
+
+            //hardware.armMotorOne.setPower(getDownwardPower(currentPosition));
+            //hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
 
             justMoved = true;
         }
@@ -174,7 +180,7 @@ public class Rigatoni extends OpMode
             canRun = false;
         }
 
-        if (canRun && currentPosition == lastPosition && armTime.milliseconds() >= 150)
+        if (canRun && armTime.milliseconds() >= 300)
         {
             hardware.armMotorOne.setTargetPosition(currentPosition);
             hardware.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);

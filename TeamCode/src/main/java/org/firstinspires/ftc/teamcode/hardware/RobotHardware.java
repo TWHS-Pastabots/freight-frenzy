@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -69,11 +70,6 @@ public class RobotHardware {
         // Initialize batter voltage sensor
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        // Prepare motor directions
-//        motorLeftFront.setDirection(DcMotorEx.Direction.FORWARD);
-//        motorLeftRear.setDirection(DcMotorEx.Direction.FORWARD);
-//        motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
-//        motorRightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Initialize the components if it is specified
         if (shouldInitializeComponents) {

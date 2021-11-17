@@ -71,6 +71,13 @@ public class RigatoniHardware
         armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        // Temp Code
+        armMotorOne.setTargetPosition(0);
+        armMotorTwo.setTargetPosition(0);
+
+        armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
 
     private void initializeCarousel(HardwareMap hardwareMap)

@@ -64,6 +64,10 @@ public class FettuccineHardware
         leftArm = hardwareMap.get(DcMotorEx.class, FettuccineIds.LEFT_ARM_MOTOR);
         rightArm = hardwareMap.get(DcMotorEx.class, FettuccineIds.RIGHT_ARM_MOTOR);
 
+        // TEMP CODE
+        leftArm.setTargetPosition(0);
+        rightArm.setTargetPosition(0);
+
         encoderArm = new Encoder(hardwareMap.get(DcMotorEx.class, ARM_ENCODER));
 
         // Supplemental Servo Motors
@@ -75,7 +79,6 @@ public class FettuccineHardware
         rightArm.setDirection(DcMotor.Direction.FORWARD);
         leftArm.setDirection(DcMotor.Direction.REVERSE);
 
-        encoderArm.setDirection(Encoder.Direction.REVERSE);
 
         grabber.setDirection(Servo.Direction.FORWARD);
         // Motor Types

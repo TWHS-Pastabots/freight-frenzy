@@ -21,8 +21,7 @@ public class LinguineHardware extends RobotHardware {
 
     public DcMotorEx cSpinner = null;
 
-    public Servo servoClawLeft = null;
-    public Servo servoClawRight = null;
+    public Servo servoClaw = null;
 
     public Encoder armEncoder = null;
 
@@ -56,8 +55,7 @@ public class LinguineHardware extends RobotHardware {
         motorArm2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         motorArm1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        servoClawLeft = hardwareMap.get(Servo.class, LinguineIds.SERVO_CLAW_LEFT);
-        servoClawRight = hardwareMap.get(Servo.class, LinguineIds.SERVO_CLAW_RIGHT);
+        servoClaw = hardwareMap.get(Servo.class, LinguineIds.SERVO_CLAW);
 
         armEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LinguineIds.MOTOR_ARM_1));
     }

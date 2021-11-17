@@ -15,7 +15,7 @@ public class Linguine extends LinearOpMode {
     // Initialize
     LinguineHardware robot = new LinguineHardware();
 
-    // Global Variables
+    // Variables
     private double speedMult = .75;
 
     // Checks if running
@@ -77,68 +77,30 @@ public class Linguine extends LinearOpMode {
             else if (gamepad1.square) speedMult = .75;
 
 
-            if (gamepad2.dpad_up) {
-                //decrease arm power so arm does not
-                if (robot.armEncoder.getCurrentPosition() < 3000 && robot.armEncoder.getCurrentPosition() > 1200)
-                    for (DcMotorEx motor : robot.motorArms) motor.setPower(-.4);
-                else for (DcMotorEx motor : robot.motorArms) motor.setPower(-.5);
+            // Arm up
+            if (gamepad2.dpad_up) for (DcMotorEx motor : robot.motorArms) motor.setPower(-.75);
 
-            }
-            else if (gamepad2.dpad_down) {
-                if (robot.armEncoder.getCurrentPosition() < 2340) {
-                    for (DcMotorEx motor : robot.motorArms) motor.setPower(.1);
-                    if (robot.armEncoder.getCurrentPosition() < 1200)
-                        for (DcMotorEx motor : robot.motorArms) motor.setPower(0 );
-                }
-
-                else for (DcMotorEx motor : robot.motorArms) motor.setPower(.5);
-            }
-//            if (gamepad2.dpad_up)
-//            {
-//                telemetry.addLine("UP");
-//                if (encToRad(robot.armEncoder.getCurrentPosition()) > -100 && encToRad(robot.armEncoder.getCurrentPosition()) < Math.PI / 2) {
-//                    robot.motorArm1.setPower(-.4 * Math.cos(encToRad(robot.armEncoder.getCurrentPosition()) - .6));
-//                    robot.motorArm2.setPower(-.4 * Math.cos(encToRad(robot.armEncoder.getCurrentPosition()) - .6));
-//                }
-//
-//                else if (encToRad(robot.armEncoder.getCurrentPosition()) >= Math.PI / 2) {
-//                    robot.motorArm1.setPower(-.2);
-//                    robot.motorArm2.setPower(-.2);
-//                }
-//            }
-//
-//            else if (gamepad2.dpad_down)
-//            {
-//                telemetry.addLine("DOWN");
-//                if (encToRad(robot.armEncoder.getCurrentPosition()) >= Math.PI / 2) {
-//                    robot.motorArm1.setPower(.4 * Math.cos(encToRad(robot.armEncoder.getCurrentPosition()) + .6));
-//                    robot.motorArm2.setPower(.4 * Math.cos(encToRad(robot.armEncoder.getCurrentPosition()) + .6));
-//                }
-//
-//                else if (encToRad(robot.armEncoder.getCurrentPosition()) > -100 && encToRad(robot.armEncoder.getCurrentPosition()) < Math.PI / 2) {
-//                    robot.motorArm1.setPower(.2);
-//                    robot.motorArm2.setPower(.2);
-//                }
-//            }
+            // Arm down
+            else if (gamepad2.dpad_down) for (DcMotorEx motor : robot.motorArms) motor.setPower(.75);
 
             else {
                 robot.motorArm1.setPower(0);
                 robot.motorArm2.setPower(0);
             }
 
+            // Carousel Spinner
             if (gamepad2.dpad_right) robot.cSpinner.setDirection(DcMotorSimple.Direction.FORWARD);
             else if (gamepad2.dpad_left) robot.cSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
+
             robot.cSpinner.setVelocity(gamepad2.right_trigger * 1000);
 
             // Claw Activation
             if (gamepad2.square) {
-                robot.servoClawLeft.setPosition(1);
-                robot.servoClawRight.setPosition(1);
+                robot.servoClaw.setPosition(.7);
             }
 
             else if (gamepad2.circle) {
-                robot.servoClawLeft.setPosition(0);
-                robot.servoClawRight.setPosition(0);
+                robot.servoClaw.setPosition(-1);
             }
 
             // Telemetry
@@ -150,11 +112,4 @@ public class Linguine extends LinearOpMode {
 
 
     }
-
-    // Converts encoder readings to radians
-    // Rad = tick * pi / 4100
-    private double encToRad(int encVal) { return Math.abs(encVal * (Math.PI / 4100) ); }
-
-
-
 }

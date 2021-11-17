@@ -12,6 +12,5 @@ public class LinguineIds extends ComponentIds {
     public static final String MOTOR_SPINNER = "motorSpinner";
 
     // Claw Servo
-    public static final String SERVO_CLAW_RIGHT = "servoClawRight";
-    public static final String SERVO_CLAW_LEFT = "servoClawLeft";
+    public static final String SERVO_CLAW = "servoClawRight";
 }

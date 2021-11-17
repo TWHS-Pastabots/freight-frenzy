@@ -185,8 +185,6 @@ public class Rigatoni extends OpMode
             hardware.armMotorTwo.setPower(1);
         }
 
-
-
         // Runs to highest position
         if (gamepad2.triangle)
         {

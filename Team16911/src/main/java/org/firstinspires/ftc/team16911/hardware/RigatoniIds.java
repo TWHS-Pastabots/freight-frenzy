@@ -14,6 +14,8 @@ public class RigatoniIds
     public static final String CAROUSEL_MOTOR_ONE = "carouselMotorOne";
     public static final String CAROUSEL_MOTOR_TWO = "carouselMotorTwo";
 
+    public static final String ARM_SERVO = "armServo";
+
     public static final String LEFT_ENCODER = "leftRear";
     public static final String RIGHT_ENCODER = "rightRear";
     public static final String FRONT_ENCODER = "leftFront";

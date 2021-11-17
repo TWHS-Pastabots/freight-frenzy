@@ -18,7 +18,6 @@ public class Rigatoni extends OpMode
     double slowConstant = 1.0;
 
     boolean justMoved = false;
-    boolean newPos = false;
     boolean canRun = false;
     boolean strafeRight = false;
     boolean strafeLeft = false;
@@ -57,9 +56,10 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         drive();
-        //moveArm();
+        moveArm();
         //moveArmTwoPointZero();
         spinCarousel();
+        operateClaw();
     }
 
     public void stop()
@@ -122,7 +122,7 @@ public class Rigatoni extends OpMode
         armMotorTwoOffset = hardware.armMotorTwo.getCurrentPosition() - currentPosition;
 
         // Runs driver controlled code
-        if (gamepad2.right_trigger > .25)
+        if (gamepad2.right_trigger > .4)
         {
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -130,16 +130,15 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.right_trigger * .7);
-            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .7);
+            hardware.armMotorOne.setPower(gamepad2.right_trigger * .75);
+            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .75);
 
             //hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
             //hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
 
             justMoved = true;
-            newPos = true;
         }
-        else if (gamepad2.left_trigger > .25)
+        else if (gamepad2.left_trigger > .4)
         {
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -154,7 +153,6 @@ public class Rigatoni extends OpMode
             //hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
 
             justMoved = true;
-            newPos = true;
         }
         else if (justMoved)
         {
@@ -185,7 +183,7 @@ public class Rigatoni extends OpMode
             canRun = false;
         }
 
-        if (canRun && newPos && armTime.milliseconds() >= 300)
+        if (canRun && armTime.milliseconds() >= 300)
         {
             hardware.armMotorOne.setTargetPosition(currentPosition);
             hardware.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);
@@ -195,8 +193,6 @@ public class Rigatoni extends OpMode
 
             hardware.armMotorOne.setPower(1);
             hardware.armMotorTwo.setPower(1);
-
-            newPos = false;
         }
 
         // Runs to highest position
@@ -212,7 +208,6 @@ public class Rigatoni extends OpMode
             hardware.armMotorTwo.setPower(.7);
 
             justMoved = false;
-            newPos = true;
         }
 
         // Resets zero position for calibration
@@ -232,21 +227,42 @@ public class Rigatoni extends OpMode
 
     private void moveArmTwoPointZero()
     {
-        int armOnePos = hardware.armMotorOne.getCurrentPosition();
-        int armTwoPos = hardware.armMotorTwo.getCurrentPosition();
+        int armOneTargetPos = hardware.armMotorOne.getTargetPosition();
+        int armTwoTargetPos = hardware.armMotorTwo.getTargetPosition();
 
         if (gamepad2.right_trigger > 0 && armTime.time() >= 40)
         {
-            hardware.armMotorOne.setTargetPosition(Math.min(armOnePos + 1, 100));
-            hardware.armMotorTwo.setTargetPosition(Math.min(armTwoPos + 1, 100));
+            hardware.armMotorOne.setTargetPosition(Math.min(armOneTargetPos + 1, 100));
+            hardware.armMotorTwo.setTargetPosition(Math.min(armTwoTargetPos + 1, 100));
+
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+            hardware.armMotorOne.setPower(1.0);
+            hardware.armMotorTwo.setPower(1.0);
+
             armTime.reset();
         }
         else if (gamepad2.left_trigger > 0 && armTime.time() >= 40)
         {
-            hardware.armMotorOne.setTargetPosition(Math.max(0, armOnePos - 1));
-            hardware.armMotorTwo.setTargetPosition(Math.max(0, armTwoPos - 1));
+            hardware.armMotorOne.setTargetPosition(Math.max(0, armOneTargetPos - 1));
+            hardware.armMotorTwo.setTargetPosition(Math.max(0, armTwoTargetPos - 1));
+
+            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+            hardware.armMotorOne.setPower(1.0);
+            hardware.armMotorTwo.setPower(1.0);
+
             armTime.reset();
         }
+
+        telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
+        telemetry.addData("Arm One Target", hardware.armMotorOne.getTargetPosition());
+        telemetry.addData("Arm Two Pos", hardware.armMotorTwo.getCurrentPosition());
+        telemetry.addData("Arm Two Target", hardware.armMotorTwo.getTargetPosition());
+        telemetry.addData("Current Position", currentPosition);
+        telemetry.update();
     }
 
     private void spinCarousel()
@@ -272,6 +288,22 @@ public class Rigatoni extends OpMode
         {
             hardware.carouselMotorOne.setPower(0.0);
             hardware.carouselMotorTwo.setPower(0.0);
+        }
+    }
+
+    private void operateClaw()
+    {
+        if (gamepad2.right_bumper)
+        {
+            hardware.armServo.setPower(1.0);
+        }
+        else if (gamepad2.left_bumper)
+        {
+            hardware.armServo.setPower(-1.0);
+        }
+        else
+        {
+            hardware.armServo.setPower(0.0);
         }
     }
 
@@ -322,18 +354,18 @@ public class Rigatoni extends OpMode
 
         strafeRight = true;
 
-        if (strafeRight && rightStrafeTime.time() <= 400)
+        if (rightStrafeTime.time() <= 275)
         {
             leftFrontPower = -1;
-            leftRearPower = .67;
-            rightRearPower = -.67;
+            leftRearPower = .55;
+            rightRearPower = -.55;
             rightFrontPower = 1;
         }
-        else if (strafeRight)
+        else
         {
             leftFrontPower = -1;
-            leftRearPower = 1;
-            rightRearPower = -1;
+            leftRearPower = .95;
+            rightRearPower = -.95;
             rightFrontPower = 1;
         }
     }
@@ -347,14 +379,14 @@ public class Rigatoni extends OpMode
 
         strafeLeft = true;
 
-        if (strafeLeft && leftStrafeTime.time() <= 400)
+        if (leftStrafeTime.time() <= 240)
         {
-            leftFrontPower = 1;
-            leftRearPower = -.7;
-            rightRearPower = .7;
-            rightFrontPower = -1;
+            leftFrontPower = .6;
+            leftRearPower = -1;
+            rightRearPower = 1;
+            rightFrontPower = -.6;
         }
-        else if (strafeLeft)
+        else
         {
             leftFrontPower = 1;
             leftRearPower = -1;

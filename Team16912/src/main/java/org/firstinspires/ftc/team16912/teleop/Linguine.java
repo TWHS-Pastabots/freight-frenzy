@@ -31,17 +31,11 @@ public class Linguine extends LinearOpMode {
 
         waitForStart();
 
-        // Init
-        robot.motorArm1.setTargetPositionTolerance(5);
-        robot.motorArm2.setTargetPositionTolerance(5);
 
         // Loop
         while (isActive()) {
-            for(DcMotorEx motor : robot.motorArms)
-            {
-                motor.setPower(0);
-            }
-            // Mecanum drivecode
+
+            // Mecanum drive code
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double x = -gamepad1.left_stick_x; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
@@ -77,39 +71,93 @@ public class Linguine extends LinearOpMode {
             else if (gamepad1.square) speedMult = .75;
 
 
+
             // Arm up
-            if (gamepad2.dpad_up) for (DcMotorEx motor : robot.motorArms) motor.setPower(-.75);
+            if (gamepad2.dpad_up) armUp();
 
             // Arm down
-            else if (gamepad2.dpad_down) for (DcMotorEx motor : robot.motorArms) motor.setPower(.75);
+            else if (gamepad2.dpad_down) armDown();
 
-            else {
-                robot.motorArm1.setPower(0);
-                robot.motorArm2.setPower(0);
-            }
+            // Zero power to the arm
+            else armZero();
+
+            // Reset Arm
+            if (gamepad2.triangle) runArmToStart();
+
+
 
             // Carousel Spinner
-            if (gamepad2.dpad_right) robot.cSpinner.setDirection(DcMotorSimple.Direction.FORWARD);
-            else if (gamepad2.dpad_left) robot.cSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
+            if (gamepad2.dpad_right) setSpinnerDirection('f');
+            else if (gamepad2.dpad_left) setSpinnerDirection('r');
 
             robot.cSpinner.setVelocity(gamepad2.right_trigger * 1000);
 
-            // Claw Activation
-            if (gamepad2.square) {
-                robot.servoClaw.setPosition(.7);
-            }
 
-            else if (gamepad2.circle) {
-                robot.servoClaw.setPosition(-1);
-            }
+
+            // Claw Activation
+            if (gamepad2.square) closeClaw();
+
+            else if (gamepad2.circle) openClaw();
+
 
             // Telemetry
             telemetry.addData("Arm Position: ", robot.armEncoder.getCurrentPosition());
-            telemetry.addData("Motor Arm 1: ", robot.motorArm1.getDirection());
-            telemetry.addData("Motor Arm 2: ", robot.motorArm2.getDirection());
             telemetry.update();
         }
 
 
+    }
+
+
+
+    /*
+    Helper arm methods
+     */
+
+
+    // Resets arm to start position
+    private void runArmToStart() {
+
+        // As long as the arm is above this position
+        while (robot.armEncoder.getCurrentPosition() > 250)
+            for (DcMotorEx motor : robot.motorArms) motor.setPower(.5);
+
+    }
+
+    // Arm Up
+    private void armUp() { for (DcMotorEx motor : robot.motorArms) motor.setPower(-.75); }
+
+    // Arm Down
+    private void armDown() { for (DcMotorEx motor : robot.motorArms) motor.setPower(.75); }
+
+    // Zero Power
+    private void armZero() { for (DcMotorEx motor : robot.motorArms) motor.setPower(0); }
+
+
+
+    /*
+    Helper claw methods
+     */
+
+
+    // Closes claw
+    private void closeClaw() { robot.servoClaw.setPosition(.7); }
+
+    // Opens claw
+    private void openClaw() { robot.servoClaw.setPosition(-1); }
+
+
+
+    /*
+    Spinner Directions
+     */
+
+
+    // Set spinner direction
+    private void setSpinnerDirection(char dir) {
+
+        if (dir == 'f') robot.cSpinner.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        else if (dir == 'r') robot.cSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }

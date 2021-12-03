@@ -6,4 +6,9 @@ public class RavioliIds
     public static final String RIGHT_FRONT_MOTOR = "rightFront";
     public static final String RIGHT_REAR_MOTOR = "rightRear";
     public static final String LEFT_REAR_MOTOR = "leftRear";
+
+    // Arm Motors and Carousel Motor
+    public static final String ARM_MOTOR_ONE = "armMotorOne";
+    public static final String ARM_MOTOR_TWO = "armMotorTwo";
+
 }

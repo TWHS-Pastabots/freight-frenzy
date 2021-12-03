@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.team16911.hardware;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
@@ -16,6 +18,7 @@ public class RigatoniHardware
     public DcMotorEx armMotorTwo = null;
     public DcMotorEx carouselMotorOne = null;
     public DcMotorEx carouselMotorTwo = null;
+    public CRServo armServo = null;
     public DcMotorEx[] motors;
 
     public void init(HardwareMap hardwareMap)
@@ -25,6 +28,7 @@ public class RigatoniHardware
         initializePrimaryMotors(hardwareMap);
         initializeArmMotors(hardwareMap);
         initializeCarousel(hardwareMap);
+        initializeServos(hardwareMap);
     }
 
     private void initializePrimaryMotors(HardwareMap hardwareMap)
@@ -63,7 +67,7 @@ public class RigatoniHardware
         armMotorTwo.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         // Set Motors to Run in Right Direction
-        armMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
+        armMotorOne.setDirection(DcMotorEx.Direction.FORWARD);
         armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
 
         // Reset Arm Motors
@@ -71,6 +75,8 @@ public class RigatoniHardware
         armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        armMotorOne.setTargetPosition(0);
+        armMotorTwo.setTargetPosition(0);
     }
 
     private void initializeCarousel(HardwareMap hardwareMap)
@@ -86,5 +92,12 @@ public class RigatoniHardware
 
         carouselMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         carouselMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    private void initializeServos(HardwareMap hardwareMap)
+    {
+        armServo = hardwareMap.get(CRServo.class, RigatoniIds.ARM_SERVO);
+
+        armServo.setDirection(CRServo.Direction.FORWARD);
     }
 }

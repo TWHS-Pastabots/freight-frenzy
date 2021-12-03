@@ -55,7 +55,6 @@ public class Rigatoni extends OpMode
     {
         drive();
         moveArm();
-        //moveArmTwoPointZero();
         spinCarousel();
         operateClaw();
     }
@@ -128,13 +127,11 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            //hardware.armMotorOne.setPower(gamepad2.right_trigger * .8);
-            //hardware.armMotorTwo.setPower(gamepad2.right_trigger * .8);
+            hardware.armMotorOne.setPower(gamepad2.right_trigger * .65);
+            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .65);
 
-            //TODO Multiply power by trigger value to allow further control of power through trigger
-            // if necessary
-            hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
-            hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
+            //hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
+            //hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
 
             justMoved = true;
         }
@@ -146,11 +143,11 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            //hardware.armMotorOne.setPower(-.15);
-            //hardware.armMotorTwo.setPower(-.15);
+            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.17);
+            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.17);
 
-            hardware.armMotorOne.setPower(getDownwardPower(currentPosition));
-            hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
+            //hardware.armMotorOne.setPower(getDownwardPower(currentPosition));
+            //hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
 
             justMoved = true;
         }
@@ -227,26 +224,15 @@ public class Rigatoni extends OpMode
     private void spinCarousel()
     {
         // Carousel Motor Code
-        if (gamepad1.right_bumper)
+        if (gamepad1.right_trigger > 0)
         {
-            hardware.carouselMotorOne.setDirection(DcMotorEx.Direction.FORWARD);
-            hardware.carouselMotorOne.setPower(.6);
-
-            hardware.carouselMotorTwo.setDirection(DcMotorEx.Direction.REVERSE);
-            hardware.carouselMotorTwo.setPower(.6);
-        }
-        else if (gamepad1.left_bumper)
-        {
-            hardware.carouselMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
-            hardware.carouselMotorOne.setPower(.6);
-
-            hardware.carouselMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
-            hardware.carouselMotorTwo.setPower(.6);
+            hardware.carouselMotorOne.setPower(gamepad1.right_trigger * .5);
+            hardware.carouselMotorTwo.setPower(gamepad1.right_trigger * .5);
         }
         else
         {
-            hardware.carouselMotorOne.setPower(0.0);
-            hardware.carouselMotorTwo.setPower(0.0);
+            hardware.carouselMotorOne.setPower(-gamepad1.left_trigger * .5);
+            hardware.carouselMotorTwo.setPower(-gamepad1.left_trigger * .5);
         }
     }
 
@@ -316,8 +302,8 @@ public class Rigatoni extends OpMode
         if (strafeTime.time() <= 275)
         {
             leftFrontPower = -1;
-            leftRearPower = .55;
-            rightRearPower = -.55;
+            leftRearPower = .65;
+            rightRearPower = -.65;
             rightFrontPower = 1;
         }
         else

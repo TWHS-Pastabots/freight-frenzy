@@ -34,10 +34,10 @@ public class TestAutonomous extends LinearOpMode
 
     private int maxPosition = 230;
 
-    private Pose2d firstPosition = new Pose2d(0, 0, 0);
-    private Pose2d secondPosition = new Pose2d(0,0, 0);
-    private Pose2d thirdPosition = new Pose2d(0, 0, 0);
-    private Pose2d fourthPosition = new Pose2d(0, 0, 0);
+    private Pose2d firstPosition = new Pose2d(7.25, -23, 6.1116);
+    private Pose2d secondPosition = new Pose2d(26.75,28, 0.108);
+    private Pose2d thirdPosition = new Pose2d(-10, 50, 0);
+    private Pose2d fourthPosition = new Pose2d(-30, 110, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
 
@@ -50,6 +50,7 @@ public class TestAutonomous extends LinearOpMode
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
+        buildTrajectories();
 
 
         waitForStart();
@@ -76,7 +77,7 @@ public class TestAutonomous extends LinearOpMode
         thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
                 .lineToLinearHeading(thirdPosition).build();
 
-        fourthTrajectory = drive.trajectoryBuilder(firstTrajectory.end())
+        fourthTrajectory = drive.trajectoryBuilder(thirdTrajectory.end())
                 .lineToLinearHeading(fourthPosition).build();
 
     }
@@ -86,7 +87,7 @@ public class TestAutonomous extends LinearOpMode
         hardware.carouselMotorOne.setPower(.6);
         hardware.carouselMotorTwo.setPower(.6);
         MoveArm();
-        wait(300);
+        wait(2000);
         hardware.carouselMotorOne.setPower(0.0);
         hardware.carouselMotorTwo.setPower(0.0);
     }
@@ -105,14 +106,15 @@ public class TestAutonomous extends LinearOpMode
 
     private void DropCargo()
     {
-        hardware.armServo.setPower(1);
-        wait(300);
+        hardware.armServo.setPower(-1);
+        wait(3000);
         hardware.armServo.setPower(0);
     }
 
     private void wait(int waitTime)
     {
         ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        time.reset();
         while (time.time() < waitTime)
         {
             continue;

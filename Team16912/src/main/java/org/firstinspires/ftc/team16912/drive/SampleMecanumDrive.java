@@ -21,6 +21,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -122,6 +123,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
@@ -250,20 +255,33 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public List<Double> getWheelPositions() {
         List<Double> wheelPositions = new ArrayList<>();
-        for (DcMotorEx motor : motors) {
-            wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
+        for (int i = 0; i < motors.size(); i++) {
+//            if (i % 2 == 1)
+//                wheelPositions.add(encoderTicksToInches(-motors.get(i).getCurrentPosition()));
+//            else
+//                wheelPositions.add(encoderTicksToInches(motors.get(i).getCurrentPosition()));
+
+            wheelPositions.add(encoderTicksToInches(-motors.get(i).getCurrentPosition()));
         }
+
         return wheelPositions;
     }
 
     @Override
     public List<Double> getWheelVelocities() {
         List<Double> wheelVelocities = new ArrayList<>();
-        for (DcMotorEx motor : motors) {
-            wheelVelocities.add(encoderTicksToInches(motor.getVelocity()));
+
+        for (int i = 0; i < motors.size(); i++) {
+//            if (i % 2 == 1)
+//                wheelVelocities.add(encoderTicksToInches(-motors.get(i).getVelocity()));
+//            else
+//                wheelVelocities.add(encoderTicksToInches(motors.get(i).getVelocity()));
+
+            wheelVelocities.add(encoderTicksToInches(-motors.get(i).getVelocity()));
         }
         return wheelVelocities;
     }
+
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {

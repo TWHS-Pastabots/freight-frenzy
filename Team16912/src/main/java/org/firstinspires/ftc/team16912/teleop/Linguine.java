@@ -119,7 +119,7 @@ public class Linguine extends LinearOpMode {
     private void runArmToStart() {
 
         // As long as the arm is above this position
-        while (robot.armEncoder.getCurrentPosition() > 250)
+        while (robot.armEncoder.getCurrentPosition() < 0)
             for (DcMotorEx motor : robot.motorArms) motor.setPower(.5);
 
     }

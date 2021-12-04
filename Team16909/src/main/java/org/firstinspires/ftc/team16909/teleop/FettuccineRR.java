@@ -24,12 +24,14 @@ public class FettuccineRR extends LinearOpMode {
     int maxPosition = 100;
     int currentPosition = 0;
     int lastPosition = -100;
-    //int leftArmOffset = 0;
+    int leftArmOffset = 0;
     //double slowConstant = 1.0;
     boolean justMoved = false;
     boolean canRun = false;
+    boolean moveUp = false;
     ElapsedTime armTime = null;
-    ElapsedTime buttonTime = null;
+    ElapsedTime armButton = null;
+    ElapsedTime timeSinceMove = null;
     FettuccineHardware robot = null;
 
 
@@ -48,7 +50,7 @@ public class FettuccineRR extends LinearOpMode {
 
 
         armTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        timeSinceMove = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         robot.leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -66,7 +68,7 @@ public class FettuccineRR extends LinearOpMode {
             else robot.carousel.setPower(0);
 
             // ARM PIVOT CODE
-            moveArm();
+            moveArmTwoPointZero();
 
             // ARM EXTENSION CODE
             if (gamepad2.dpad_left) robot.armServo.setPower(-1.0);
@@ -74,8 +76,9 @@ public class FettuccineRR extends LinearOpMode {
             else robot.armServo.setPower(0.0);
 
             // GRABBER CODE
-            if (gamepad2.triangle) robot.grabber.setPosition(1);
-            else if (gamepad2.cross) robot.grabber.setPosition(0);
+            if (gamepad2.dpad_up) robot.grabber.setPosition(-1);
+            else if (gamepad2.dpad_down) robot.grabber.setPosition(1);
+
             // MOTOR MULTIPLIERS
             if (gamepad1.circle) mult = 0.25;
             if (gamepad1.cross) mult = 0.5;
@@ -96,22 +99,63 @@ public class FettuccineRR extends LinearOpMode {
             Pose2d poseEstimate = drive.getPoseEstimate();
 
 
-            telemetry.addData("tolerance", robot.rightArm.getTargetPositionTolerance());
-            telemetry.addData("position", robot.encoderArm.getCurrentPosition());
-            telemetry.addData("position", robot.rightArm.getCurrentPosition());
-            telemetry.addData("rightArm", robot.rightArm.getTargetPosition());
-            telemetry.addData("leftArm", robot.leftArm.getTargetPosition());
+            /*telemetry.addData("tolerance", robot.rightArm.getTargetPositionTolerance());
+            telemetry.addData("rightPower", robot.rightArm.getPower());
+            telemetry.addData("leftPower", robot.leftArm.getPower());
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.update();
+            telemetry.update();*/
         }
     }
+
+    /*private void moveArm()
+    {
+        if (gamepad2.right_trigger > 0)
+        {
+            robot.leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.leftArm.setPower(gamepad2.right_trigger * 0.7);
+            robot.rightArm.setPower(gamepad2.right_trigger * 0.7);
+            currentPosition = robot.rightArm.getCurrentPosition();
+            leftArmOffset = currentPosition - robot.leftArm.getCurrentPosition();
+        }
+        else if (gamepad2.left_trigger > 0)
+        {
+            robot.leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.leftArm.setPower(gamepad2.left_trigger * -0.01);
+            robot.rightArm.setPower(gamepad2.left_trigger * -0.01);
+            currentPosition = robot.rightArm.getCurrentPosition();
+            leftArmOffset = currentPosition - robot.leftArm.getCurrentPosition();
+        }
+        else
+        {
+            robot.leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.leftArm.setTargetPosition(currentPosition + leftArmOffset);
+            robot.rightArm.setTargetPosition(currentPosition);
+            robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftArm.setPower(1);
+            robot.rightArm.setPower(1);
+        }
+
+        telemetry.addData("Arm One Pos", robot.rightArm.getCurrentPosition());
+        telemetry.addData("Arm One Target", robot.rightArm.getTargetPosition());
+        telemetry.addData("Arm Two Pos", robot.leftArm.getCurrentPosition());
+        telemetry.addData("Arm Two Target", robot.leftArm.getTargetPosition());
+        telemetry.addData("Current Position", currentPosition);
+        telemetry.addData("LTrigger", gamepad2.left_trigger);
+        telemetry.addData("RTrigger", gamepad2.right_trigger);
+        telemetry.update();
+    }*/
+
 
     private void moveArm()
     {
         currentPosition = robot.rightArm.getCurrentPosition();
-        //leftArmOffset = currentPosition - hardware.leftArm.getCurrentPosition();
+        leftArmOffset = robot.leftArm.getCurrentPosition() - currentPosition ;
 
         // Runs driver controlled code
         if (gamepad2.right_trigger > 0)
@@ -122,23 +166,39 @@ public class FettuccineRR extends LinearOpMode {
             robot.rightArm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.leftArm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.rightArm.setPower(getUpwardPower(robot.rightArm.getCurrentPosition()));
-            robot.leftArm.setPower(getUpwardPower(robot.leftArm.getCurrentPosition()));
+//            robot.rightArm.setPower(getUpwardPower(robot.rightArm.getCurrentPosition()));
+//            robot.leftArm.setPower(getUpwardPower(robot.leftArm.getCurrentPosition()));
+
+
+            // robot.rightArm.setPower(getUpwardPower(robot.rightArm.getCurrentPosition()));
+            // robot.leftArm.setPower(getUpwardPower(robot.leftArm.getCurrentPosition()));
+            robot.rightArm.setPower(gamepad2.right_trigger * 1);
+            robot.leftArm.setPower(gamepad2.right_trigger * 1);
+
 
             justMoved = true;
+            timeSinceMove.reset();
         }
-        else if (gamepad2.left_trigger > 0)
-        {
+        else if (gamepad2.left_trigger > 0) {
             robot.rightArm.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             robot.leftArm.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
             robot.rightArm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.leftArm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.rightArm.setPower(getDownwardPower(robot.rightArm.getCurrentPosition()));
-            robot.leftArm.setPower(getDownwardPower(robot.leftArm.getCurrentPosition()));
+//            robot.rightArm.setPower(getDownwardPower(robot.rightArm.getCurrentPosition()));
+//            robot.leftArm.setPower(getDownwardPower(robot.leftArm.getCurrentPosition()));
+
+
+            // robot.rightArm.setPower(getDownwardPower(robot.rightArm.getCurrentPosition()));
+            // robot.leftArm.setPower(getDownwardPower(robot.leftArm.getCurrentPosition()));
+            robot.rightArm.setPower(gamepad2.left_trigger * 0);
+            robot.leftArm.setPower(gamepad2.left_trigger * 0);
+
+
 
             justMoved = true;
+            timeSinceMove.reset();
         }
         else if (justMoved)
         {
@@ -171,14 +231,14 @@ public class FettuccineRR extends LinearOpMode {
         if (canRun && currentPosition == lastPosition && armTime.milliseconds() >= 100)
         {
             robot.leftArm.setTargetPosition(currentPosition);
-            robot.rightArm.setTargetPosition(currentPosition);
+            robot.rightArm.setTargetPosition(currentPosition + leftArmOffset);
             // robot.leftArm.setTargetPosition(currentPosition + leftArmOffset);
 
             robot.rightArm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             robot.leftArm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-            robot.rightArm.setPower(.8);
-            robot.leftArm.setPower(.8);
+            robot.rightArm.setPower(1);
+            robot.leftArm.setPower(1);
         }
 
 
@@ -187,7 +247,7 @@ public class FettuccineRR extends LinearOpMode {
         if (gamepad2.triangle)
         {
             robot.rightArm.setTargetPosition(maxPosition);
-            robot.leftArm.setTargetPosition(maxPosition);
+            robot.leftArm.setTargetPosition(maxPosition + leftArmOffset);
 
             robot.rightArm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             robot.leftArm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -196,13 +256,6 @@ public class FettuccineRR extends LinearOpMode {
             robot.leftArm.setPower(.7);
 
             justMoved = false;
-        }
-
-        // Resets zero position for calibration
-        if (gamepad2.dpad_down)
-        {
-            robot.rightArm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            robot.leftArm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         telemetry.addData("Arm One Pos", robot.rightArm.getCurrentPosition());
@@ -215,11 +268,54 @@ public class FettuccineRR extends LinearOpMode {
 
     private double getUpwardPower(int position)
     {
-        return -0.00008 * position * position + position * 0.008 + 0.5;
+        return -0.000137 * position * position + position * 0.0137 + 0.189;
     }
 
     private double getDownwardPower(int position)
     {
-        return -0.000034 * position * position + 0.0034 * position + -0.075;
+        return 0.00006 * position * position - 0.007 * position + 0.1;
+    }
+
+    private void moveArmTwoPointZero()
+    {
+        int rightTargetPos = robot.rightArm.getTargetPosition();
+        int leftTargetPos = robot.leftArm.getTargetPosition();
+
+        if (gamepad2.right_trigger > 0)
+        {
+            robot.rightArm.setTargetPosition(Math.min(rightTargetPos + 1, 100));
+            robot.leftArm.setTargetPosition(Math.min(leftTargetPos + 1, 100));
+
+            robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            robot.leftArm.setPower(0.6);
+            robot.rightArm.setPower(0.6);
+
+            armTime.reset();
+        }
+        else if (gamepad2.left_trigger > 0 && armTime.time() >= 40)
+        {
+            robot.rightArm.setTargetPosition(Math.max(0, rightTargetPos - 1));
+            robot.leftArm.setTargetPosition(Math.max(0, leftTargetPos - 1));
+
+            robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            robot.leftArm.setPower(0.6);
+            robot.rightArm.setPower(0.6);
+
+            armTime.reset();
+        }
+
+        telemetry.addData("Arm One Pos", robot.rightArm.getCurrentPosition());
+        telemetry.addData("Arm One Target", robot.rightArm.getTargetPosition());
+        telemetry.addData("Arm Two Pos", robot.leftArm.getCurrentPosition());
+        telemetry.addData("Arm Two Target", robot.leftArm.getTargetPosition());
+        telemetry.addData("Arm Time", armTime.time());
+        telemetry.addData("LTrigger", gamepad2.left_trigger);
+        telemetry.addData("RTrigger", gamepad2.right_trigger);
+        telemetry.update();
     }
 }
+

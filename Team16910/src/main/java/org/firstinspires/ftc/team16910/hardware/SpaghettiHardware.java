@@ -19,8 +19,10 @@ public class SpaghettiHardware
     public DcMotorEx spinnyWheel = null;
     public DcMotorEx armMotorOne = null;
     public DcMotorEx armMotorTwo = null;
-    public CRServo stabilizingServo = null;
-    public Servo doorServo = null;
+    public CRServo stabilizingServoOne = null;
+    public CRServo stabilizingServoTwo = null;
+    //public Servo doorServo = null;
+    public Servo grabberServo = null;
     public DcMotorEx[] motors;
 
 
@@ -63,8 +65,10 @@ public class SpaghettiHardware
         armMotorTwo = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_TWO);
 
         // Maps Servo Motors
-        stabilizingServo = hardwareMap.get(CRServo.class, SpaghettiIds.STABILIZING_SERVO);
-        doorServo = hardwareMap.get(Servo.class, SpaghettiIds.DOOR_SERVO);
+        stabilizingServoOne = hardwareMap.get(CRServo.class, SpaghettiIds.STABILIZING_SERVO_ONE);
+        stabilizingServoTwo = hardwareMap.get(CRServo.class, SpaghettiIds.STABILIZING_SERVO_TWO);
+        //doorServo = hardwareMap.get(Servo.class, SpaghettiIds.DOOR_SERVO);
+        grabberServo = hardwareMap.get(Servo.class, SpaghettiIds.GRABBER_SERVO);
 
         // Sets ZeroPowerBehavior
         armMotorOne.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -74,7 +78,8 @@ public class SpaghettiHardware
         armMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
         armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
 
-        doorServo.setDirection(Servo.Direction.FORWARD);
+        //doorServo.setDirection(Servo.Direction.FORWARD);
+        grabberServo.setDirection(Servo.Direction.FORWARD);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);

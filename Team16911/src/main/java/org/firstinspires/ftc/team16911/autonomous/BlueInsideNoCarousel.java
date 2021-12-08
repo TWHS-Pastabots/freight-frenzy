@@ -15,11 +15,9 @@ import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-import java.security.spec.PSSParameterSpec;
 
-
-@Autonomous(name = "Test Autonomous")
-public class TestAutonomous extends LinearOpMode
+@Autonomous(name = "BlueInsideNoCarousel")
+public class BlueInsideNoCarousel extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -32,14 +30,13 @@ public class TestAutonomous extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private int maxPosition = 230;
+    private int maxPosition = 220, startPosition = 35;
 
-    private Pose2d firstPosition = new Pose2d(7.25, -23, 6.1116);
-    private Pose2d secondPosition = new Pose2d(26.75,28, 0.108);
-    private Pose2d thirdPosition = new Pose2d(-10, 50, 0);
-    private Pose2d fourthPosition = new Pose2d(-30, 110, 0);
+    private Pose2d firstPosition = new Pose2d(25, -17, 0);
+    private Pose2d secondPosition = new Pose2d(0,0, 0);
+    private Pose2d thirdPosition = new Pose2d(0, 30, 0);
 
-    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
+    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
 
     public void runOpMode()
     {
@@ -50,25 +47,23 @@ public class TestAutonomous extends LinearOpMode
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
+        moveArm(startPosition);
         buildTrajectories();
-
 
         waitForStart();
         if(!opModeIsActive()) {return;}
 
+        moveArm(maxPosition);
         drive.followTrajectory(firstTrajectory);
-        SpinCarouselAndMoveArm();
+        dropCargo(2000);
 
         drive.followTrajectory(secondTrajectory);
-        DropCargo();
-
         drive.followTrajectory(thirdTrajectory);
-        drive.followTrajectory(fourthTrajectory);
     }
 
     private void buildTrajectories()
     {
-        firstTrajectory = drive.trajectoryBuilder(new Pose2d())
+        firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
 
         secondTrajectory = drive.trajectoryBuilder(firstTrajectory.end())
@@ -76,26 +71,12 @@ public class TestAutonomous extends LinearOpMode
 
         thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
                 .lineToLinearHeading(thirdPosition).build();
-
-        fourthTrajectory = drive.trajectoryBuilder(thirdTrajectory.end())
-                .lineToLinearHeading(fourthPosition).build();
-
     }
 
-    private void SpinCarouselAndMoveArm()
+    private void moveArm(int position)
     {
-        hardware.carouselMotorOne.setPower(.6);
-        hardware.carouselMotorTwo.setPower(.6);
-        MoveArm();
-        wait(2000);
-        hardware.carouselMotorOne.setPower(0.0);
-        hardware.carouselMotorTwo.setPower(0.0);
-    }
-
-    private void MoveArm()
-    {
-        hardware.armMotorOne.setTargetPosition(maxPosition);
-        hardware.armMotorTwo.setTargetPosition(maxPosition);
+        hardware.armMotorOne.setTargetPosition(position);
+        hardware.armMotorTwo.setTargetPosition(position);
 
         hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -104,10 +85,10 @@ public class TestAutonomous extends LinearOpMode
         hardware.armMotorTwo.setPower(.8);
     }
 
-    private void DropCargo()
+    private void dropCargo(int waitTime)
     {
         hardware.armServo.setPower(-1);
-        wait(3000);
+        wait(waitTime);
         hardware.armServo.setPower(0);
     }
 

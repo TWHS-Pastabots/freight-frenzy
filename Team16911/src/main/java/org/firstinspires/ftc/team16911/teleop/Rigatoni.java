@@ -15,7 +15,7 @@ public class Rigatoni extends OpMode
     int currentPosition = 0;
     int lastPosition = -100;
     int armMotorTwoOffset = 0;
-    double slowConstant = 1.0;
+    double slowConstant = .75;
 
     boolean justMoved = false;
     boolean canRun = false;
@@ -96,14 +96,14 @@ public class Rigatoni extends OpMode
 
         strafe(y, x);
 
-        if (gamepad1.right_bumper && slowConstant == 1.0 && buttonTime.time() >= 500)
+        if (gamepad1.right_bumper && slowConstant == .75 && buttonTime.time() >= 500)
         {
-            slowConstant = .5;
+            slowConstant = .45;
             buttonTime.reset();
         }
-        else if (gamepad1.right_bumper && slowConstant == 0.5 && buttonTime.time() >= 500)
+        else if (gamepad1.right_bumper && slowConstant == 0.45 && buttonTime.time() >= 500)
         {
-            slowConstant = 1.0;
+            slowConstant = .75;
             buttonTime.reset();
         }
 
@@ -299,19 +299,19 @@ public class Rigatoni extends OpMode
 
         strafeRight = true;
 
-        if (strafeTime.time() <= 275)
+        if (strafeTime.time() <= 400)
         {
-            leftFrontPower = -1;
-            leftRearPower = .65;
-            rightRearPower = -.65;
-            rightFrontPower = 1;
+            leftFrontPower = -.65;
+            leftRearPower = 1;
+            rightRearPower = -1;
+            rightFrontPower = .65;
         }
         else
         {
-            leftFrontPower = -1;
-            leftRearPower = .95;
-            rightRearPower = -.95;
-            rightFrontPower = 1;
+            leftFrontPower = -.875;
+            leftRearPower = 1;
+            rightRearPower = -1;
+            rightFrontPower = .875;
         }
     }
 
@@ -324,12 +324,12 @@ public class Rigatoni extends OpMode
 
         strafeLeft = true;
 
-        if (strafeTime.time() <= 240)
+        if (strafeTime.time() <= 400)
         {
-            leftFrontPower = .6;
-            leftRearPower = -1;
-            rightRearPower = 1;
-            rightFrontPower = -.6;
+            leftFrontPower = 1;
+            leftRearPower = -.8;
+            rightRearPower = .8;
+            rightFrontPower = -1;
         }
         else
         {

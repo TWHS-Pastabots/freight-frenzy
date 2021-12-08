@@ -53,10 +53,10 @@ import static org.firstinspires.ftc.team16912.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(2, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 1.084835948916;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -124,9 +124,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         // TODO: reverse any motors using DcMotor.setDirection()
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         leftRear.setDirection(DcMotorEx.Direction.REVERSE);
-        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
@@ -256,12 +256,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public List<Double> getWheelPositions() {
         List<Double> wheelPositions = new ArrayList<>();
         for (int i = 0; i < motors.size(); i++) {
-//            if (i % 2 == 1)
-//                wheelPositions.add(encoderTicksToInches(-motors.get(i).getCurrentPosition()));
-//            else
-//                wheelPositions.add(encoderTicksToInches(motors.get(i).getCurrentPosition()));
-
-            wheelPositions.add(encoderTicksToInches(-motors.get(i).getCurrentPosition()));
+            wheelPositions.add(encoderTicksToInches(motors.get(i).getCurrentPosition()));
         }
 
         return wheelPositions;
@@ -272,12 +267,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         List<Double> wheelVelocities = new ArrayList<>();
 
         for (int i = 0; i < motors.size(); i++) {
-//            if (i % 2 == 1)
-//                wheelVelocities.add(encoderTicksToInches(-motors.get(i).getVelocity()));
-//            else
-//                wheelVelocities.add(encoderTicksToInches(motors.get(i).getVelocity()));
 
-            wheelVelocities.add(encoderTicksToInches(-motors.get(i).getVelocity()));
+            wheelVelocities.add(encoderTicksToInches(motors.get(i).getVelocity()));
         }
         return wheelVelocities;
     }

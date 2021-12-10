@@ -16,7 +16,7 @@ import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 
-@Autonomous(name = "RedInsideCarousel")
+//@Autonomous(name = "RedInsideCarousel")
 public class RedInsideCarousel extends LinearOpMode
 {
     private RigatoniHardware hardware;

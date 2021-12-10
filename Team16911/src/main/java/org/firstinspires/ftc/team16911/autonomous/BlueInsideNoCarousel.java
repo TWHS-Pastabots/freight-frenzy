@@ -32,9 +32,9 @@ public class BlueInsideNoCarousel extends LinearOpMode
 
     private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(28.5, -18, 0);
+    private Pose2d firstPosition = new Pose2d(24, -17, 0);
     private Pose2d secondPosition = new Pose2d(0,0, 0);
-    private Pose2d thirdPosition = new Pose2d(0, 30, 0);
+    private Pose2d thirdPosition = new Pose2d(0, 32, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
 
@@ -116,12 +116,12 @@ public class BlueInsideNoCarousel extends LinearOpMode
             {
                 break;
             }
-            else if (gamepad1.dpad_up && buttonTime.time() < 500)
+            else if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
-            else if (gamepad1.dpad_down && buttonTime.time() < 500)
+            else if (gamepad1.dpad_down && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.max(0, initialWaitTime - 1000);
                 buttonTime.reset();
@@ -135,7 +135,8 @@ public class BlueInsideNoCarousel extends LinearOpMode
             telemetry.update();
         }
 
-        telemetry.addLine("Confirmed");
+        telemetry.addData("Status", "Confirmed");
+        telemetry.update();
     }
 
     private void initVuforia()

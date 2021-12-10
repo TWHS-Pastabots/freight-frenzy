@@ -31,12 +31,12 @@ public class RedOutside extends LinearOpMode
 
     private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(3, 16, 0);
-    private Pose2d secondPosition = new Pose2d(24,-24, 0);
-    private Pose2d thirdPosition = new Pose2d(12, -34, 0);
-    private Pose2d fourthPosition = new Pose2d(12, -48, 0);
-    private Pose2d fifthPosition = new Pose2d(0, -48, 0);
-    private Pose2d sixthPosition = new Pose2d(0, -72, 0);
+    private Pose2d firstPosition = new Pose2d(3, 15, 0);
+    private Pose2d secondPosition = new Pose2d(20,15, 0);
+    private Pose2d thirdPosition = new Pose2d(22, -24, 0);
+    private Pose2d fourthPosition = new Pose2d(20, -40, 0);
+    private Pose2d fifthPosition = new Pose2d(0, -40, 0);
+    private Pose2d sixthPosition = new Pose2d(0, -65, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
     private Trajectory fifthTrajectory, sixthTrajectory;
@@ -64,9 +64,9 @@ public class RedOutside extends LinearOpMode
         spinCarouselAndMoveArm(2700, maxPosition);
 
         drive.followTrajectory(secondTrajectory);
+        drive.followTrajectory(thirdTrajectory);
         dropCargo(2000);
 
-        drive.followTrajectory(thirdTrajectory);
         drive.followTrajectory(fourthTrajectory);
         drive.followTrajectory(fifthTrajectory);
         drive.followTrajectory(sixthTrajectory);
@@ -143,12 +143,12 @@ public class RedOutside extends LinearOpMode
             {
                 break;
             }
-            else if (gamepad1.dpad_up && buttonTime.time() < 500)
+            else if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
-            else if (gamepad1.dpad_down && buttonTime.time() < 500)
+            else if (gamepad1.dpad_down && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.max(0, initialWaitTime - 1000);
                 buttonTime.reset();
@@ -162,7 +162,8 @@ public class RedOutside extends LinearOpMode
             telemetry.update();
         }
 
-        telemetry.addLine("Confirmed");
+        telemetry.addData("Status", "Confirmed");
+        telemetry.update();
     }
 
     private void initVuforia()

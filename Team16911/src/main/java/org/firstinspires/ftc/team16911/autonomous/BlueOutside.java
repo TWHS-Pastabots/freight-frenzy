@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.team16911.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,7 +14,6 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
-
 
 @Autonomous(name = "BlueOutside")
 public class BlueOutside extends LinearOpMode
@@ -33,12 +31,12 @@ public class BlueOutside extends LinearOpMode
 
     private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(5, -17, 0);
-    private Pose2d secondPosition = new Pose2d(24,24, 0);
-    private Pose2d thirdPosition = new Pose2d(24, 42, 0);
-    private Pose2d fourthPosition = new Pose2d(0, 42, 0);
-    private Pose2d fifthPosition = new Pose2d(0, 70, 0);
-    private Pose2d sixthPosition = new Pose2d(0, 70, 0);
+    private Pose2d firstPosition = new Pose2d(3, -15, 0);
+    private Pose2d secondPosition = new Pose2d(20,-15, 0);
+    private Pose2d thirdPosition = new Pose2d(22, 24, 0);
+    private Pose2d fourthPosition = new Pose2d(20, 40, 0);
+    private Pose2d fifthPosition = new Pose2d(0, 40, 0);
+    private Pose2d sixthPosition = new Pose2d(0, 65, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
     private Trajectory fifthTrajectory, sixthTrajectory;
@@ -66,9 +64,9 @@ public class BlueOutside extends LinearOpMode
         spinCarouselAndMoveArm(2700, maxPosition);
 
         drive.followTrajectory(secondTrajectory);
+        drive.followTrajectory(thirdTrajectory);
         dropCargo(2000);
 
-        drive.followTrajectory(thirdTrajectory);
         drive.followTrajectory(fourthTrajectory);
         drive.followTrajectory(fifthTrajectory);
         drive.followTrajectory(sixthTrajectory);
@@ -76,6 +74,7 @@ public class BlueOutside extends LinearOpMode
 
     private void buildTrajectories()
     {
+
         firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
 
@@ -140,16 +139,16 @@ public class BlueOutside extends LinearOpMode
 
         while (!gamepad1.x)
         {
-            if (isStarted())
+            if (isStarted() || gamepad1.x)
             {
                 break;
             }
-            else if (gamepad1.dpad_up && buttonTime.time() < 500)
+            else if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
-            else if (gamepad1.dpad_down && buttonTime.time() < 500)
+            else if (gamepad1.dpad_down && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.max(0, initialWaitTime - 1000);
                 buttonTime.reset();
@@ -163,7 +162,8 @@ public class BlueOutside extends LinearOpMode
             telemetry.update();
         }
 
-        telemetry.addLine("Confirmed");
+        telemetry.addData("Status", "Confirmed");
+        telemetry.update();
     }
 
     private void initVuforia()

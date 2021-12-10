@@ -116,12 +116,12 @@ public class RedInsideNoCarousel extends LinearOpMode
             {
                 break;
             }
-            else if (gamepad1.dpad_up && buttonTime.time() < 500)
+            else if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
-            else if (gamepad1.dpad_down && buttonTime.time() < 500)
+            else if (gamepad1.dpad_down && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.max(0, initialWaitTime - 1000);
                 buttonTime.reset();
@@ -135,7 +135,8 @@ public class RedInsideNoCarousel extends LinearOpMode
             telemetry.update();
         }
 
-        telemetry.addLine("Confirmed");
+        telemetry.addData("Status", "Confirmed");
+        telemetry.update();
     }
 
     private void initVuforia()

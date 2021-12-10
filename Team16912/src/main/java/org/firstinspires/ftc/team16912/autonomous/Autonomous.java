@@ -13,6 +13,7 @@ import org.firstinspires.ftc.team16912.util.LinguineHardware;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "LinguineAutonomousV1")
@@ -47,21 +48,25 @@ public class Autonomous extends LinearOpMode {
 
         waitForStart();
 
-        // No camera yet so robot will always deliver to top for now
-        deliverShipment(1);
+        if (isStarted()) {
 
-        robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
-        spinCarousel();
+            // No camera yet so robot will always deliver to top for now
+            deliverShipment(1);
 
-        //slow down spinner
-        robot.cSpinner.setVelocity(300);
+            robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
+            spinCarousel();
 
-        //wait 1.5 seconds for the duck to fall
-        sleep(2500);
-        robot.cSpinner.setVelocity(0);
+            //slow down spinner
+            robot.cSpinner.setVelocity(300);
 
-        setToFinish();
-        runArmToStart();
+            //wait 1.5 seconds for the duck to fall
+            sleep(2500);
+            robot.cSpinner.setVelocity(0);
+
+            setToFinish();
+            runArmToStart();
+        }
+
     }
 
 
@@ -208,6 +213,7 @@ public class Autonomous extends LinearOpMode {
     // Alliance configuration
     private void config() {
 
+        telemetry.addLine("Press RIGHT BUMPER to confirm selection");
         while (!gamepad1.right_bumper) {
 
             if (gamepad1.circle) {
@@ -234,9 +240,13 @@ public class Autonomous extends LinearOpMode {
                 startPose = PoseStorage.BlueLeft;
             }
 
-            telemetry.addData("Start Position: ", alliance + " " + side);
+            telemetry.addData("Start Position: ", alliance.toUpperCase() + " " + side.toUpperCase());
             telemetry.update();
         }
+
+        telemetry.clearAll();
+        telemetry.addLine("CONFIRMED. READY TO START");
+        telemetry.update();
     }
 
 }

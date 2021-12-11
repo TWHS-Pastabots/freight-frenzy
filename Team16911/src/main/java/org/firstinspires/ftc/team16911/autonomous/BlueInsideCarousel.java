@@ -16,7 +16,7 @@ import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 
-@Autonomous(name = "BlueInsideCarousel")
+//@Autonomous(name = "BlueInsideCarousel")
 public class BlueInsideCarousel extends LinearOpMode
 {
     private RigatoniHardware hardware;
@@ -30,13 +30,13 @@ public class BlueInsideCarousel extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private int maxPosition = 220, startPosition = 35;
+    private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(25, -17, 0);
-    private Pose2d secondPosition = new Pose2d(25,-64, 0);
-    private Pose2d thirdPosition = new Pose2d(4, -64, 0);
-    private Pose2d fourthPosition = new Pose2d(25, -64, 0);
-    private Pose2d fifthPosition = new Pose2d(23, 0, 0);
+    private Pose2d firstPosition = new Pose2d(21.5, 0, 0);
+    private Pose2d secondPosition = new Pose2d(21.5,-52, 0);
+    private Pose2d thirdPosition = new Pose2d(3, -52, 0);
+    private Pose2d fourthPosition = new Pose2d(21.5, -52, 0);
+    private Pose2d fifthPosition = new Pose2d(21.5, 0, 0);
     private Pose2d sixthPosition = new Pose2d(0, 0, 0);
     private Pose2d seventhPosition = new Pose2d(0, 30, 0);
 
@@ -55,8 +55,12 @@ public class BlueInsideCarousel extends LinearOpMode
         moveArm(startPosition);
         buildTrajectories();
 
+        configuration();
+
         waitForStart();
         if(!opModeIsActive()) {return;}
+
+        wait(initialWaitTime);
 
         moveArm(maxPosition);
         drive.followTrajectory(firstTrajectory);
@@ -74,7 +78,6 @@ public class BlueInsideCarousel extends LinearOpMode
 
     private void buildTrajectories()
     {
-
         firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
 
@@ -133,6 +136,38 @@ public class BlueInsideCarousel extends LinearOpMode
         {
             continue;
         }
+    }
+
+    private void configuration()
+    {
+        ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        while (!gamepad1.x)
+        {
+            if (isStarted())
+            {
+                break;
+            }
+            else if (gamepad1.dpad_up && buttonTime.time() < 500)
+            {
+                initialWaitTime = Math.min(10000, initialWaitTime + 1000);
+                buttonTime.reset();
+            }
+            else if (gamepad1.dpad_down && buttonTime.time() < 500)
+            {
+                initialWaitTime = Math.max(0, initialWaitTime - 1000);
+                buttonTime.reset();
+            }
+            else if (gamepad1.circle)
+            {
+                initialWaitTime = 0;
+            }
+
+            telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
+            telemetry.update();
+        }
+
+        telemetry.addLine("Confirmed");
     }
 
     private void initVuforia()

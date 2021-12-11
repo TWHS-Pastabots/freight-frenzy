@@ -226,13 +226,13 @@ public class Rigatoni extends OpMode
         // Carousel Motor Code
         if (gamepad1.right_trigger > 0)
         {
-            hardware.carouselMotorOne.setPower(gamepad1.right_trigger * .5);
-            hardware.carouselMotorTwo.setPower(gamepad1.right_trigger * .5);
+            hardware.carouselMotorOne.setPower(gamepad1.right_trigger * .7);
+            hardware.carouselMotorTwo.setPower(gamepad1.right_trigger * .7);
         }
         else
         {
-            hardware.carouselMotorOne.setPower(-gamepad1.left_trigger * .5);
-            hardware.carouselMotorTwo.setPower(-gamepad1.left_trigger * .5);
+            hardware.carouselMotorOne.setPower(-gamepad1.left_trigger * .7);
+            hardware.carouselMotorTwo.setPower(-gamepad1.left_trigger * .7);
         }
     }
 

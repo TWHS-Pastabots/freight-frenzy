@@ -30,11 +30,11 @@ public class BlueInsideNoCarousel extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private int maxPosition = 220, startPosition = 35;
+    private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(25, -17, 0);
+    private Pose2d firstPosition = new Pose2d(24, -17, 0);
     private Pose2d secondPosition = new Pose2d(0,0, 0);
-    private Pose2d thirdPosition = new Pose2d(0, 30, 0);
+    private Pose2d thirdPosition = new Pose2d(0, 32, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
 
@@ -50,8 +50,12 @@ public class BlueInsideNoCarousel extends LinearOpMode
         moveArm(startPosition);
         buildTrajectories();
 
+        configuration();
+
         waitForStart();
         if(!opModeIsActive()) {return;}
+
+        wait(initialWaitTime);
 
         moveArm(maxPosition);
         drive.followTrajectory(firstTrajectory);
@@ -100,6 +104,39 @@ public class BlueInsideNoCarousel extends LinearOpMode
         {
             continue;
         }
+    }
+
+    private void configuration()
+    {
+        ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        while (!gamepad1.x)
+        {
+            if (isStarted())
+            {
+                break;
+            }
+            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            {
+                initialWaitTime = Math.min(10000, initialWaitTime + 1000);
+                buttonTime.reset();
+            }
+            else if (gamepad1.dpad_down && buttonTime.time() > 300)
+            {
+                initialWaitTime = Math.max(0, initialWaitTime - 1000);
+                buttonTime.reset();
+            }
+            else if (gamepad1.circle)
+            {
+                initialWaitTime = 0;
+            }
+
+            telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
+            telemetry.update();
+        }
+
+        telemetry.addData("Status", "Confirmed");
+        telemetry.update();
     }
 
     private void initVuforia()

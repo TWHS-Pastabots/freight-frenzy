@@ -15,7 +15,6 @@ import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-
 @Autonomous(name = "RedOutside")
 public class RedOutside extends LinearOpMode
 {
@@ -30,15 +29,17 @@ public class RedOutside extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private int maxPosition = 220, startPosition = 35;
+    private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(4, 17.5, 0);
-    private Pose2d secondPosition = new Pose2d(25,-29, 0);
-    private Pose2d thirdPosition = new Pose2d(25, -48, 0);
-    private Pose2d fourthPosition = new Pose2d(0, -48, 0);
-    private Pose2d fifthPosition = new Pose2d(0, -78, 0);
+    private Pose2d firstPosition = new Pose2d(3, 15, 0);
+    private Pose2d secondPosition = new Pose2d(20,15, 0);
+    private Pose2d thirdPosition = new Pose2d(22, -24, 0);
+    private Pose2d fourthPosition = new Pose2d(20, -40, 0);
+    private Pose2d fifthPosition = new Pose2d(0, -40, 0);
+    private Pose2d sixthPosition = new Pose2d(0, -65, 0);
 
-    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory, fifthTrajectory;
+    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
+    private Trajectory fifthTrajectory, sixthTrajectory;
 
     public void runOpMode()
     {
@@ -52,25 +53,27 @@ public class RedOutside extends LinearOpMode
         moveArm(startPosition);
         buildTrajectories();
 
+        configuration();
 
         waitForStart();
         if(!opModeIsActive()) {return;}
+
+        wait(initialWaitTime);
 
         drive.followTrajectory(firstTrajectory);
         spinCarouselAndMoveArm(2700, maxPosition);
 
         drive.followTrajectory(secondTrajectory);
+        drive.followTrajectory(thirdTrajectory);
         dropCargo(2000);
 
-        drive.followTrajectory(thirdTrajectory);
         drive.followTrajectory(fourthTrajectory);
         drive.followTrajectory(fifthTrajectory);
+        drive.followTrajectory(sixthTrajectory);
     }
 
     private void buildTrajectories()
     {
-        //firstTrajectory = drive.trajectoryBuilder(new Pose2d())
-                //.lineToLinearHeading(firstPosition).build();
 
         firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
@@ -86,6 +89,9 @@ public class RedOutside extends LinearOpMode
 
         fifthTrajectory = drive.trajectoryBuilder(fourthTrajectory.end())
                 .lineToLinearHeading(fifthPosition).build();
+
+        sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
+                .lineToLinearHeading(sixthPosition).build();
     }
 
     private void spinCarouselAndMoveArm(int waitTime, int position)
@@ -125,6 +131,39 @@ public class RedOutside extends LinearOpMode
         {
             continue;
         }
+    }
+
+    private void configuration()
+    {
+        ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        while (!gamepad1.x)
+        {
+            if (isStarted())
+            {
+                break;
+            }
+            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            {
+                initialWaitTime = Math.min(10000, initialWaitTime + 1000);
+                buttonTime.reset();
+            }
+            else if (gamepad1.dpad_down && buttonTime.time() > 300)
+            {
+                initialWaitTime = Math.max(0, initialWaitTime - 1000);
+                buttonTime.reset();
+            }
+            else if (gamepad1.circle)
+            {
+                initialWaitTime = 0;
+            }
+
+            telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
+            telemetry.update();
+        }
+
+        telemetry.addData("Status", "Confirmed");
+        telemetry.update();
     }
 
     private void initVuforia()

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team16909.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,8 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.team16909.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16909.hardware.FettuccineHardware;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
-public class Autonomous extends LinearOpMode {
+@Autonomous(preselectTeleOp = "FettuccineRRv2")
+public class TimeAutonomous extends LinearOpMode {
 
     int maxPosition = 100;
     int currentPosition = 0;

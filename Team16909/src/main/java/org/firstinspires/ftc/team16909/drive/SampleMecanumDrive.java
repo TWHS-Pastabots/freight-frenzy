@@ -88,11 +88,7 @@ public class SampleMecanumDrive extends MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
+
 
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
@@ -129,6 +125,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
@@ -279,7 +277,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation().firstAngle;
+        return 0;
     }
 
     @Override

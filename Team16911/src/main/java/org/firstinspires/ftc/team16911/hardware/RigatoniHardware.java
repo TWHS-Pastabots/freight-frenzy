@@ -2,7 +2,7 @@ package org.firstinspires.ftc.team16911.hardware;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
@@ -19,6 +19,8 @@ public class RigatoniHardware
     public DcMotorEx carouselMotorOne = null;
     public DcMotorEx carouselMotorTwo = null;
     public CRServo armServo = null;
+    public DistanceSensor leftDistanceSensor = null;
+    public DistanceSensor rightDistanceSensor = null;
     public DcMotorEx[] motors;
 
     public void init(HardwareMap hardwareMap)
@@ -29,6 +31,7 @@ public class RigatoniHardware
         initializeArmMotors(hardwareMap);
         initializeCarousel(hardwareMap);
         initializeServos(hardwareMap);
+        initializeColorSensors(hardwareMap);
     }
 
     private void initializePrimaryMotors(HardwareMap hardwareMap)
@@ -99,5 +102,11 @@ public class RigatoniHardware
         armServo = hardwareMap.get(CRServo.class, RigatoniIds.ARM_SERVO);
 
         armServo.setDirection(CRServo.Direction.FORWARD);
+    }
+
+    private void initializeColorSensors(HardwareMap hardwareMap)
+    {
+        leftDistanceSensor = hardwareMap.get(DistanceSensor.class, RigatoniIds.LEFT_DISTANCE_SENSOR);
+        rightDistanceSensor = hardwareMap.get(DistanceSensor.class, RigatoniIds.RIGHT_DISTANCE_SENSOR);
     }
 }

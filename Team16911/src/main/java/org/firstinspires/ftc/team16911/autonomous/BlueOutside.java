@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -29,14 +28,15 @@ public class BlueOutside extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
+    private final int maxPosition = 220, startPosition = 35;
+    private int initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(3, -15, 0);
-    private Pose2d secondPosition = new Pose2d(20,-15, 0);
-    private Pose2d thirdPosition = new Pose2d(22, 24, 0);
-    private Pose2d fourthPosition = new Pose2d(20, 40, 0);
-    private Pose2d fifthPosition = new Pose2d(0, 40, 0);
-    private Pose2d sixthPosition = new Pose2d(0, 65, 0);
+    private final Pose2d firstPosition = new Pose2d(3.75, 14.4, 0);
+    private final Pose2d secondPosition = new Pose2d(20,14.4, 0);
+    private final Pose2d thirdPosition = new Pose2d(22, 23.4, 0);
+    private final Pose2d fourthPosition = new Pose2d(20, 40, 0);
+    private final Pose2d fifthPosition = new Pose2d(0, -40, 0);
+    private final Pose2d sixthPosition = new Pose2d(0, -65, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
     private Trajectory fifthTrajectory, sixthTrajectory;
@@ -45,12 +45,13 @@ public class BlueOutside extends LinearOpMode
     {
         // Initialize Hardware
         hardware = new RigatoniHardware();
+        util utilities = new util(hardware);
         hardware.init(hardwareMap);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        moveArm(startPosition);
+        utilities.moveArm(startPosition);
         buildTrajectories();
 
         configuration();
@@ -58,14 +59,14 @@ public class BlueOutside extends LinearOpMode
         waitForStart();
         if(!opModeIsActive()) {return;}
 
-        wait(initialWaitTime);
+        utilities.wait(initialWaitTime);
 
         drive.followTrajectory(firstTrajectory);
-        spinCarouselAndMoveArm(2700, maxPosition);
+        utilities.spinCarouselAndMoveArm(2700, maxPosition);
 
         drive.followTrajectory(secondTrajectory);
         drive.followTrajectory(thirdTrajectory);
-        dropCargo(2000);
+        utilities.dropCargo(2000);
 
         drive.followTrajectory(fourthTrajectory);
         drive.followTrajectory(fifthTrajectory);
@@ -92,45 +93,6 @@ public class BlueOutside extends LinearOpMode
 
         sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
                 .lineToLinearHeading(sixthPosition).build();
-    }
-
-    private void spinCarouselAndMoveArm(int waitTime, int position)
-    {
-        hardware.carouselMotorOne.setPower(.6);
-        hardware.carouselMotorTwo.setPower(.6);
-        moveArm(position);
-        wait(waitTime);
-        hardware.carouselMotorOne.setPower(0.0);
-        hardware.carouselMotorTwo.setPower(0.0);
-    }
-
-    private void moveArm(int position)
-    {
-        hardware.armMotorOne.setTargetPosition(position);
-        hardware.armMotorTwo.setTargetPosition(position);
-
-        hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        hardware.armMotorOne.setPower(.8);
-        hardware.armMotorTwo.setPower(.8);
-    }
-
-    private void dropCargo(int waitTime)
-    {
-        hardware.armServo.setPower(-1);
-        wait(waitTime);
-        hardware.armServo.setPower(0);
-    }
-
-    private void wait(int waitTime)
-    {
-        ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        time.reset();
-        while (time.time() < waitTime)
-        {
-            continue;
-        }
     }
 
     private void configuration()

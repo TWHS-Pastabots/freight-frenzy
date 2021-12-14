@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -30,11 +29,12 @@ public class RedInsideNoCarousel extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private int maxPosition = 220, startPosition = 35, initialWaitTime = 0;
+    private final int maxPosition = 220, startPosition = 35;
+    private int initialWaitTime = 0;
 
-    private Pose2d firstPosition = new Pose2d(24, 17, 0);
-    private Pose2d secondPosition = new Pose2d(0,0, 0);
-    private Pose2d thirdPosition = new Pose2d(0, -32, 0);
+    private final Pose2d firstPosition = new Pose2d(24, 17, 0);
+    private final Pose2d secondPosition = new Pose2d(0,0, 0);
+    private final Pose2d thirdPosition = new Pose2d(0, -32, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
 
@@ -43,11 +43,12 @@ public class RedInsideNoCarousel extends LinearOpMode
         // Initialize Hardware
         hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
+        util utilities = new util(hardware);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        moveArm(startPosition);
+        utilities.moveArm(startPosition);
         buildTrajectories();
 
         configuration();
@@ -55,11 +56,11 @@ public class RedInsideNoCarousel extends LinearOpMode
         waitForStart();
         if(!opModeIsActive()) {return;}
 
-        wait(initialWaitTime);
+        utilities.wait(initialWaitTime);
 
-        moveArm(maxPosition);
+        utilities.moveArm(maxPosition);
         drive.followTrajectory(firstTrajectory);
-        dropCargo(2000);
+        utilities.dropCargo(2000);
 
         drive.followTrajectory(secondTrajectory);
         drive.followTrajectory(thirdTrajectory);
@@ -77,42 +78,13 @@ public class RedInsideNoCarousel extends LinearOpMode
                 .lineToLinearHeading(thirdPosition).build();
     }
 
-    private void moveArm(int position)
-    {
-        hardware.armMotorOne.setTargetPosition(position);
-        hardware.armMotorTwo.setTargetPosition(position);
-
-        hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        hardware.armMotorOne.setPower(.8);
-        hardware.armMotorTwo.setPower(.8);
-    }
-
-    private void dropCargo(int waitTime)
-    {
-        hardware.armServo.setPower(-1);
-        wait(waitTime);
-        hardware.armServo.setPower(0);
-    }
-
-    private void wait(int waitTime)
-    {
-        ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        time.reset();
-        while (time.time() < waitTime)
-        {
-            continue;
-        }
-    }
-
     private void configuration()
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         while (!gamepad1.x)
         {
-            if (isStarted())
+            if (isStarted() || gamepad1.x)
             {
                 break;
             }

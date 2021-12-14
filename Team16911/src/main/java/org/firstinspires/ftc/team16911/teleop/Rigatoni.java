@@ -127,8 +127,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.right_trigger * .65);
-            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .65);
+            hardware.armMotorOne.setPower(gamepad2.right_trigger * .7);
+            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .7);
 
             //hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
             //hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
@@ -143,8 +143,8 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.17);
-            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.17);
+            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.23);
+            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.23);
 
             //hardware.armMotorOne.setPower(getDownwardPower(currentPosition));
             //hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
@@ -226,13 +226,13 @@ public class Rigatoni extends OpMode
         // Carousel Motor Code
         if (gamepad1.right_trigger > 0)
         {
-            hardware.carouselMotorOne.setPower(gamepad1.right_trigger * .7);
-            hardware.carouselMotorTwo.setPower(gamepad1.right_trigger * .7);
+            hardware.carouselMotorOne.setPower(gamepad1.right_trigger * .6);
+            hardware.carouselMotorTwo.setPower(gamepad1.right_trigger * .6);
         }
         else
         {
-            hardware.carouselMotorOne.setPower(-gamepad1.left_trigger * .7);
-            hardware.carouselMotorTwo.setPower(-gamepad1.left_trigger * .7);
+            hardware.carouselMotorOne.setPower(-gamepad1.left_trigger * .6);
+            hardware.carouselMotorTwo.setPower(-gamepad1.left_trigger * .6);
         }
     }
 

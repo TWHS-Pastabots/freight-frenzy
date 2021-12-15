@@ -35,6 +35,7 @@ public class FettuccineRR extends LinearOpMode {
     ElapsedTime armButton = null;
     ElapsedTime timeSinceMove = null;
     FettuccineHardware robot = null;
+    SampleMecanumDrive drive = null;
 
     int dpadFB = 0;
     int dpadLR = 0;
@@ -49,14 +50,13 @@ public class FettuccineRR extends LinearOpMode {
         robot.init(hardwareMap);
 
         // Drive Motors
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
+        // Arm Stuff
         armTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         timeSinceMove = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         lockoutTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-
         robot.leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 

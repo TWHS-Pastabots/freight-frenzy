@@ -8,15 +8,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-@Autonomous(name = "BlueOutsideDistance")
-public class BlueOutsideDistance extends LinearOpMode
+@Autonomous(name = "BlueCarousel")
+public class BlueCarousel extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -29,33 +28,25 @@ public class BlueOutsideDistance extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private final int startPosition = 35;
+    private final int maxPosition = 220, startPosition = 35;
     private int initialWaitTime = 0;
-    private final int[] positions = {110, 130, 220};
 
-    private final Pose2d firstPosition = new Pose2d(3.75, -14.4, 0);
-    private final Pose2d secondPosition = new Pose2d(20,-14.4, 0);
-    private final Pose2d thirdPosition = new Pose2d(20, -.65, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(13.3, 23.4, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(16.3, 23.4, 0);
-    private final Pose2d hubLevelThreePose = new Pose2d(22, 23.4, 0);
-    private final Pose2d fourthPosition = new Pose2d(20, 40, 0);
-    private final Pose2d fifthPosition = new Pose2d(0, 40, 0);
-    private final Pose2d sixthPosition = new Pose2d(0, 65, 0);
+    private final Pose2d firstPosition = new Pose2d(3.75, -18, 0);
+    private final Pose2d secondPosition = new Pose2d(20,-18, 0);
+    private final Pose2d thirdPosition = new Pose2d(22, 27.75, 0);
+    private final Pose2d fourthPosition = new Pose2d(20, 52, 0);
+    private final Pose2d fifthPosition = new Pose2d(0, 52, 0);
+    private final Pose2d sixthPosition = new Pose2d(0, 80, 0);
 
-    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, toHubLevelOne;
-    private Trajectory toHubLevelTwo, toHubLevelThree, fromHubLevelOne, fromHubLevelTwo;
-    private Trajectory fromHubLevelThree, fifthTrajectory, sixthTrajectory;
-    private final Trajectory[] toHubTrajectories = new Trajectory[3];
-    private final Trajectory[] fromHubTrajectories = new Trajectory[3];
-
+    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
+    private Trajectory fifthTrajectory, sixthTrajectory;
 
     public void runOpMode()
     {
         // Initialize Hardware
         hardware = new RigatoniHardware();
-        hardware.init(hardwareMap);
         util utilities = new util(hardware);
+        hardware.init(hardwareMap);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
@@ -71,21 +62,13 @@ public class BlueOutsideDistance extends LinearOpMode
         utilities.wait(initialWaitTime);
 
         drive.followTrajectory(firstTrajectory);
-        utilities.spinCarouselAndMoveArm(2700, positions[1]);
+        utilities.spinCarouselAndMoveArm(2700, maxPosition);
 
         drive.followTrajectory(secondTrajectory);
         drive.followTrajectory(thirdTrajectory);
-        int barcodeLevel = utilities.getBarcodeLevelBlueSide();
-        utilities.moveArm(positions[barcodeLevel]);
-        telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
-        telemetry.update();
-
-        drive.followTrajectory(toHubTrajectories[barcodeLevel]);
-        utilities.eliminateOscillations();
         utilities.dropCargo(2000);
 
-        drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
+        drive.followTrajectory(fourthTrajectory);
         drive.followTrajectory(fifthTrajectory);
         drive.followTrajectory(sixthTrajectory);
     }
@@ -102,37 +85,14 @@ public class BlueOutsideDistance extends LinearOpMode
         thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
                 .lineToLinearHeading(thirdPosition).build();
 
-        toHubLevelOne = drive.trajectoryBuilder(thirdTrajectory.end())
-                .lineToLinearHeading(hubLevelOnePose).build();
-
-        toHubLevelTwo = drive.trajectoryBuilder(thirdTrajectory.end())
-                .lineToLinearHeading(hubLevelTwoPose).build();
-
-        toHubLevelThree = drive.trajectoryBuilder(thirdTrajectory.end())
-                .lineToLinearHeading(hubLevelThreePose).build();
-
-        fromHubLevelOne = drive.trajectoryBuilder(toHubLevelOne.end())
+        fourthTrajectory = drive.trajectoryBuilder(thirdTrajectory.end())
                 .lineToLinearHeading(fourthPosition).build();
 
-        fromHubLevelTwo = drive.trajectoryBuilder(toHubLevelTwo.end())
-                .lineToLinearHeading(fourthPosition).build();
-
-        fromHubLevelThree = drive.trajectoryBuilder(toHubLevelThree.end())
-                .lineToLinearHeading(fourthPosition).build();
-
-        fifthTrajectory = drive.trajectoryBuilder(fourthPosition)
+        fifthTrajectory = drive.trajectoryBuilder(fourthTrajectory.end())
                 .lineToLinearHeading(fifthPosition).build();
 
         sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
                 .lineToLinearHeading(sixthPosition).build();
-
-        toHubTrajectories[0] = toHubLevelOne;
-        toHubTrajectories[1] = toHubLevelTwo;
-        toHubTrajectories[2] = toHubLevelThree;
-
-        fromHubTrajectories[0] = fromHubLevelOne;
-        fromHubTrajectories[1] = fromHubLevelTwo;
-        fromHubTrajectories[2] = fromHubLevelThree;
     }
 
     private void configuration()

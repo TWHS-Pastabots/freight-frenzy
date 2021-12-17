@@ -14,9 +14,8 @@ import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-
-//@Autonomous(name = "RedInsideCarousel")
-public class RedInsideCarousel extends LinearOpMode
+@Autonomous(name = "RedCarousel")
+public class RedCarousel extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -32,23 +31,22 @@ public class RedInsideCarousel extends LinearOpMode
     private final int maxPosition = 220, startPosition = 35;
     private int initialWaitTime = 0;
 
-    private final Pose2d firstPosition = new Pose2d(24, 19, 0);
-    private final Pose2d secondPosition = new Pose2d(24,60, 0);
-    private final Pose2d thirdPosition = new Pose2d(1.5, 60, 0);
-    private final Pose2d fourthPosition = new Pose2d(24, 62, 0);
-    private final Pose2d fifthPosition = new Pose2d(24, 0, 0);
-    private final Pose2d sixthPosition = new Pose2d(0, 0, 0);
-    private final Pose2d seventhPosition = new Pose2d(0, -32, 0);
+    private final Pose2d firstPosition = new Pose2d(3.75, 18, 0);
+    private final Pose2d secondPosition = new Pose2d(20,18, 0);
+    private final Pose2d thirdPosition = new Pose2d(22, -27.75, 0);
+    private final Pose2d fourthPosition = new Pose2d(20, -52, 0);
+    private final Pose2d fifthPosition = new Pose2d(-.5, -52, 0);
+    private final Pose2d sixthPosition = new Pose2d(-.5, -80, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
-    private Trajectory fifthTrajectory, sixthTrajectory, seventhTrajectory;
+    private Trajectory fifthTrajectory, sixthTrajectory;
 
     public void runOpMode()
     {
         // Initialize Hardware
         hardware = new RigatoniHardware();
-        hardware.init(hardwareMap);
         util utilities = new util(hardware);
+        hardware.init(hardwareMap);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
@@ -63,22 +61,21 @@ public class RedInsideCarousel extends LinearOpMode
 
         utilities.wait(initialWaitTime);
 
-        utilities.moveArm(maxPosition);
         drive.followTrajectory(firstTrajectory);
-        utilities.dropCargo(2000);
+        utilities.spinCarouselAndMoveArm(2700, maxPosition);
 
         drive.followTrajectory(secondTrajectory);
         drive.followTrajectory(thirdTrajectory);
-        utilities.spinCarousel(2700);
+        utilities.dropCargo(2000);
 
         drive.followTrajectory(fourthTrajectory);
         drive.followTrajectory(fifthTrajectory);
         drive.followTrajectory(sixthTrajectory);
-        drive.followTrajectory(seventhTrajectory);
     }
 
     private void buildTrajectories()
     {
+
         firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
 
@@ -96,9 +93,6 @@ public class RedInsideCarousel extends LinearOpMode
 
         sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
                 .lineToLinearHeading(sixthPosition).build();
-
-        seventhTrajectory = drive.trajectoryBuilder(sixthTrajectory.end())
-                .lineToLinearHeading(seventhPosition).build();
     }
 
     private void configuration()

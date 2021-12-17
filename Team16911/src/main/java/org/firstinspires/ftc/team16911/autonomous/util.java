@@ -9,6 +9,7 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 public class util
 {
     private RigatoniHardware hardware;
+    private final int MAX_TRIGGER_DISTANCE = 10;
 
     util(RigatoniHardware hardware)
     {
@@ -24,8 +25,8 @@ public class util
 
     public void spinCarouselAndMoveArm(int waitTime, int position)
     {
-        hardware.carouselMotorOne.setPower(.6);
-        hardware.carouselMotorTwo.setPower(.6);
+        hardware.carouselMotorOne.setPower(.5);
+        hardware.carouselMotorTwo.setPower(.5);
         moveArm(position);
         wait(waitTime);
         hardware.carouselMotorOne.setPower(0.0);
@@ -34,8 +35,8 @@ public class util
 
     public void spinCarousel(int waitTime)
     {
-        hardware.carouselMotorOne.setPower(.6);
-        hardware.carouselMotorTwo.setPower(.6);
+        hardware.carouselMotorOne.setPower(.5);
+        hardware.carouselMotorTwo.setPower(.5);
         wait(waitTime);
         hardware.carouselMotorOne.setPower(0.0);
         hardware.carouselMotorTwo.setPower(0.0);
@@ -71,11 +72,11 @@ public class util
 
     public int getBarcodeLevelBlueSide()
     {
-        if (hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH) <= 6)
+        if (hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH) <= MAX_TRIGGER_DISTANCE)
         {
             return 2;
         }
-        else if (hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH) <= 6)
+        else if (hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH) <= MAX_TRIGGER_DISTANCE)
         {
             return 1;
         }
@@ -87,11 +88,11 @@ public class util
 
     public int getBarcodeLevelRedSide()
     {
-        if (hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH) <= 6)
+        if (hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH) <= MAX_TRIGGER_DISTANCE)
         {
             return 1;
         }
-        else if (hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH) <= 6)
+        else if (hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH) <= MAX_TRIGGER_DISTANCE)
         {
             return 0;
         }

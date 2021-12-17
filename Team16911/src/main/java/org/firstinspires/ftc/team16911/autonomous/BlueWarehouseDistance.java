@@ -15,8 +15,8 @@ import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-@Autonomous(name = "RedInsideDistance")
-public class RedInsideDistance extends LinearOpMode
+@Autonomous(name = "BlueWarehouseDistance")
+public class BlueWarehouseDistance extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -31,14 +31,14 @@ public class RedInsideDistance extends LinearOpMode
 
     private final int startPosition = 35;
     private int initialWaitTime = 0;
-    private final int[] positions = {110, 130, 220};
+    private final int[] positions = {100, 130, 200};
 
-    private final Pose2d firstPosition = new Pose2d(20, .375, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(13.5, 17, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(16.3, 17, 0);
-    private final Pose2d hubLevelThreePose = new Pose2d(22.4, 17, 0);
-    private final Pose2d secondPosition = new Pose2d(0, 0, 0);
-    private final Pose2d thirdPosition = new Pose2d(0, -32, 0);
+    private final Pose2d firstPosition = new Pose2d(20, -.5, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(13.85, -18.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(15.8, -18.75, 0);
+    private final Pose2d hubLevelThreePose = new Pose2d(22, -18.75, 0);
+    private final Pose2d secondPosition = new Pose2d(-.5, 0, 0);
+    private final Pose2d thirdPosition = new Pose2d(-.5, 32, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, toHubLevelOne;
     private Trajectory toHubLevelTwo, toHubLevelThree, fromHubLevelOne, fromHubLevelTwo;
@@ -67,8 +67,9 @@ public class RedInsideDistance extends LinearOpMode
 
         utilities.wait(initialWaitTime);
 
+        utilities.moveArm(positions[1]);
         drive.followTrajectory(firstTrajectory);
-        int barcodeLevel = utilities.getBarcodeLevelRedSide();
+        int barcodeLevel = utilities.getBarcodeLevelBlueSide();
         utilities.moveArm(positions[barcodeLevel]);
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));

@@ -31,6 +31,7 @@ public class Rigatoni extends OpMode
     ElapsedTime armTime = null;
     ElapsedTime buttonTime = null;
     ElapsedTime strafeTime = null;
+    ElapsedTime gameTime = null;
 
     public void init()
     {
@@ -40,6 +41,7 @@ public class Rigatoni extends OpMode
         armTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         strafeTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        gameTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -96,6 +98,11 @@ public class Rigatoni extends OpMode
 
         strafe(y, x);
 
+        if (gameTime.time() > 100)
+        {
+            telemetry.addData("Status", "Can Remove Limiter");
+        }
+
         if (gamepad1.right_bumper && slowConstant == .75 && buttonTime.time() >= 500)
         {
             slowConstant = .45;
@@ -105,6 +112,10 @@ public class Rigatoni extends OpMode
         {
             slowConstant = .75;
             buttonTime.reset();
+        }
+        else if (gamepad2.dpad_up && gameTime.time() > 100)
+        {
+            slowConstant = 1.0;
         }
 
         hardware.leftFront.setPower(leftFrontPower * slowConstant);

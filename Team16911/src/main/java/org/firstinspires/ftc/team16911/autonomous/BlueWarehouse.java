@@ -15,8 +15,8 @@ import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 
-@Autonomous(name = "RedInsideNoCarousel")
-public class RedInsideNoCarousel extends LinearOpMode
+@Autonomous(name = "BlueWarehouse")
+public class BlueWarehouse extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -32,9 +32,9 @@ public class RedInsideNoCarousel extends LinearOpMode
     private final int maxPosition = 220, startPosition = 35;
     private int initialWaitTime = 0;
 
-    private final Pose2d firstPosition = new Pose2d(24, 17, 0);
-    private final Pose2d secondPosition = new Pose2d(0,0, 0);
-    private final Pose2d thirdPosition = new Pose2d(0, -32, 0);
+    private final Pose2d firstPosition = new Pose2d(24, -17, 0);
+    private final Pose2d secondPosition = new Pose2d(-.5,0, 0);
+    private final Pose2d thirdPosition = new Pose2d(-.5, 32, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
 

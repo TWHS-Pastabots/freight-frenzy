@@ -91,15 +91,16 @@ public class BlueCarouselDistance extends LinearOpMode
         utilities.eliminateOscillations();
         utilities.dropCargo(2000);
 
-        if (endPosition.equals(WAREHOUSE))
+        switch (endPosition)
         {
-            drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
-            drive.followTrajectory(fifthTrajectory);
-            drive.followTrajectory(sixthTrajectory);
-        }
-        else
-        {
-            drive.followTrajectory(toStorageTrajectories[barcodeLevel]);
+            case WAREHOUSE:
+                drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
+                drive.followTrajectory(fifthTrajectory);
+                drive.followTrajectory(sixthTrajectory);
+                break;
+            case STORAGE_UNIT:
+                drive.followTrajectory(toStorageTrajectories[barcodeLevel]);
+                break;
         }
     }
 
@@ -165,13 +166,9 @@ public class BlueCarouselDistance extends LinearOpMode
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (!gamepad1.x)
+        while (!isStarted() && !gamepad1.x)
         {
-            if (isStarted() || gamepad1.x)
-            {
-                break;
-            }
-            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();

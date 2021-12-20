@@ -37,7 +37,7 @@ public class RedCarouselDistance extends LinearOpMode
     private final int[] positions = {100, 130, 200};
 
     private final Pose2d firstPosition = new Pose2d(3.75, 18, 0);
-    private final Pose2d secondPosition = new Pose2d(20,18, 0);
+    private final Pose2d secondPosition = new Pose2d(20, 18,  0);
     private final Pose2d thirdPosition = new Pose2d(20, -.18, 0);
     private final Pose2d hubLevelOnePose = new Pose2d(13.35, -27.75, 0);
     private final Pose2d hubLevelTwoPose = new Pose2d(15.8, -27.75, 0);
@@ -91,15 +91,16 @@ public class RedCarouselDistance extends LinearOpMode
         utilities.eliminateOscillations();
         utilities.dropCargo(2000);
 
-        if (endPosition.equals(WAREHOUSE))
+        switch (endPosition)
         {
-            drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
-            drive.followTrajectory(fifthTrajectory);
-            drive.followTrajectory(sixthTrajectory);
-        }
-        else
-        {
-            drive.followTrajectory(toStorageTrajectories[barcodeLevel]);
+            case WAREHOUSE:
+                drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
+                drive.followTrajectory(fifthTrajectory);
+                drive.followTrajectory(sixthTrajectory);
+                break;
+            case STORAGE_UNIT:
+                drive.followTrajectory(toStorageTrajectories[barcodeLevel]);
+                break;
         }
     }
 
@@ -165,13 +166,9 @@ public class RedCarouselDistance extends LinearOpMode
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (!gamepad1.x)
+        while (!isStarted() && !gamepad1.x)
         {
-            if (isStarted() || gamepad1.x)
-            {
-                break;
-            }
-            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();

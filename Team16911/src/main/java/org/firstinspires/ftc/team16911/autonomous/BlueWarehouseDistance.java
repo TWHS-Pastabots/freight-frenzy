@@ -123,13 +123,9 @@ public class BlueWarehouseDistance extends LinearOpMode
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (!gamepad1.x)
+        while (!isStarted() && !gamepad1.x)
         {
-            if (isStarted() || gamepad1.x)
-            {
-                break;
-            }
-            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();

@@ -30,9 +30,9 @@ public class LinguineHardware extends RobotHardware {
         super.init(hardwareMap, shouldInitializeComponents);
 
         // Prepare motor directions
-        motorLeftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        motorLeftFront.setDirection(DcMotorEx.Direction.REVERSE);
         motorLeftRear.setDirection(DcMotorEx.Direction.REVERSE);
-        motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        motorRightFront.setDirection(DcMotorEx.Direction.FORWARD);
         motorRightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         for (DcMotorEx motor : wheels) motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);

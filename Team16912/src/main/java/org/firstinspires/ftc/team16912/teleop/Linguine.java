@@ -38,12 +38,12 @@ public class Linguine extends LinearOpMode {
             // Mecanum drive code
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double x = -gamepad1.left_stick_x; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
+            double rx = -gamepad1.right_stick_x;
 
-            double frontLeftPower = y + x -  rx;
-            double backLeftPower = y + x + rx;
-            double frontRightPower = y - x + rx;
-            double backRightPower = y - x - rx;
+            double frontLeftPower = y - x -  rx;
+            double backLeftPower = y + x - rx;
+            double frontRightPower = y + x + rx;
+            double backRightPower = y - x + rx;
 
             if (Math.abs(frontLeftPower) > 1 || Math.abs(backLeftPower) > 1 ||
                     Math.abs(frontRightPower) > 1 || Math.abs(backRightPower) > 1 ) {

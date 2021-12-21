@@ -3,6 +3,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 
@@ -14,6 +15,9 @@ public class RavioliHardware
     public DcMotorEx rightRear = null;
     public DcMotorEx armMotorOne = null;
     public DcMotorEx armMotorTwo = null;
+    public DcMotorEx carouselMotorOne = null;
+    public Servo servoOne = null;
+    public Servo servoTwo = null;
     public DcMotorEx[] motors;
 
 
@@ -23,6 +27,8 @@ public class RavioliHardware
 
         initializeDriveMotors(hardwareMap);
         initializeArmMotors(hardwareMap);
+        initializeServoes(hardwareMap);
+        initializeCarousel(hardwareMap);
     }
 
     private void initializeDriveMotors(HardwareMap hardwareMap)
@@ -59,12 +65,31 @@ public class RavioliHardware
 
         // Set Motors to Run in Right Direction
         armMotorOne.setDirection(DcMotorEx.Direction.FORWARD);
-        armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
+        armMotorTwo.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+    }
+
+    private void initializeServoes(HardwareMap hardwareMap)
+    {
+        servoOne = hardwareMap.get(Servo.class, RavioliIds.SERVO_MOTOR_ONE);
+        servoTwo = hardwareMap.get(Servo.class, RavioliIds.SERVO_MOTOR_TWO);
+
+        servoOne.setDirection(Servo.Direction.FORWARD);
+        servoTwo.setDirection(Servo.Direction.REVERSE);
+    }
+    private void initializeCarousel(HardwareMap hardwareMap)
+    {
+        carouselMotorOne = hardwareMap.get(DcMotorEx.class, RavioliIds.CAROUSEL_MOTOR_ONE);
+
+        carouselMotorOne.setPower(0.0);
+
+        carouselMotorOne.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+
+        carouselMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 }

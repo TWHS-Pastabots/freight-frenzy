@@ -99,10 +99,10 @@ public class FettuccineRRv2 extends LinearOpMode {
 
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-//            telemetry.addData("x", poseEstimate.getX());
-//            telemetry.addData("y", poseEstimate.getY());
-//            telemetry.addData("heading", poseEstimate.getHeading());
-//            telemetry.update();*/
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
+            telemetry.update();
         }
     }
 
@@ -199,17 +199,17 @@ public class FettuccineRRv2 extends LinearOpMode {
             canRun = false;
         }*/
 
-        telemetry.addData("rF", robot.rightFront.getVelocity());
-        telemetry.addData("lF", robot.leftFront.getVelocity());
-        telemetry.addData("rR", robot.rightRear.getVelocity());
-        telemetry.addData("lR", robot.leftRear.getVelocity());
-        telemetry.addData("Arm One Pos", robot.rightArm.getCurrentPosition());
-        telemetry.addData("Arm One Target", robot.rightArm.getTargetPosition());
-        telemetry.addData("Arm Two Pos", robot.leftArm.getCurrentPosition());
-        telemetry.addData("Arm Two Target", robot.leftArm.getTargetPosition());
-        telemetry.addData("Arm Time", armTime.time());
-        telemetry.addData("Just Moved", justMoved);
-        telemetry.update();
+//        telemetry.addData("rF", robot.rightFront.getVelocity());
+//        telemetry.addData("lF", robot.leftFront.getVelocity());
+//        telemetry.addData("rR", robot.rightRear.getVelocity());
+//        telemetry.addData("lR", robot.leftRear.getVelocity());
+//        telemetry.addData("Arm One Pos", robot.rightArm.getCurrentPosition());
+//        telemetry.addData("Arm One Target", robot.rightArm.getTargetPosition());
+//        telemetry.addData("Arm Two Pos", robot.leftArm.getCurrentPosition());
+//        telemetry.addData("Arm Two Target", robot.leftArm.getTargetPosition());
+//        telemetry.addData("Arm Time", armTime.time());
+//        telemetry.addData("Just Moved", justMoved);
+//        telemetry.update();
     }
 
     private void carouselCode()

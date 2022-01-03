@@ -32,8 +32,8 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(12, 0, 1,
-            12.25);
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(10, 0, 2,
+            11.75);
             //getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
     /*
@@ -45,8 +45,8 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.4763; // in
-    public static double GEAR_RATIO = 1.025051854; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 9.55; // in
+    public static double GEAR_RATIO = 1.035111731; // output (wheel) speed / input (motor) speed
+    public static double TRACK_WIDTH = 9.18; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using

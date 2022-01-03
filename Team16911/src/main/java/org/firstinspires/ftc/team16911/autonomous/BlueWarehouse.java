@@ -15,8 +15,8 @@ import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 
-@Autonomous(name = "BlueInsideNoCarousel")
-public class BlueInsideNoCarousel extends LinearOpMode
+@Autonomous(name = "BlueWarehouse")
+public class BlueWarehouse extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -33,8 +33,8 @@ public class BlueInsideNoCarousel extends LinearOpMode
     private int initialWaitTime = 0;
 
     private final Pose2d firstPosition = new Pose2d(24, -17, 0);
-    private final Pose2d secondPosition = new Pose2d(0,0, 0);
-    private final Pose2d thirdPosition = new Pose2d(0, 32, 0);
+    private final Pose2d secondPosition = new Pose2d(-.5,0, 0);
+    private final Pose2d thirdPosition = new Pose2d(-.5, 32, 0);
 
     private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
 
@@ -82,13 +82,9 @@ public class BlueInsideNoCarousel extends LinearOpMode
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (!gamepad1.x)
+        while (!isStarted() && !gamepad1.x)
         {
-            if (isStarted() || gamepad1.x)
-            {
-                break;
-            }
-            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();

@@ -8,15 +8,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-
-//@Autonomous(name = "RedInsideCarousel")
-public class RedInsideCarousel extends LinearOpMode
+@Autonomous(name = "BlueWarehouseDistance")
+public class BlueWarehouseDistance extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -29,19 +29,23 @@ public class RedInsideCarousel extends LinearOpMode
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
 
-    private final int maxPosition = 220, startPosition = 35;
+    private final int startPosition = 35;
     private int initialWaitTime = 0;
+    private final int[] positions = {100, 130, 200};
 
-    private final Pose2d firstPosition = new Pose2d(24, 19, 0);
-    private final Pose2d secondPosition = new Pose2d(24,60, 0);
-    private final Pose2d thirdPosition = new Pose2d(1.5, 60, 0);
-    private final Pose2d fourthPosition = new Pose2d(24, 62, 0);
-    private final Pose2d fifthPosition = new Pose2d(24, 0, 0);
-    private final Pose2d sixthPosition = new Pose2d(0, 0, 0);
-    private final Pose2d seventhPosition = new Pose2d(0, -32, 0);
+    private final Pose2d firstPosition = new Pose2d(20, -.5, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(13.85, -18.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(15.8, -18.75, 0);
+    private final Pose2d hubLevelThreePose = new Pose2d(22, -18.75, 0);
+    private final Pose2d secondPosition = new Pose2d(-.5, 0, 0);
+    private final Pose2d thirdPosition = new Pose2d(-.5, 32, 0);
 
-    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
-    private Trajectory fifthTrajectory, sixthTrajectory, seventhTrajectory;
+    private Trajectory firstTrajectory, secondTrajectory, toHubLevelOne;
+    private Trajectory toHubLevelTwo, toHubLevelThree, fromHubLevelOne, fromHubLevelTwo;
+    private Trajectory fromHubLevelThree;
+    private final Trajectory[] toHubTrajectories = new Trajectory[3];
+    private final Trajectory[] fromHubTrajectories = new Trajectory[3];
+
 
     public void runOpMode()
     {
@@ -63,55 +67,65 @@ public class RedInsideCarousel extends LinearOpMode
 
         utilities.wait(initialWaitTime);
 
-        utilities.moveArm(maxPosition);
+        utilities.moveArm(positions[1]);
         drive.followTrajectory(firstTrajectory);
+        int barcodeLevel = utilities.getBarcodeLevelBlueSide();
+        utilities.moveArm(positions[barcodeLevel]);
+        telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.update();
+
+        drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+        utilities.eliminateOscillations();
         utilities.dropCargo(2000);
 
+        drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
         drive.followTrajectory(secondTrajectory);
-        drive.followTrajectory(thirdTrajectory);
-        utilities.spinCarousel(2700);
-
-        drive.followTrajectory(fourthTrajectory);
-        drive.followTrajectory(fifthTrajectory);
-        drive.followTrajectory(sixthTrajectory);
-        drive.followTrajectory(seventhTrajectory);
     }
 
     private void buildTrajectories()
     {
+
         firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
 
-        secondTrajectory = drive.trajectoryBuilder(firstTrajectory.end())
+        toHubLevelOne = drive.trajectoryBuilder(firstTrajectory.end())
+                .lineToLinearHeading(hubLevelOnePose).build();
+
+        toHubLevelTwo = drive.trajectoryBuilder(firstTrajectory.end())
+                .lineToLinearHeading(hubLevelTwoPose).build();
+
+        toHubLevelThree = drive.trajectoryBuilder(firstTrajectory.end())
+                .lineToLinearHeading(hubLevelThreePose).build();
+
+        fromHubLevelOne = drive.trajectoryBuilder(toHubLevelOne.end())
                 .lineToLinearHeading(secondPosition).build();
 
-        thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
+        fromHubLevelTwo = drive.trajectoryBuilder(toHubLevelTwo.end())
+                .lineToLinearHeading(secondPosition).build();
+
+        fromHubLevelThree = drive.trajectoryBuilder(toHubLevelThree.end())
+                .lineToLinearHeading(secondPosition).build();
+
+        secondTrajectory = drive.trajectoryBuilder(secondPosition)
                 .lineToLinearHeading(thirdPosition).build();
 
-        fourthTrajectory = drive.trajectoryBuilder(thirdTrajectory.end())
-                .lineToLinearHeading(fourthPosition).build();
+        toHubTrajectories[0] = toHubLevelOne;
+        toHubTrajectories[1] = toHubLevelTwo;
+        toHubTrajectories[2] = toHubLevelThree;
 
-        fifthTrajectory = drive.trajectoryBuilder(fourthTrajectory.end())
-                .lineToLinearHeading(fifthPosition).build();
-
-        sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
-                .lineToLinearHeading(sixthPosition).build();
-
-        seventhTrajectory = drive.trajectoryBuilder(sixthTrajectory.end())
-                .lineToLinearHeading(seventhPosition).build();
+        fromHubTrajectories[0] = fromHubLevelOne;
+        fromHubTrajectories[1] = fromHubLevelTwo;
+        fromHubTrajectories[2] = fromHubLevelThree;
     }
 
     private void configuration()
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (!gamepad1.x)
+        while (!isStarted() && !gamepad1.x)
         {
-            if (isStarted() || gamepad1.x)
-            {
-                break;
-            }
-            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();

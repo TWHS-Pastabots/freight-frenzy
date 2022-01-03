@@ -15,8 +15,8 @@ import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-@Autonomous(name = "RedInsideDistance")
-public class RedInsideDistance extends LinearOpMode
+@Autonomous(name = "BlueCarouselDistance")
+public class BlueCarouselDistance extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -28,23 +28,32 @@ public class RedInsideDistance extends LinearOpMode
     private static final String ASSET_NAME = null;
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
+    private static final String WAREHOUSE = "Warehouse";
+    private static final String STORAGE_UNIT = "Storage Unit";
+    private static String endPosition = WAREHOUSE;
 
     private final int startPosition = 35;
     private int initialWaitTime = 0;
-    private final int[] positions = {110, 130, 220};
+    private final int[] positions = {100, 130, 200};
 
-    private final Pose2d firstPosition = new Pose2d(20, .375, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(13.5, 17, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(16.3, 17, 0);
-    private final Pose2d hubLevelThreePose = new Pose2d(22.4, 17, 0);
-    private final Pose2d secondPosition = new Pose2d(0, 0, 0);
-    private final Pose2d thirdPosition = new Pose2d(0, -32, 0);
+    private final Pose2d firstPosition = new Pose2d(3.75, -18, 0);
+    private final Pose2d secondPosition = new Pose2d(20,-18, 0);
+    private final Pose2d thirdPosition = new Pose2d(20, .18, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(13.35, 27.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(15.8, 27.75, 0);
+    private final Pose2d hubLevelThreePose = new Pose2d(22, 27.75, 0);
+    private final Pose2d warehousePrepPose = new Pose2d(20, 52, 0);
+    private final Pose2d fifthPosition = new Pose2d(-.5, 52, 0);
+    private final Pose2d sixthPosition = new Pose2d(-.5, 80, 0);
+    private final Pose2d storageUnit = new Pose2d(31,-24, Math.toRadians(90));
 
-    private Trajectory firstTrajectory, secondTrajectory, toHubLevelOne;
+    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, toHubLevelOne;
     private Trajectory toHubLevelTwo, toHubLevelThree, fromHubLevelOne, fromHubLevelTwo;
-    private Trajectory fromHubLevelThree;
+    private Trajectory fromHubLevelThree, fifthTrajectory, sixthTrajectory, toStorageLevelOne;
+    private Trajectory toStorageLevelTwo, toStorageLevelThree;
     private final Trajectory[] toHubTrajectories = new Trajectory[3];
     private final Trajectory[] fromHubTrajectories = new Trajectory[3];
+    private final Trajectory[] toStorageTrajectories = new Trajectory[3];
 
 
     public void runOpMode()
@@ -68,7 +77,11 @@ public class RedInsideDistance extends LinearOpMode
         utilities.wait(initialWaitTime);
 
         drive.followTrajectory(firstTrajectory);
-        int barcodeLevel = utilities.getBarcodeLevelRedSide();
+        utilities.spinCarouselAndMoveArm(2700, positions[1]);
+
+        drive.followTrajectory(secondTrajectory);
+        drive.followTrajectory(thirdTrajectory);
+        int barcodeLevel = utilities.getBarcodeLevelBlueSide();
         utilities.moveArm(positions[barcodeLevel]);
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
@@ -78,8 +91,17 @@ public class RedInsideDistance extends LinearOpMode
         utilities.eliminateOscillations();
         utilities.dropCargo(2000);
 
-        drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
-        drive.followTrajectory(secondTrajectory);
+        switch (endPosition)
+        {
+            case WAREHOUSE:
+                drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
+                drive.followTrajectory(fifthTrajectory);
+                drive.followTrajectory(sixthTrajectory);
+                break;
+            case STORAGE_UNIT:
+                drive.followTrajectory(toStorageTrajectories[barcodeLevel]);
+                break;
+        }
     }
 
     private void buildTrajectories()
@@ -88,26 +110,44 @@ public class RedInsideDistance extends LinearOpMode
         firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
 
-        toHubLevelOne = drive.trajectoryBuilder(firstTrajectory.end())
+        secondTrajectory = drive.trajectoryBuilder(firstTrajectory.end())
+                .lineToLinearHeading(secondPosition).build();
+
+        thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
+                .lineToLinearHeading(thirdPosition).build();
+
+        toHubLevelOne = drive.trajectoryBuilder(thirdTrajectory.end())
                 .lineToLinearHeading(hubLevelOnePose).build();
 
-        toHubLevelTwo = drive.trajectoryBuilder(firstTrajectory.end())
+        toHubLevelTwo = drive.trajectoryBuilder(thirdTrajectory.end())
                 .lineToLinearHeading(hubLevelTwoPose).build();
 
-        toHubLevelThree = drive.trajectoryBuilder(firstTrajectory.end())
+        toHubLevelThree = drive.trajectoryBuilder(thirdTrajectory.end())
                 .lineToLinearHeading(hubLevelThreePose).build();
 
         fromHubLevelOne = drive.trajectoryBuilder(toHubLevelOne.end())
-                .lineToLinearHeading(secondPosition).build();
+                .lineToLinearHeading(warehousePrepPose).build();
 
         fromHubLevelTwo = drive.trajectoryBuilder(toHubLevelTwo.end())
-                .lineToLinearHeading(secondPosition).build();
+                .lineToLinearHeading(warehousePrepPose).build();
 
         fromHubLevelThree = drive.trajectoryBuilder(toHubLevelThree.end())
-                .lineToLinearHeading(secondPosition).build();
+                .lineToLinearHeading(warehousePrepPose).build();
 
-        secondTrajectory = drive.trajectoryBuilder(secondPosition)
-                .lineToLinearHeading(thirdPosition).build();
+        fifthTrajectory = drive.trajectoryBuilder(warehousePrepPose)
+                .lineToLinearHeading(fifthPosition).build();
+
+        sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
+                .lineToLinearHeading(sixthPosition).build();
+
+        toStorageLevelOne = drive.trajectoryBuilder(toHubLevelOne.end())
+                .lineToSplineHeading(storageUnit).build();
+
+        toStorageLevelTwo = drive.trajectoryBuilder(toHubLevelTwo.end())
+                .lineToSplineHeading(storageUnit).build();
+
+        toStorageLevelThree = drive.trajectoryBuilder(toHubLevelThree.end())
+                .lineToSplineHeading(storageUnit).build();
 
         toHubTrajectories[0] = toHubLevelOne;
         toHubTrajectories[1] = toHubLevelTwo;
@@ -116,19 +156,19 @@ public class RedInsideDistance extends LinearOpMode
         fromHubTrajectories[0] = fromHubLevelOne;
         fromHubTrajectories[1] = fromHubLevelTwo;
         fromHubTrajectories[2] = fromHubLevelThree;
+
+        toStorageTrajectories[0] = toStorageLevelOne;
+        toStorageTrajectories[1] = toStorageLevelTwo;
+        toStorageTrajectories[2] = toStorageLevelThree;
     }
 
     private void configuration()
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (!gamepad1.x)
+        while (!isStarted() && !gamepad1.x)
         {
-            if (isStarted() || gamepad1.x)
-            {
-                break;
-            }
-            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();
@@ -142,8 +182,17 @@ public class RedInsideDistance extends LinearOpMode
             {
                 initialWaitTime = 0;
             }
+            else if (gamepad1.right_bumper)
+            {
+                endPosition = WAREHOUSE;
+            }
+            else if (gamepad1.left_bumper)
+            {
+                endPosition = STORAGE_UNIT;
+            }
 
             telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
+            telemetry.addData("End Position", endPosition);
             telemetry.update();
         }
 

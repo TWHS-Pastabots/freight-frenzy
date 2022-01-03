@@ -14,8 +14,9 @@ import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-@Autonomous(name = "RedOutside")
-public class RedOutside extends LinearOpMode
+
+@Autonomous(name = "RedWarehouse")
+public class RedWarehouse extends LinearOpMode
 {
     private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
@@ -31,22 +32,18 @@ public class RedOutside extends LinearOpMode
     private final int maxPosition = 220, startPosition = 35;
     private int initialWaitTime = 0;
 
-    private final Pose2d firstPosition = new Pose2d(3.75, -14.4, 0);
-    private final Pose2d secondPosition = new Pose2d(20,-14.4, 0);
-    private final Pose2d thirdPosition = new Pose2d(22, -23.4, 0);
-    private final Pose2d fourthPosition = new Pose2d(20, -40, 0);
-    private final Pose2d fifthPosition = new Pose2d(0, -40, 0);
-    private final Pose2d sixthPosition = new Pose2d(0, -65, 0);
+    private final Pose2d firstPosition = new Pose2d(23.75, 20, 0);
+    private final Pose2d secondPosition = new Pose2d(-.5,0, 0);
+    private final Pose2d thirdPosition = new Pose2d(-.5, -30, 0);
 
-    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
-    private Trajectory fifthTrajectory, sixthTrajectory;
+    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
 
     public void runOpMode()
     {
         // Initialize Hardware
         hardware = new RigatoniHardware();
-        util utilities = new util(hardware);
         hardware.init(hardwareMap);
+        util utilities = new util(hardware);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
@@ -61,21 +58,16 @@ public class RedOutside extends LinearOpMode
 
         utilities.wait(initialWaitTime);
 
+        utilities.moveArm(maxPosition);
         drive.followTrajectory(firstTrajectory);
-        utilities.spinCarouselAndMoveArm(2700, maxPosition);
+        utilities.dropCargo(2000);
 
         drive.followTrajectory(secondTrajectory);
         drive.followTrajectory(thirdTrajectory);
-        utilities.dropCargo(2000);
-
-        drive.followTrajectory(fourthTrajectory);
-        drive.followTrajectory(fifthTrajectory);
-        drive.followTrajectory(sixthTrajectory);
     }
 
     private void buildTrajectories()
     {
-
         firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(firstPosition).build();
 
@@ -84,28 +76,15 @@ public class RedOutside extends LinearOpMode
 
         thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
                 .lineToLinearHeading(thirdPosition).build();
-
-        fourthTrajectory = drive.trajectoryBuilder(thirdTrajectory.end())
-                .lineToLinearHeading(fourthPosition).build();
-
-        fifthTrajectory = drive.trajectoryBuilder(fourthTrajectory.end())
-                .lineToLinearHeading(fifthPosition).build();
-
-        sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
-                .lineToLinearHeading(sixthPosition).build();
     }
 
     private void configuration()
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (!gamepad1.x)
+        while (!isStarted() && !gamepad1.x)
         {
-            if (isStarted() || gamepad1.x)
-            {
-                break;
-            }
-            else if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > 300)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();

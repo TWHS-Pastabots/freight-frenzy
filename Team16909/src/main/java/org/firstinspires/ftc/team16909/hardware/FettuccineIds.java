@@ -17,9 +17,6 @@ public class FettuccineIds
 
     public static final String ARM_ENCODER = "rightArm";
 
-    public static final String LEFT_ENCODER = "leftRear";
-    public static final String RIGHT_ENCODER = "rightRear";
-    public static final String FRONT_ENCODER = "leftFront";
 
     public static final String SERVO_TEST = "servoTest";
 }

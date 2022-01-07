@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team16909.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,9 +10,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16909.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16909.hardware.FettuccineHardware;
+import org.firstinspires.ftc.team16909.trajectorysequence.TrajectorySequence;
 
 @Autonomous(preselectTeleOp = "FettuccineRRv2")
-public class RRAutonomous extends LinearOpMode {
+public class BlueRight extends LinearOpMode {
 
     int currentPosition = 0;
     int leftArmOffset = 0;
@@ -25,6 +27,14 @@ public class RRAutonomous extends LinearOpMode {
 
     double mult = 0.5;
 
+    // Poses
+    private final Pose2d posPushback = new Pose2d(4.7063, 0,Math.toRadians(0));
+    private final Pose2d posBlueCarousel = new Pose2d(4.1820, -18.9322, Math.toRadians(188));
+    private final Pose2d posBlueUnitPark = new Pose2d(32, -22.5, Math.toRadians(90));
+
+    // Trajectories
+    private Trajectory trajPushback, trajBlueCarousel, trajBlueUnitPark;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -36,82 +46,54 @@ public class RRAutonomous extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        while (!isStarted()) {
-            if (gamepad2.circle) autonState = "redLeft";
-            else if (gamepad2.cross) autonState = "redRight";
-            else if (gamepad2.square) autonState = "blueLeft";
-            else if (gamepad2.triangle) autonState = "blueRight";
+        // Action Method Init
+        ActionMethods action = new ActionMethods(robot);
 
-            telemetry.addData("Auton", autonState);
-            telemetry.update();
-        }
+        blueRightTrajectories();
 
         waitForStart();
+        if (!opModeIsActive()) return;
 
-        switch (autonState) {
-            case "redLeft":
-                redLeft();
-                break;
-            case "redRight":
-                redRight();
-                break;
-            case "blueLeft":
-                blueLeft();
-                break;
-            case "blueRight":
-                blueRight();
-                break;
-        }
+        drive.followTrajectory(trajPushback);
+        drive.followTrajectory(trajBlueCarousel);
+        action.moveCarousel(4,-0.5);
+        drive.followTrajectory(trajBlueUnitPark);
+
 
     }
 
 
-    // AUTON METHODS
+    // Trajectory Build
 
-    private void redLeft ()
+    private void blueRightTrajectories ()
     {
-        // RR Methods
-    }
-
-    private void redRight ()
-    {
-        // RR Methods
-    }
-
-    private void blueLeft ()
-    {
-        // RR Methods
-    }
-
-    private void blueRight ()
-    {
-        // RR Methods
+        trajPushback = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToSplineHeading(posPushback)
+                .build();
+        trajBlueCarousel = drive.trajectoryBuilder(trajPushback.end())
+                .lineToSplineHeading(posBlueCarousel)
+                .build();
+        trajBlueUnitPark = drive.trajectoryBuilder(trajBlueCarousel.end())
+                .lineToSplineHeading(posBlueUnitPark)
+                .build();
     }
 
 
-    // MOTION METHODS
+    // Action Methods
 
-    /*
-    private void moveY (double time, double power) {
+
+    private void moveCarousel (double time, double power) {
 
         ElapsedTime moveTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         double startTime = moveTime.seconds();
 
         while (moveTime.seconds() - startTime < time) {
-            drive.setWeightedDrivePower(
-                    new Pose2d(
-                            power * mult,
-                            0 * mult,
-                            0 * mult
-                    )
-            );
-
-            drive.update();
-
-            Pose2d poseEstimate = drive.getPoseEstimate();
+            robot.carousel.setPower(power);
         }
+        robot.carousel.setPower(0);
     }
 
+    /*
     private void moveX (double time, double power) {
 
         ElapsedTime moveTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);

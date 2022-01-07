@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team16911.autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
@@ -16,28 +17,28 @@ public class util
         this.hardware = hardware;
     }
 
-    public void dropCargo(int waitTime)
+    public void dropCargo(int waitTime, Telemetry telemetry)
     {
         hardware.armServo.setPower(-1);
-        wait(waitTime);
+        wait(waitTime, telemetry);
         hardware.armServo.setPower(0);
     }
 
-    public void spinCarouselAndMoveArm(int waitTime, int position)
+    public void spinCarouselAndMoveArm(int waitTime, int position, Telemetry telemetry)
     {
         hardware.carouselMotorOne.setPower(.5);
         hardware.carouselMotorTwo.setPower(.5);
         moveArm(position);
-        wait(waitTime);
+        wait(waitTime, telemetry);
         hardware.carouselMotorOne.setPower(0.0);
         hardware.carouselMotorTwo.setPower(0.0);
     }
 
-    public void spinCarousel(int waitTime)
+    public void spinCarousel(int waitTime, Telemetry telemetry)
     {
         hardware.carouselMotorOne.setPower(.5);
         hardware.carouselMotorTwo.setPower(.5);
-        wait(waitTime);
+        wait(waitTime, telemetry);
         hardware.carouselMotorOne.setPower(0.0);
         hardware.carouselMotorTwo.setPower(0.0);
     }
@@ -54,12 +55,16 @@ public class util
         hardware.armMotorTwo.setPower(.8);
     }
 
-    public void wait(int waitTime)
+    public void wait(int waitTime, Telemetry telemetry)
     {
         ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         time.reset();
         while (time.time() < waitTime)
         {
+            telemetry.addData("Status", "Waiting");
+            telemetry.addData("Wait Time", waitTime / 1000);
+            telemetry.addData("Time Left", (waitTime - time.time()) / 1000);
+            telemetry.update();
             continue;
         }
     }

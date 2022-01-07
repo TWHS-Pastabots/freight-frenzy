@@ -6,42 +6,37 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.team16911.R;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
-
 
 @Autonomous(name = "BlueWarehouse")
 public class BlueWarehouse extends LinearOpMode
 {
-    private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
 
-    private VuforiaLocalizer vuforiaLocalizer;
-    private TFObjectDetector objectDetector;
-
-    private static final double MIN_CONFIDENCE = .7;
-    private static final String ASSET_NAME = null;
-    private static final String QUAD_LABEL = "Quad";
-    private static final String SINGLE_LABEL = "Single";
-
-    private final int maxPosition = 220, startPosition = 35;
     private int initialWaitTime = 0;
+    private final int[] positions = {100, 130, 200};
 
-    private final Pose2d firstPosition = new Pose2d(24, -17, 0);
-    private final Pose2d secondPosition = new Pose2d(-.5,0, 0);
-    private final Pose2d thirdPosition = new Pose2d(-.5, 32, 0);
+    private final Pose2d barcode = new Pose2d(20, -.5, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(14, -18.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(15.8, -18.75, 0);
+    private final Pose2d hubLevelThreePose = new Pose2d(22, -18.75, 0);
+    private final Pose2d warehouseOutside = new Pose2d(0, 0, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, 32, 0);
 
-    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory;
+    private Trajectory toBarcode;
+    private final Trajectory[] toHubTrajectories = new Trajectory[3];
+    private final Trajectory[] fromHubTrajectories = new Trajectory[3];
+
 
     public void runOpMode()
     {
+        // Configuration Variables
+        final int startPosition = 35;
+
         // Initialize Hardware
-        hardware = new RigatoniHardware();
+        RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
         util utilities = new util(hardware);
 
@@ -56,40 +51,75 @@ public class BlueWarehouse extends LinearOpMode
         waitForStart();
         if(!opModeIsActive()) {return;}
 
-        utilities.wait(initialWaitTime);
+        utilities.wait(initialWaitTime, telemetry);
+        utilities.moveArm(positions[1]);
 
-        utilities.moveArm(maxPosition);
-        drive.followTrajectory(firstTrajectory);
-        utilities.dropCargo(2000);
+        drive.followTrajectory(toBarcode);
+        int barcodeLevel = utilities.getBarcodeLevelBlueSide();
+        utilities.moveArm(positions[barcodeLevel]);
+        telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.update();
 
-        drive.followTrajectory(secondTrajectory);
-        drive.followTrajectory(thirdTrajectory);
+        drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+        utilities.eliminateOscillations();
+        utilities.dropCargo(2000, telemetry);
+
+        drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
     }
 
     private void buildTrajectories()
     {
-        firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(firstPosition).build();
+        // Configuration Variables
+        Trajectory toHubLevelTwo, toHubLevelThree, fromHubLevelOne, fromHubLevelTwo;
+        Trajectory fromHubLevelThree, toHubLevelOne;
 
-        secondTrajectory = drive.trajectoryBuilder(firstTrajectory.end())
-                .lineToLinearHeading(secondPosition).build();
+        toBarcode = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(barcode).build();
 
-        thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
-                .lineToLinearHeading(thirdPosition).build();
+        toHubLevelOne = drive.trajectoryBuilder(toBarcode.end())
+                .lineToLinearHeading(hubLevelOnePose).build();
+
+        toHubLevelTwo = drive.trajectoryBuilder(toBarcode.end())
+                .lineToLinearHeading(hubLevelTwoPose).build();
+
+        toHubLevelThree = drive.trajectoryBuilder(toBarcode.end())
+                .lineToLinearHeading(hubLevelThreePose).build();
+
+        fromHubLevelOne = drive.trajectoryBuilder(toHubLevelOne.end(), Math.toRadians(135))
+                .splineToLinearHeading(warehouseOutside, Math.toRadians(90))
+                .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
+
+        fromHubLevelTwo = drive.trajectoryBuilder(toHubLevelTwo.end(), Math.toRadians(140))
+                .splineToLinearHeading(warehouseOutside, Math.toRadians(90))
+                .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
+
+        fromHubLevelThree = drive.trajectoryBuilder(toHubLevelThree.end(), Math.toRadians(140))
+                .splineToLinearHeading(warehouseOutside, Math.toRadians(90))
+                .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
+
+        toHubTrajectories[0] = toHubLevelOne;
+        toHubTrajectories[1] = toHubLevelTwo;
+        toHubTrajectories[2] = toHubLevelThree;
+
+        fromHubTrajectories[0] = fromHubLevelOne;
+        fromHubTrajectories[1] = fromHubLevelTwo;
+        fromHubTrajectories[2] = fromHubLevelThree;
     }
 
     private void configuration()
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        int lockoutTime = 200;
 
-        while (!isStarted() && !gamepad1.x)
+        while (!isStarted() && !gamepad1.cross)
         {
-            if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > lockoutTime)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
-            else if (gamepad1.dpad_down && buttonTime.time() > 300)
+            else if (gamepad1.dpad_down && buttonTime.time() > lockoutTime)
             {
                 initialWaitTime = Math.max(0, initialWaitTime - 1000);
                 buttonTime.reset();
@@ -105,40 +135,5 @@ public class BlueWarehouse extends LinearOpMode
 
         telemetry.addData("Status", "Confirmed");
         telemetry.update();
-    }
-
-    private void initVuforia()
-    {
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-
-        parameters.vuforiaLicenseKey = null;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        vuforiaLocalizer = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    private void initTfod()
-    {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = (float) MIN_CONFIDENCE;
-        objectDetector = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforiaLocalizer);
-        objectDetector.loadModelFromAsset(ASSET_NAME, QUAD_LABEL, SINGLE_LABEL);
-        //dashboard.startCameraStream(tfod, 10);
-    }
-
-    private void activateTfod()
-    {
-        // Initialize Vuforia and TFOD
-        initVuforia();
-        initTfod();
-
-        // Activate TFOD if it can be activated
-        if (objectDetector != null) {
-            objectDetector.activate();
-
-            objectDetector.setZoom(1.25, 16.0 / 9.0);
-        }
     }
 }

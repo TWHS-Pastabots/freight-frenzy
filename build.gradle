@@ -15,7 +15,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
+        classpath 'com.android.tools.build:gradle:7.0.4'
     }
 }
 
@@ -31,6 +31,7 @@ allprojects {
 
 repositories {
     mavenCentral()
+    jcenter()
 
     flatDir {
         dirs '../libs'

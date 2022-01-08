@@ -30,6 +30,8 @@ public class Autonomous extends LinearOpMode {
     Pose2d startPose;
 
     private String alliance = "blue", side = "left";
+    boolean isWaiting = false;
+
 
     public void runOpMode() {
 
@@ -50,6 +52,8 @@ public class Autonomous extends LinearOpMode {
 
         if (isStarted()) {
 
+            if (isWaiting) wait5();
+
             // No camera yet so robot will always deliver to top for now
             deliverShipment(1);
 
@@ -63,8 +67,9 @@ public class Autonomous extends LinearOpMode {
             sleep(2500);
             robot.cSpinner.setVelocity(0);
 
-            setToFinish();
             runArmToStart();
+
+            setToFinish();
         }
 
     }
@@ -206,14 +211,20 @@ public class Autonomous extends LinearOpMode {
 
     // Return arm to start
     private void runArmToStart() {
-        while (robot.armEncoder.getCurrentPosition() < -1000)
-            for (DcMotorEx motor : robot.motorArms) motor.setPower(.5);
+        while (robot.armEncoder.getCurrentPosition() < -1000) {
+            for (DcMotorEx motor : robot.motorArms) {
+                motor.setPower(.5);
+            }
+        }
+        for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
     }
+
+    private void wait5() { sleep (10000); }
 
     // Alliance configuration
     private void config() {
 
-        telemetry.addLine("Press RIGHT BUMPER to confirm selection");
+        // Alliance Config
         while (!gamepad1.right_bumper) {
 
             if (gamepad1.circle) {
@@ -242,6 +253,35 @@ public class Autonomous extends LinearOpMode {
 
             telemetry.addData("Start Position: ", alliance.toUpperCase() + " " + side.toUpperCase());
             telemetry.update();
+        }
+
+        telemetry.clearAll();
+        telemetry.addLine("ALLIANCE SELECTION CONFIRMED");
+        telemetry.update();
+
+        sleep(1000);
+        telemetry.clear();
+        telemetry.addLine("Select wait time");
+        telemetry.update();
+
+        sleep(1000);
+        telemetry.clear();
+        telemetry.update();
+
+        // Add Wait5
+        while (!gamepad1.left_bumper) {
+            if (gamepad1.cross && !isWaiting) {
+                isWaiting = true;
+                telemetry.addLine("Waiting 5 seconds on start");
+            }
+
+            else if (gamepad1.cross && isWaiting) {
+                isWaiting = false;
+                telemetry.addLine("No wait on start");
+            }
+
+            telemetry.update();
+
         }
 
         telemetry.clearAll();

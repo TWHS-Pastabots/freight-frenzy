@@ -17,8 +17,8 @@ public class PoseStorage {
 
 
         // Start poses
-        RedLeft = new Pose2d(-35.04860248750233, -64.287627195530014, Math.toRadians(90));
-        RedRight = new Pose2d(13.04860248750233, -64.287627195530014, Math.toRadians(90));
+        RedLeft = new Pose2d(-36.04860248750233, -64.287627195530014, Math.toRadians(90));
+        RedRight = new Pose2d(12.04860248750233, -64.287627195530014, Math.toRadians(90));
         BlueLeft = new Pose2d(13.04860248750233, 64.287627195530014, Math.toRadians(270));
         BlueRight = new Pose2d(-35.04860248750233, 64.287627195530014, Math.toRadians(270));
 

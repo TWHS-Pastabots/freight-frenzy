@@ -90,7 +90,7 @@ public class Linguine extends LinearOpMode {
             if (gamepad2.dpad_right) setSpinnerDirection('f');
             else if (gamepad2.dpad_left) setSpinnerDirection('r');
 
-            robot.cSpinner.setVelocity(gamepad2.right_trigger * 1000);
+            robot.cSpinner.setVelocity(gamepad2.right_trigger * 500);
 
 
 

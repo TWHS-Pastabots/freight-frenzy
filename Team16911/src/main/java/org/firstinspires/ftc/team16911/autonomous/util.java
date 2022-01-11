@@ -51,8 +51,8 @@ public class util
         hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        hardware.armMotorOne.setPower(.8);
-        hardware.armMotorTwo.setPower(.8);
+        hardware.armMotorOne.setPower(1);
+        hardware.armMotorTwo.setPower(1);
     }
 
     public void wait(int waitTime, Telemetry telemetry)

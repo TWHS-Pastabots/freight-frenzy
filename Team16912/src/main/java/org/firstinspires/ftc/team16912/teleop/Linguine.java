@@ -38,7 +38,7 @@ public class Linguine extends LinearOpMode {
             // Mecanum drive code
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double x = -gamepad1.left_stick_x; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
+            double rx = -gamepad1.right_stick_x;
 
             double frontLeftPower = y - x -  rx;
             double backLeftPower = y + x - rx;
@@ -90,7 +90,7 @@ public class Linguine extends LinearOpMode {
             if (gamepad2.dpad_right) setSpinnerDirection('f');
             else if (gamepad2.dpad_left) setSpinnerDirection('r');
 
-            robot.cSpinner.setVelocity(gamepad2.right_trigger * 1000);
+            robot.cSpinner.setVelocity(gamepad2.right_trigger * 500);
 
 
 

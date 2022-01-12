@@ -4,15 +4,14 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16912.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.team16912.teleop.Linguine;
 import org.firstinspires.ftc.team16912.util.LinguineHardware;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "LinguineAutonomousV1")
@@ -29,8 +28,39 @@ public class Autonomous extends LinearOpMode {
     Pose2d startPose;
 
     private String alliance = "blue", side = "left";
+    boolean isWaiting = false;
+
+    OpenCvInternalCamera webcam;
+    BarcodePipeline pipeline;
+
+
+
 
     public void runOpMode() {
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        pipeline = new BarcodePipeline();
+        webcam.setPipeline(pipeline);
+
+        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+
+        BarcodePipeline.ObjectPosition pos = pipeline.getAnalysis();
+
 
         robot.init(hardwareMap);
         drive = new SampleMecanumDrive(hardwareMap);
@@ -47,21 +77,28 @@ public class Autonomous extends LinearOpMode {
 
         waitForStart();
 
-        // No camera yet so robot will always deliver to top for now
-        deliverShipment(1);
+        if (isStarted()) {
 
-        robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
-        spinCarousel();
+            if (isWaiting) wait5();
 
-        //slow down spinner
-        robot.cSpinner.setVelocity(300);
+            // No camera yet so robot will always deliver to top for now
+            deliverShipment(barcodeToInt(pos));
 
-        //wait 1.5 seconds for the duck to fall
-        sleep(2500);
-        robot.cSpinner.setVelocity(0);
+            robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
+            spinCarousel();
 
-        setToFinish();
-        runArmToStart();
+            //slow down spinner
+            robot.cSpinner.setVelocity(300);
+
+            //wait 1.5 seconds for the duck to fall
+            sleep(2500);
+            robot.cSpinner.setVelocity(0);
+
+            runArmToStart();
+
+            setToFinish();
+        }
+
     }
 
 
@@ -115,9 +152,25 @@ public class Autonomous extends LinearOpMode {
 
     }
 
+    private int barcodeToInt(BarcodePipeline.ObjectPosition position) {
+
+        switch (position) {
+            case LEFT:
+                return 1;
+
+            case CENTER:
+                return 2;
+
+            case RIGHT:
+                return 3;
+        }
+
+        return 0;
+    }
+
     private void deliverShipment(int pos) {
 
-        int encoderPos = 0;
+        int encoderPos;
 
         switch (pos) {
 
@@ -135,6 +188,8 @@ public class Autonomous extends LinearOpMode {
                 encoderPos = -4748;
                 break;
             }
+
+            default: encoderPos = 0;
 
         }
 
@@ -201,13 +256,20 @@ public class Autonomous extends LinearOpMode {
 
     // Return arm to start
     private void runArmToStart() {
-        while (robot.armEncoder.getCurrentPosition() < -1000)
-            for (DcMotorEx motor : robot.motorArms) motor.setPower(.5);
+        while (robot.armEncoder.getCurrentPosition() < -1000) {
+            for (DcMotorEx motor : robot.motorArms) {
+                motor.setPower(.5);
+            }
+        }
+        for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
     }
+
+    private void wait5() { sleep (10000); }
 
     // Alliance configuration
     private void config() {
 
+        // Alliance Config
         while (!gamepad1.right_bumper) {
 
             if (gamepad1.circle) {
@@ -234,9 +296,42 @@ public class Autonomous extends LinearOpMode {
                 startPose = PoseStorage.BlueLeft;
             }
 
-            telemetry.addData("Start Position: ", alliance + " " + side);
+            telemetry.addData("Start Position: ", alliance.toUpperCase() + " " + side.toUpperCase());
             telemetry.update();
         }
+
+        telemetry.clearAll();
+        telemetry.addLine("ALLIANCE SELECTION CONFIRMED");
+        telemetry.update();
+
+        sleep(1000);
+        telemetry.clear();
+        telemetry.addLine("Select wait time");
+        telemetry.update();
+
+        sleep(1000);
+        telemetry.clear();
+        telemetry.update();
+
+        // Add Wait5
+        while (!gamepad1.left_bumper) {
+            if (gamepad1.cross && !isWaiting) {
+                isWaiting = true;
+                telemetry.addLine("Waiting 5 seconds on start");
+            }
+
+            else if (gamepad1.cross && isWaiting) {
+                isWaiting = false;
+                telemetry.addLine("No wait on start");
+            }
+
+            telemetry.update();
+
+        }
+
+        telemetry.clearAll();
+        telemetry.addLine("CONFIRMED. READY TO START");
+        telemetry.update();
     }
 
 }

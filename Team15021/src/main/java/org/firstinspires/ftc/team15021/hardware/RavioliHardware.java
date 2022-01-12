@@ -40,10 +40,10 @@ public class RavioliHardware
 
         motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear};
 
-        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
-        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
-        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
-        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
         for (DcMotorEx motor : motors)
         {
@@ -65,7 +65,7 @@ public class RavioliHardware
 
         // Set Motors to Run in Right Direction
         armMotorOne.setDirection(DcMotorEx.Direction.FORWARD);
-        armMotorTwo.setDirection(DcMotorEx.Direction.REVERSE);
+        armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -77,10 +77,8 @@ public class RavioliHardware
     private void initializeServoes(HardwareMap hardwareMap)
     {
         servoOne = hardwareMap.get(Servo.class, RavioliIds.SERVO_MOTOR_ONE);
-        servoTwo = hardwareMap.get(Servo.class, RavioliIds.SERVO_MOTOR_TWO);
 
-        servoOne.setDirection(Servo.Direction.FORWARD);
-        servoTwo.setDirection(Servo.Direction.REVERSE);
+        servoOne.setDirection(Servo.Direction.REVERSE);
     }
     private void initializeCarousel(HardwareMap hardwareMap)
     {

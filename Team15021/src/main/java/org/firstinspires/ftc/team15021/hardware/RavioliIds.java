@@ -13,7 +13,6 @@ public class RavioliIds
 
     // Claw Motors
     public static final String SERVO_MOTOR_ONE = "servoOne";
-    public static final String SERVO_MOTOR_TWO = "servoTwo";
 
     //Carousel Motor
     public static final String CAROUSEL_MOTOR_ONE = "carouselMotorOne";

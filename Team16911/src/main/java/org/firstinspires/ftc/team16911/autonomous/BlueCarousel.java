@@ -131,7 +131,7 @@ public class BlueCarousel extends LinearOpMode
         toHubLevelThree = drive.trajectoryBuilder(toBarcode.end())
                 .lineToLinearHeading(hubLevelThree).build();
 
-        fromHubLevelOneDirect = drive.trajectoryBuilder(toHubLevelOne.end(), Math.toRadians(120))
+        fromHubLevelOneDirect = drive.trajectoryBuilder(toHubLevelOne.end(), Math.toRadians(130))
                 .splineToLinearHeading(warehouseOutside, Math.toRadians(90))
                 .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
 

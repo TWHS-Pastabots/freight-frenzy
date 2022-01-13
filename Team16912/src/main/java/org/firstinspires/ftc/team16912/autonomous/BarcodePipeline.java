@@ -33,6 +33,10 @@ public class BarcodePipeline extends OpenCvPipeline {
     static final int REGION_WIDTH = 20;
     static final int REGION_HEIGHT = 20;
 
+    public int R1Y;
+    public int R2Y;
+    public int R3Y;
+
 
     Point region1_pointA = new Point(
             REGION1_TOPLEFT_ANCHOR_POINT.x,
@@ -56,10 +60,9 @@ public class BarcodePipeline extends OpenCvPipeline {
     /*
      * Working variables
      */
-    Mat region1_Cb, region2_Cb, region3_Cb;
+    Mat region1_Cb, region1_Y, region1_Cr, region2_Cb, region2_Y, region2_Cr, region3_Cb, region3_Cr, region3_Y;
     Mat YCrCb = new Mat();
-    Mat Cb = new Mat();
-    int avg1, avg2, avg3;
+    Mat Y = new Mat();
 
     // Volatile since accessed by OpMode thread w/o synchronization
     private volatile ObjectPosition position = ObjectPosition.LEFT;
@@ -70,7 +73,7 @@ public class BarcodePipeline extends OpenCvPipeline {
      */
     void inputToCb(Mat input) {
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-        Core.extractChannel(YCrCb, Cb, 2);
+        Core.extractChannel(YCrCb, Y, 0);
     }
 
     @Override
@@ -83,9 +86,9 @@ public class BarcodePipeline extends OpenCvPipeline {
          * buffer. Any changes to the child affect the parent, and the
          * reverse also holds true.
          */
-        region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
-        region2_Cb = Cb.submat(new Rect(region2_pointA, region2_pointB));
-        region3_Cb = Cb.submat(new Rect(region3_pointA, region3_pointB));
+        region1_Y = Y.submat(new Rect(region1_pointA, region1_pointB));
+        region2_Y = Y.submat(new Rect(region2_pointA, region2_pointB));
+        region3_Y = Y.submat(new Rect(region3_pointA, region3_pointB));
     }
 
     @Override
@@ -93,9 +96,10 @@ public class BarcodePipeline extends OpenCvPipeline {
 
         inputToCb(input);
 
-        avg1 = (int) Core.mean(region1_Cb).val[0];
-        avg2 = (int) Core.mean(region2_Cb).val[0];
-        avg3 = (int) Core.mean(region3_Cb).val[0];
+        R1Y = (int) Core.mean(region1_Y).val[0];
+        R2Y = (int) Core.mean(region2_Y).val[0];
+        R3Y = (int) Core.mean(region3_Y).val[0];
+
 
         Imgproc.rectangle(
                 input, // Buffer to draw on
@@ -128,16 +132,18 @@ public class BarcodePipeline extends OpenCvPipeline {
 
 
         /*
-         * Find the max of the 3 averages
+         * Find the minimum brightness (black) of the 3 averages
          */
-        int maxOneTwo = Math.max(avg1, avg2);
-        int max = Math.max(maxOneTwo, avg3);
+        int minOneTwo = Math.min(R1Y, R2Y);
+        int minY = Math.min(R3Y, minOneTwo);
+
 
         /*
-         * Now that we found the max, we actually need to go and
+         * Now that we found the min, we actually need to go and
          * figure out which sample region that value was from
          */
-        if (max == avg1) // Was it from region 1?
+
+        if (minY == R1Y) // Was it from region 1?
         {
             position = ObjectPosition.LEFT; // Record our analysis
 
@@ -151,9 +157,9 @@ public class BarcodePipeline extends OpenCvPipeline {
                     region1_pointB, // Second point which defines the rectangle
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
-        } else if (max == avg2) // Was it from region 2?
-        {
-            position = ObjectPosition.CENTER; // Record our analysis
+        }
+        if (minY == R2Y){
+            position = ObjectPosition.RIGHT; // Record our analysis
 
             /*
              * Draw a solid rectangle on top of the chosen region.
@@ -165,9 +171,10 @@ public class BarcodePipeline extends OpenCvPipeline {
                     region2_pointB, // Second point which defines the rectangle
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
-        } else if (max == avg3) // Was it from region 3?
+        }
+        if (minY == R3Y) // Was it from region 2?
         {
-            position = ObjectPosition.RIGHT; // Record our analysis
+            position = ObjectPosition.CENTER; // Record our analysis
 
             /*
              * Draw a solid rectangle on top of the chosen region.

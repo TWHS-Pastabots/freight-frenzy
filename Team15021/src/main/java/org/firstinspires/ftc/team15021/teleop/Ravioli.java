@@ -126,8 +126,8 @@ public class Ravioli extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.right_trigger * .3);
-            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .3);
+            hardware.armMotorOne.setPower(gamepad2.right_trigger * .5);
+            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .5);
 
             justMoved = true;
         }
@@ -139,8 +139,8 @@ public class Ravioli extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.3);
-            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.3);
+            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.5);
+            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.5);
 
             justMoved = true;
         }
@@ -228,13 +228,13 @@ public class Ravioli extends OpMode
 
     private void controlClaw()
     {
-        if (gamepad2.right_bumper)
+        if (gamepad2.left_bumper)
         {
             hardware.servoOne.setPosition(1);
             telemetry.addData("Status", "Moved Servo");
             telemetry.update();
         }
-        else if (gamepad2.left_bumper)
+        else if (gamepad2.right_bumper)
         {
             hardware.servoOne.setPosition(0);
         }

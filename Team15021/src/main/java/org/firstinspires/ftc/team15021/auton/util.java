@@ -22,13 +22,13 @@ public class util
         ravioliHardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ravioliHardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        ravioliHardware.armMotorOne.setPower(1);
-        ravioliHardware.armMotorTwo.setPower(1);
+        ravioliHardware.armMotorOne.setPower(.5);
+        ravioliHardware.armMotorTwo.setPower(.5);
     }
 
     public void openClaw()
     {
-        ravioliHardware.servoOne.setPosition(1);
+        ravioliHardware.servoOne.setPosition(.5);
     }
 
     public void closeClaw()
@@ -38,8 +38,14 @@ public class util
 
     public void spinCarousel()
     {
-        ravioliHardware.carouselMotorOne.setPower(.3);
-        wait(3000);
+        ravioliHardware.carouselMotorOne.setPower(.45);
+        wait(3500);
+        ravioliHardware.carouselMotorOne.setPower(0);
+    }
+    public void spinRedCarousel()
+    {
+        ravioliHardware.carouselMotorOne.setPower(-.45);
+        wait(3500);
         ravioliHardware.carouselMotorOne.setPower(0);
     }
 

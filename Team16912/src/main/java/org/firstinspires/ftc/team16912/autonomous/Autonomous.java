@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16912.drive.SampleMecanumDrive;
@@ -23,16 +24,16 @@ public class Autonomous extends LinearOpMode {
 
     ElapsedTime runTime = new ElapsedTime();
 
-    Trajectory toShipment, toCarousel, toFinish;
+    Trajectory toShipment, toCarousel, toFinish, moveBack;
 
     Pose2d startPose;
 
     private String alliance = "blue", side = "left";
     boolean isWaiting = false;
+    public int HubDist = -13;
 
     OpenCvInternalCamera webcam;
     BarcodePipeline pipeline;
-
 
 
 
@@ -59,13 +60,19 @@ public class Autonomous extends LinearOpMode {
             }
         });
 
-        BarcodePipeline.ObjectPosition pos = pipeline.getAnalysis();
-
 
         robot.init(hardwareMap);
         drive = new SampleMecanumDrive(hardwareMap);
 
         PoseStorage.initPoses();
+
+
+        while (!gamepad1.triangle) {
+            telemetry.addData("Left Brightness: ", pipeline.R1Y);
+            telemetry.addData("Middle Brightness: ", pipeline.R2Y);
+            telemetry.addData("Right Brightness: ", pipeline.R3Y);
+            telemetry.update();
+        }
 
         config();
         drive.setPoseEstimate(startPose);
@@ -79,6 +86,8 @@ public class Autonomous extends LinearOpMode {
 
         if (isStarted()) {
 
+            BarcodePipeline.ObjectPosition pos = pipeline.getAnalysis();
+
             if (isWaiting) wait5();
 
             // No camera yet so robot will always deliver to top for now
@@ -86,6 +95,8 @@ public class Autonomous extends LinearOpMode {
 
             robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
             spinCarousel();
+
+            closeClaw();
 
             //slow down spinner
             robot.cSpinner.setVelocity(300);
@@ -108,18 +119,19 @@ public class Autonomous extends LinearOpMode {
         switch(alliance) {
 
             case ("red"): {
-
                 toShipment = drive.trajectoryBuilder(drive.getPoseEstimate())
                         .lineToLinearHeading(PoseStorage.RedHub)
                         .build();
-
-                toCarousel = drive.trajectoryBuilder(toShipment.end())
+                moveBack = drive.trajectoryBuilder(toShipment.end())
+                        .forward(HubDist)
+                        .build();
+                toCarousel = drive.trajectoryBuilder(moveBack.end())
                         .lineToLinearHeading(PoseStorage.RedCarousel)
                         .build();
-
                 toFinish = drive.trajectoryBuilder(toCarousel.end())
                         .lineToLinearHeading(PoseStorage.RedFinish)
                         .build();
+
 
                 break;
             }
@@ -130,7 +142,11 @@ public class Autonomous extends LinearOpMode {
                         .lineToLinearHeading(PoseStorage.BlueHub)
                         .build();
 
-                toCarousel = drive.trajectoryBuilder(toShipment.end())
+                moveBack = drive.trajectoryBuilder(toShipment.end())
+                        .forward(HubDist)
+                        .build();
+
+                toCarousel = drive.trajectoryBuilder(moveBack.end())
                         .lineToLinearHeading(PoseStorage.BlueCarousel)
                         .build();
 
@@ -141,15 +157,6 @@ public class Autonomous extends LinearOpMode {
                 break;
             }
         }
-
-
-
-
-
-
-
-
-
     }
 
     private int barcodeToInt(BarcodePipeline.ObjectPosition position) {
@@ -170,28 +177,29 @@ public class Autonomous extends LinearOpMode {
 
     private void deliverShipment(int pos) {
 
-        int encoderPos;
+        int encoderPos = 0;
 
         switch (pos) {
 
-            case 1: {
+            case 2: {
                 encoderPos = -3000;
                 break;
             }
 
-            case 2: {
-                encoderPos = -4248;
-                break;
-            }
-
             case 3: {
-                encoderPos = -4748;
+                encoderPos = -3750;
                 break;
             }
 
-            default: encoderPos = 0;
+            case 1: {
+                encoderPos = -4200;
+                break;
+            }
 
         }
+
+        telemetry.addData("Delivering to: ", encoderPos);
+        telemetry.update();
 
         // Drive to position
         drive.followTrajectory(toShipment);
@@ -205,10 +213,13 @@ public class Autonomous extends LinearOpMode {
 
         for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
 
+        // Move forwards based on which level
+
+        drive.followTrajectory(moveBack);
+
         // Claw actions
         openClaw();
         sleep(100);
-        closeClaw();
 
         double initTime = runTime.seconds();
 
@@ -231,12 +242,12 @@ public class Autonomous extends LinearOpMode {
         switch (alliance) {
 
             case "blue": {
-                robot.cSpinner.setDirection(DcMotorEx.Direction.FORWARD);
+                robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
                 break;
             }
 
             case "red": {
-                robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
+                robot.cSpinner.setDirection(DcMotorEx.Direction.FORWARD);
                 break;
             }
 

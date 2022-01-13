@@ -88,7 +88,7 @@ public class BlueCarousel extends LinearOpMode
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
         utilities.eliminateOscillations();
-        utilities.dropCargo(2000, telemetry);
+        utilities.dropCargo(3500, telemetry);
 
         switch (path)
         {

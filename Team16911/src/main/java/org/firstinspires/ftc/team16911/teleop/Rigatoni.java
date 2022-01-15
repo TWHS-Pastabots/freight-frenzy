@@ -15,7 +15,10 @@ public class Rigatoni extends OpMode
     int currentPosition = 0;
     int lastPosition = -100;
     int armMotorTwoOffset = 0;
-    double slowConstant = .75;
+    final double HIGH_SPEED = .725;
+    final double SLOW_SPEED = .35;
+    double slowConstant = HIGH_SPEED;
+    boolean usePowerScaling = true;
 
     boolean justMoved = false;
     boolean canRun = false;
@@ -56,6 +59,18 @@ public class Rigatoni extends OpMode
     public void loop()
     {
         drive();
+
+        if (gamepad2.cross && buttonTime.time() > 500 && usePowerScaling)
+        {
+            usePowerScaling = false;
+            buttonTime.reset();
+        }
+        else if (gamepad2.cross && buttonTime.time() > 500 && !usePowerScaling)
+        {
+            usePowerScaling = true;
+            buttonTime.reset();
+        }
+
         moveArm();
         spinCarousel();
         operateClaw();
@@ -101,16 +116,17 @@ public class Rigatoni extends OpMode
         if (gameTime.time() > 100)
         {
             telemetry.addData("Status", "Can Remove Limiter");
+            telemetry.update();
         }
 
-        if (gamepad1.right_bumper && slowConstant == .75 && buttonTime.time() >= 500)
+        if (gamepad1.right_bumper && slowConstant == HIGH_SPEED && buttonTime.time() >= 500)
         {
-            slowConstant = .45;
+            slowConstant = SLOW_SPEED;
             buttonTime.reset();
         }
-        else if (gamepad1.right_bumper && slowConstant == 0.45 && buttonTime.time() >= 500)
+        else if (gamepad1.right_bumper && slowConstant == SLOW_SPEED && buttonTime.time() >= 500)
         {
-            slowConstant = .75;
+            slowConstant = HIGH_SPEED;
             buttonTime.reset();
         }
         else if (gamepad2.dpad_up && gameTime.time() > 100)
@@ -138,11 +154,16 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.right_trigger * .7);
-            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .7);
-
-            //hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
-            //hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
+            if (usePowerScaling)
+            {
+                hardware.armMotorOne.setPower(getUpwardPower(currentPosition));
+                hardware.armMotorTwo.setPower(getUpwardPower(currentPosition));
+            }
+            else
+            {
+                hardware.armMotorOne.setPower(gamepad2.right_trigger * .7);
+                hardware.armMotorTwo.setPower(gamepad2.right_trigger * .7);
+            }
 
             justMoved = true;
         }
@@ -154,11 +175,16 @@ public class Rigatoni extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.23);
-            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.23);
-
-            //hardware.armMotorOne.setPower(getDownwardPower(currentPosition));
-            //hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
+            if (usePowerScaling)
+            {
+                hardware.armMotorOne.setPower(getDownwardPower(currentPosition));
+                hardware.armMotorTwo.setPower(getDownwardPower(currentPosition));
+            }
+            else
+            {
+                hardware.armMotorOne.setPower(gamepad2.left_trigger * -.23);
+                hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.23);
+            }
 
             justMoved = true;
         }
@@ -353,11 +379,11 @@ public class Rigatoni extends OpMode
 
     private double getUpwardPower(int currentPosition)
     {
-        return -.0000096 * currentPosition * currentPosition + currentPosition * .0024 + .65;
+        return -.00001 * currentPosition * currentPosition + currentPosition * .002 + .6;
     }
 
     private double getDownwardPower(int currentPosition)
     {
-        return -.0000096 * currentPosition * currentPosition + currentPosition * .0024 - .05;
+        return -.000003 * currentPosition * currentPosition + currentPosition * .0006 - .13;
     }
 }

@@ -6,47 +6,61 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.team16911.R;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-//@Autonomous(name = "RedCarousel")
+@Autonomous(name = "RedCarousel")
 public class RedCarousel extends LinearOpMode
 {
-    private RigatoniHardware hardware;
     private SampleMecanumDrive drive;
 
-    private VuforiaLocalizer vuforiaLocalizer;
-    private TFObjectDetector objectDetector;
+    private static final String WAREHOUSE = "Warehouse";
+    private static final String STORAGE_UNIT = "Storage Unit";
+    private static final String DIRECT_ROUTE = "Direct";
+    private static final String BOTTOM_ROUTE = "Bottom";
+    private static final String WAREHOUSE_DIRECT_ROUTE = WAREHOUSE + DIRECT_ROUTE;
+    private static final String WAREHOUSE_BOTTOM_ROUTE = WAREHOUSE + BOTTOM_ROUTE;
+    private static final String STORAGE_DIRECT_ROUTE = STORAGE_UNIT + DIRECT_ROUTE;
+    private static final String STORAGE_BOTTOM_ROUTE = STORAGE_UNIT + BOTTOM_ROUTE;
+    private static final String[] WAREHOUSE_ROUTES = {DIRECT_ROUTE, BOTTOM_ROUTE};
+    private static final String[] STORAGE_ROUTES = {DIRECT_ROUTE, BOTTOM_ROUTE};
+    private static String endPosition = WAREHOUSE;
+    private static String route = DIRECT_ROUTE;
 
-    private static final double MIN_CONFIDENCE = .7;
-    private static final String ASSET_NAME = null;
-    private static final String QUAD_LABEL = "Quad";
-    private static final String SINGLE_LABEL = "Single";
 
-    private final int maxPosition = 220, startPosition = 35;
     private int initialWaitTime = 0;
+    private final int[] positions = {122, 170, 230};
 
-    private final Pose2d firstPosition = new Pose2d(3.75, 18, 0);
-    private final Pose2d secondPosition = new Pose2d(20,18, 0);
-    private final Pose2d thirdPosition = new Pose2d(22, -27.75, 0);
-    private final Pose2d fourthPosition = new Pose2d(20, -52, 0);
-    private final Pose2d fifthPosition = new Pose2d(-.5, -52, 0);
-    private final Pose2d sixthPosition = new Pose2d(-.5, -80, 0);
+    private final Pose2d carousel = new Pose2d(3.75, 18, 0);
+    private final Pose2d barcode = new Pose2d(20,-0.18, 0);
+    private final Pose2d hubLevelOne = new Pose2d(16, -27.75, 0);
+    private final Pose2d hubLevelTwo = new Pose2d(16.875, -27.75, 0);
+    private final Pose2d hubLevelThree = new Pose2d(23, -27.75, 0);
+    private final Pose2d warehouseOutside = new Pose2d(0, -66, 0);
+    private final Pose2d warehouseBottomPosition = new Pose2d(3, -36, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, -81, 0);
+    private final Pose2d barcodeBottomPositionOne = new Pose2d(15, -5, -Math.toRadians(45));
+    private final Pose2d barcodeBottomPositionTwo = new Pose2d(15, 5, -Math.toRadians(45));
+    private final Pose2d storageUnit = new Pose2d(30,24, -Math.toRadians(90));
 
-    private Trajectory firstTrajectory, secondTrajectory, thirdTrajectory, fourthTrajectory;
-    private Trajectory fifthTrajectory, sixthTrajectory;
+    private Trajectory toCarousel, toBarcode;
+
+    private final Trajectory[] toHubTrajectories = new Trajectory[3];
+    private final Trajectory[] fromHubDirectTrajectories = new Trajectory[3];
+    private final Trajectory[] fromHubBottomTrajectories = new Trajectory[3];
+    private final Trajectory[] toStorageDirectTrajectories = new Trajectory[3];
+    private final Trajectory[] toStorageBottomTrajectories = new Trajectory[3];
 
     public void runOpMode()
     {
+        // Configuration Variables
+        final int startPosition = 60;
+
         // Initialize Hardware
-        hardware = new RigatoniHardware();
-        util utilities = new util(hardware);
+        RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
+        util utilities = new util(hardware);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
@@ -55,58 +69,151 @@ public class RedCarousel extends LinearOpMode
         buildTrajectories();
 
         configuration();
+        final String path = endPosition + route;
 
         waitForStart();
         if(!opModeIsActive()) {return;}
 
-        utilities.wait(initialWaitTime);
+        utilities.wait(initialWaitTime, telemetry);
 
-        drive.followTrajectory(firstTrajectory);
-        utilities.spinCarouselAndMoveArm(2700, maxPosition);
+        drive.followTrajectory(toCarousel);
+        utilities.spinCarouselAndMoveArm(2700, positions[1], telemetry);
 
-        drive.followTrajectory(secondTrajectory);
-        drive.followTrajectory(thirdTrajectory);
-        utilities.dropCargo(2000);
+        drive.followTrajectory(toBarcode);
+        int barcodeLevel = utilities.getBarcodeLevelRedSide();
+        utilities.moveArm(positions[barcodeLevel]);
+        telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.update();
 
-        drive.followTrajectory(fourthTrajectory);
-        drive.followTrajectory(fifthTrajectory);
-        drive.followTrajectory(sixthTrajectory);
+        drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+        utilities.eliminateOscillations();
+        utilities.dropCargo(3500, telemetry);
+
+        switch (path)
+        {
+            case WAREHOUSE_DIRECT_ROUTE:
+                drive.followTrajectory(fromHubDirectTrajectories[barcodeLevel]);
+                break;
+            case WAREHOUSE_BOTTOM_ROUTE:
+                drive.followTrajectory(fromHubBottomTrajectories[barcodeLevel]);
+                break;
+            case STORAGE_DIRECT_ROUTE:
+                drive.followTrajectory(toStorageDirectTrajectories[barcodeLevel]);
+                break;
+            case STORAGE_BOTTOM_ROUTE:
+                drive.followTrajectory(toStorageBottomTrajectories[barcodeLevel]);
+                break;
+        }
     }
 
     private void buildTrajectories()
     {
+        // Configuration Variables
+        Trajectory toHubLevelOne, toHubLevelTwo, toHubLevelThree;
+        Trajectory fromHubLevelOneDirect, fromHubLevelTwoDirect, fromHubLevelThreeDirect;
+        Trajectory fromHubLevelOneBottom, fromHubLevelTwoBottom, fromHubLevelThreeBottom;
+        Trajectory toStorageLevelOneDirect, toStorageLevelTwoDirect, toStorageLevelThreeDirect;
+        Trajectory toStorageLevelOneBottom, toStorageLevelTwoBottom, toStorageLevelThreeBottom;
 
-        firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(firstPosition).build();
+        toCarousel = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(carousel).build();
 
-        secondTrajectory = drive.trajectoryBuilder(firstTrajectory.end())
-                .lineToLinearHeading(secondPosition).build();
+        toBarcode = drive.trajectoryBuilder(toCarousel.end())
+                .lineToLinearHeading(barcode).build();
 
-        thirdTrajectory = drive.trajectoryBuilder(secondTrajectory.end())
-                .lineToLinearHeading(thirdPosition).build();
+        toHubLevelOne = drive.trajectoryBuilder(toBarcode.end())
+                .lineToLinearHeading(hubLevelOne).build();
 
-        fourthTrajectory = drive.trajectoryBuilder(thirdTrajectory.end())
-                .lineToLinearHeading(fourthPosition).build();
+        toHubLevelTwo = drive.trajectoryBuilder(toBarcode.end())
+                .lineToLinearHeading(hubLevelTwo).build();
 
-        fifthTrajectory = drive.trajectoryBuilder(fourthTrajectory.end())
-                .lineToLinearHeading(fifthPosition).build();
+        toHubLevelThree = drive.trajectoryBuilder(toBarcode.end())
+                .lineToLinearHeading(hubLevelThree).build();
 
-        sixthTrajectory = drive.trajectoryBuilder(fifthTrajectory.end())
-                .lineToLinearHeading(sixthPosition).build();
+        fromHubLevelOneDirect = drive.trajectoryBuilder(toHubLevelOne.end(), -Math.toRadians(130))
+                .splineToLinearHeading(warehouseOutside, -Math.toRadians(90))
+                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+
+        fromHubLevelTwoDirect = drive.trajectoryBuilder(toHubLevelTwo.end(), -Math.toRadians(130))
+                .splineToLinearHeading(warehouseOutside, -Math.toRadians(90))
+                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+
+        fromHubLevelThreeDirect = drive.trajectoryBuilder(toHubLevelThree.end(), -Math.toRadians(130))
+                .splineToLinearHeading(warehouseOutside, -Math.toRadians(90))
+                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+
+        fromHubLevelOneBottom = drive.trajectoryBuilder(toHubLevelOne.end(), -Math.toRadians(180))
+                .splineToLinearHeading(warehouseBottomPosition, -Math.toRadians(90))
+                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+
+        fromHubLevelTwoBottom = drive.trajectoryBuilder(toHubLevelTwo.end(), -Math.toRadians(180))
+                .splineToLinearHeading(warehouseBottomPosition, -Math.toRadians(90))
+                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+
+        fromHubLevelThreeBottom = drive.trajectoryBuilder(toHubLevelThree.end(), -Math.toRadians(180))
+                .splineToLinearHeading(warehouseBottomPosition, -Math.toRadians(90))
+                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+
+        toStorageLevelOneDirect = drive.trajectoryBuilder(toHubLevelOne.end())
+                .lineToSplineHeading(storageUnit).build();
+
+        toStorageLevelTwoDirect = drive.trajectoryBuilder(toHubLevelTwo.end())
+                .lineToSplineHeading(storageUnit).build();
+
+        toStorageLevelThreeDirect = drive.trajectoryBuilder(toHubLevelThree.end())
+                .lineToSplineHeading(storageUnit).build();
+
+        toStorageLevelOneBottom = drive.trajectoryBuilder(toHubLevelOne.end(), -Math.toRadians(280))
+                .splineToSplineHeading(barcodeBottomPositionOne, -Math.toRadians(270))
+                .splineToSplineHeading(barcodeBottomPositionTwo, -Math.toRadians(270))
+                .splineToSplineHeading(storageUnit, -Math.toRadians(0)).build();
+
+        toStorageLevelTwoBottom = drive.trajectoryBuilder(toHubLevelTwo.end(), -Math.toRadians(265))
+                .splineToSplineHeading(barcodeBottomPositionOne, -Math.toRadians(270))
+                .splineToSplineHeading(barcodeBottomPositionTwo, -Math.toRadians(270))
+                .splineToSplineHeading(storageUnit, -Math.toRadians(0)).build();
+
+        toStorageLevelThreeBottom = drive.trajectoryBuilder(toHubLevelThree.end(), -Math.toRadians(250))
+                .splineToSplineHeading(barcodeBottomPositionOne, -Math.toRadians(270))
+                .splineToSplineHeading(barcodeBottomPositionTwo, -Math.toRadians(270))
+                .splineToSplineHeading(storageUnit, -Math.toRadians(0)).build();
+
+        toHubTrajectories[0] = toHubLevelOne;
+        toHubTrajectories[1] = toHubLevelTwo;
+        toHubTrajectories[2] = toHubLevelThree;
+
+        fromHubDirectTrajectories[0] = fromHubLevelOneDirect;
+        fromHubDirectTrajectories[1] = fromHubLevelTwoDirect;
+        fromHubDirectTrajectories[2] = fromHubLevelThreeDirect;
+
+        fromHubBottomTrajectories[0] = fromHubLevelOneBottom;
+        fromHubBottomTrajectories[1] = fromHubLevelTwoBottom;
+        fromHubBottomTrajectories[2] = fromHubLevelThreeBottom;
+
+        toStorageDirectTrajectories[0] = toStorageLevelOneDirect;
+        toStorageDirectTrajectories[1] = toStorageLevelTwoDirect;
+        toStorageDirectTrajectories[2] = toStorageLevelThreeDirect;
+
+        toStorageBottomTrajectories[0] = toStorageLevelOneBottom;
+        toStorageBottomTrajectories[1] = toStorageLevelTwoBottom;
+        toStorageBottomTrajectories[2] = toStorageLevelThreeBottom;
     }
 
     private void configuration()
     {
         ElapsedTime buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        int lockoutTime = 200;
+        int index = 0;
 
-        while (!isStarted() && !gamepad1.x)
+        while (!isStarted() && !gamepad1.cross)
         {
-            if (gamepad1.dpad_up && buttonTime.time() > 300)
+            if (gamepad1.dpad_up && buttonTime.time() > lockoutTime)
             {
                 initialWaitTime = Math.min(10000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
-            else if (gamepad1.dpad_down && buttonTime.time() > 300)
+            else if (gamepad1.dpad_down && buttonTime.time() > lockoutTime)
             {
                 initialWaitTime = Math.max(0, initialWaitTime - 1000);
                 buttonTime.reset();
@@ -115,47 +222,39 @@ public class RedCarousel extends LinearOpMode
             {
                 initialWaitTime = 0;
             }
+            else if (gamepad1.right_bumper)
+            {
+                index = 0;
+                endPosition = WAREHOUSE;
+                route = WAREHOUSE_ROUTES[index];
+            }
+            else if (gamepad1.left_bumper)
+            {
+                index = 0;
+                endPosition = STORAGE_UNIT;
+                route = STORAGE_ROUTES[index];
+            }
+
+            if (endPosition.equals(WAREHOUSE) && gamepad1.square && buttonTime.time() > lockoutTime)
+            {
+                index = (index + 1) % WAREHOUSE_ROUTES.length;
+                route = WAREHOUSE_ROUTES[index];
+                buttonTime.reset();
+            }
+            else if (gamepad1.square && buttonTime.time() > lockoutTime)
+            {
+                index = (index + 1) % STORAGE_ROUTES.length;
+                route = STORAGE_ROUTES[index];
+                buttonTime.reset();
+            }
 
             telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
+            telemetry.addData("End Position", endPosition);
+            telemetry.addData("Route", route);
             telemetry.update();
         }
 
         telemetry.addData("Status", "Confirmed");
         telemetry.update();
-    }
-
-    private void initVuforia()
-    {
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-
-        parameters.vuforiaLicenseKey = null;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        vuforiaLocalizer = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    private void initTfod()
-    {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = (float) MIN_CONFIDENCE;
-        objectDetector = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforiaLocalizer);
-        objectDetector.loadModelFromAsset(ASSET_NAME, QUAD_LABEL, SINGLE_LABEL);
-        //dashboard.startCameraStream(tfod, 10);
-    }
-
-    private void activateTfod()
-    {
-        // Initialize Vuforia and TFOD
-        initVuforia();
-        initTfod();
-
-        // Activate TFOD if it can be activated
-        if (objectDetector != null) {
-            objectDetector.activate();
-
-            objectDetector.setZoom(1.25, 16.0 / 9.0);
-        }
     }
 }

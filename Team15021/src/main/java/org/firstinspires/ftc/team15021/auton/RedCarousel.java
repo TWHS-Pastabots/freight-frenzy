@@ -13,9 +13,9 @@ public class RedCarousel extends LinearOpMode
 {
     SampleMecanumDrive drive;
 
-    private Pose2d shippingHub = new Pose2d(17.5, -28.25, 0);
-    private Pose2d positionOne = new Pose2d(7.5, 17, Math.toRadians(-90));
-    private Pose2d positionTwo = new Pose2d(30, 21, Math.toRadians(-90));
+    private Pose2d shippingHub = new Pose2d(17.5, -29, 0);
+    private Pose2d positionOne = new Pose2d(4, 20, Math.toRadians(0));
+    private Pose2d positionTwo = new Pose2d(29, 21, Math.toRadians(0));
 
     private Trajectory toShippingHub;
     private Trajectory trajectoryOne;
@@ -30,7 +30,7 @@ public class RedCarousel extends LinearOpMode
         RavioliHardware hardware = new RavioliHardware();
         util utilities = new util(hardware);
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d());
+        drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(-90)));
         hardware.init(hardwareMap);
 
         buildTrajectories();
@@ -44,18 +44,19 @@ public class RedCarousel extends LinearOpMode
         switch (endPoint)
         {
             case STORAGE:
-                utilities.moveArm(170);
+                utilities.moveArm(-360);
+                utilities.wait(3000);
                 drive.followTrajectory(toShippingHub);
                 utilities.wait(500);
                 utilities.openClaw();
                 utilities.wait(1000);
-                utilities.moveArm(250);
                 drive.followTrajectory(trajectoryOne);
-                utilities.spinCarousel();
+                utilities.spinRedCarousel();
+                utilities.moveArm(-240);
                 drive.followTrajectory(trajectoryTwo);
                 break;
             case NO_STORAGE:
-                utilities.moveArm(170);
+                utilities.moveArm(-100);
                 drive.followTrajectory(toShippingHub);
                 utilities.wait(500);
                 utilities.openClaw();

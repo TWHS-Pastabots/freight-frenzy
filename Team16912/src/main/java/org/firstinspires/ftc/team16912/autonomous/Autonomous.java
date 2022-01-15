@@ -30,7 +30,7 @@ public class Autonomous extends LinearOpMode {
 
     private String alliance = "blue", side = "left";
     boolean isWaiting = false;
-    public int HubDist = -13;
+
 
     OpenCvInternalCamera webcam;
     BarcodePipeline pipeline;
@@ -123,7 +123,7 @@ public class Autonomous extends LinearOpMode {
                         .lineToLinearHeading(PoseStorage.RedHub)
                         .build();
                 moveBack = drive.trajectoryBuilder(toShipment.end())
-                        .forward(HubDist)
+                        .forward(-13)
                         .build();
                 toCarousel = drive.trajectoryBuilder(moveBack.end())
                         .lineToLinearHeading(PoseStorage.RedCarousel)
@@ -143,7 +143,7 @@ public class Autonomous extends LinearOpMode {
                         .build();
 
                 moveBack = drive.trajectoryBuilder(toShipment.end())
-                        .forward(HubDist)
+                        .forward(-10)
                         .build();
 
                 toCarousel = drive.trajectoryBuilder(moveBack.end())
@@ -187,7 +187,7 @@ public class Autonomous extends LinearOpMode {
             }
 
             case 3: {
-                encoderPos = -3750;
+                encoderPos = -3650;
                 break;
             }
 

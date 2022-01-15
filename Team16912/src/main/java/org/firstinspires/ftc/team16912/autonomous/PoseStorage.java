@@ -27,7 +27,7 @@ public class PoseStorage {
         RedCarousel = new Pose2d(-61.32295700521856,-62.766810012697775,Math.toRadians(269.28168016088995));
         BlueCarousel = new Pose2d(-59.43131663678813, 56.86792328414704,Math.toRadians(172.84226364522823));
         RedHub = new Pose2d( -14.000456450593105,-60.08996787199466,Math.toRadians(271.0642161002907));
-        BlueHub = new Pose2d( -10.638173890493668, 45.95355503292278, Math.toRadians(90));
+        BlueHub = new Pose2d( -10.638173890493668, 60.95355503292278, Math.toRadians(90));
         RedFinish = new Pose2d(-68.66711740422015, -40.326774389878032, Math.toRadians(0));
         BlueFinish = new Pose2d(-58.664135706521755, 37.818617399773153, Math.toRadians(5));
 

@@ -275,7 +275,7 @@ public class Autonomous extends LinearOpMode {
         for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
     }
 
-    private void wait5() { sleep (10000); }
+    private void wait5() { sleep (12000); }
 
     // Alliance configuration
     private void config() {

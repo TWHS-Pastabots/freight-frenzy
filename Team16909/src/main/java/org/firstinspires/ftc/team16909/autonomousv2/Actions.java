@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team16909.autonomous;
+package org.firstinspires.ftc.team16909.autonomousv2;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.team16909.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16909.hardware.FettuccineHardware;
 
-public class ActionMethods {
+public class Actions {
     private FettuccineHardware robot;
 
     boolean grabHold = false;
@@ -22,7 +22,7 @@ public class ActionMethods {
 
 
 
-    ActionMethods(FettuccineHardware robot)
+    public Actions(FettuccineHardware robot)
     {
         this.robot = robot;
 
@@ -55,7 +55,7 @@ public class ActionMethods {
         robot.carousel.setPower(0);
     }
 
-    public void moveArm (int position)
+    public void moveArm (int position, int trim)
     {
 
         int rightTargetPos = robot.rightArm.getTargetPosition();
@@ -66,8 +66,8 @@ public class ActionMethods {
 
         if (position == 3 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(140);
-            robot.leftArm.setTargetPosition(140);
+            robot.rightArm.setTargetPosition(140 + trim);
+            robot.leftArm.setTargetPosition(140 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() + 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() + 10);
 
@@ -81,8 +81,8 @@ public class ActionMethods {
         }
         else if (position == 2 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(73);
-            robot.leftArm.setTargetPosition(73);
+            robot.rightArm.setTargetPosition(73 + trim);
+            robot.leftArm.setTargetPosition(73 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 
@@ -96,8 +96,8 @@ public class ActionMethods {
         }
         else if (position == 1 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(15);
-            robot.leftArm.setTargetPosition(15);
+            robot.rightArm.setTargetPosition(15 + trim);
+            robot.leftArm.setTargetPosition(15 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 
@@ -111,8 +111,8 @@ public class ActionMethods {
         }
         else if (position == 0 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(0);
-            robot.leftArm.setTargetPosition(0);
+            robot.rightArm.setTargetPosition(0 + trim);
+            robot.leftArm.setTargetPosition(0 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 

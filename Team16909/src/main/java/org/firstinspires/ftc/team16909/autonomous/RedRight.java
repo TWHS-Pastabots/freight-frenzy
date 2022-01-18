@@ -13,8 +13,30 @@ import org.firstinspires.ftc.team16909.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16909.hardware.FettuccineHardware;
 import org.firstinspires.ftc.team16909.trajectorysequence.TrajectorySequence;
 
+import java.util.List;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+
 @Autonomous(preselectTeleOp = "FettuccineRRv2")
 public class RedRight extends LinearOpMode {
+
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String[] LABELS = {
+            "Ball",
+            "Cube",
+            "Duck",
+            "Marker"
+    };
+
+
+    private static final String VUFORIA_KEY =
+            "AZ6i5g3/////AAABmYBANke+yESmiy8xv7zkoQRebAy42geMKzjEKCmMTcJL0dxr8WXAxzSQ/1xiGFxpR50IIrtWPx4ocwMUMVT8wJQucZYGQalz6gdXjGm8Y7qqcnw22TGtYr/xmGXCfKb6EKDHb6C1oyXuxtNsTLXyj9TT/WGEe+Y54/jEBvP63NLnfXYQgFUL+rUmk2lU+fdEkgyqTS7oSEUG5dSGhEdFjPhJeyPL1xVqzwAv6CW/0kRVL4RYfSNBXyIWr43MM26ChkYVuVrRpUZMpkBesZOBcJKq5HqRMtCUC2JEY7iJMgD6cK/JA0NCKBu/bj5MCnRtnnv4vzRtIcT+458aqc2FeXAWp+pw3qTcUPK6RLsQ2j4j";
+
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
 
     int currentPosition = 0;
     int leftArmOffset = 0;
@@ -32,7 +54,7 @@ public class RedRight extends LinearOpMode {
 
     // Poses
     private final Pose2d posScan = new Pose2d(15.2, -5.0401, Math.toRadians(0));
-    private final Pose2d posHub = new Pose2d(19.3338, 21.4224, Math.toRadians(0));
+    private final Pose2d posHub = new Pose2d(17.977, 30.689, Math.toRadians(0));
     private final Pose2d posApproach = new Pose2d(-1, 0, 0);
     private final Pose2d posWarehouse = new Pose2d(-5, -36.3931, Math.toRadians(0));
 
@@ -43,6 +65,18 @@ public class RedRight extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        initVuforia();
+        initTfod();
+
+        /**
+         * Activate TensorFlow Object Detection before we wait for the start command.
+         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+         **/
+        if (tfod != null) {
+            tfod.activate();
+            tfod.setZoom(1.0, 64.0/32.0);
+        }
 
         // All Motors
         robot = new FettuccineHardware();
@@ -58,20 +92,46 @@ public class RedRight extends LinearOpMode {
         blueLeftTrajectories();
 
         while (!isStarted()) {
-            if (gamepad2.dpad_right) tgtPos = 0;
-            else if (gamepad2.dpad_down) tgtPos = 1;
-            else if (gamepad2.dpad_left) tgtPos = 2;
-            else if (gamepad2.dpad_up) tgtPos = 3;
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-            telemetry.addData("Arm Target", tgtPos);
-            telemetry.update();
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
+                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                recognition.getLeft(), recognition.getTop());
+                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                recognition.getRight(), recognition.getBottom());
+                        i++;
+                        if (recognition.getLabel().indexOf("Duck") > -1) {
+                            if (recognition.getLeft() < 587) {
+                                telemetry.addData("Position: ", "Left");
+                                tgtPos = 1;
+                            } else if (recognition.getLeft() > 587 && recognition.getLeft() < 1030) {
+                                telemetry.addData("Position: ", "Middle");
+                                tgtPos = 2;
+                            } else {
+                                telemetry.addData("Position: ", "Right");
+                                tgtPos = 3;
+                            }
+                        }
+                    }
+                    telemetry.update();
+                    if (updatedRecognitions.size() == 0) tgtPos = 3;
+                }
+            }
         }
 
 
         waitForStart();
         if (!opModeIsActive()) return;
         robot.grabber.setPosition(0.2);
-        drive.followTrajectorySequence(trajScan);
+        //drive.followTrajectorySequence(trajScan);
         action.moveArm(tgtPos);
         action.waitFor(1);
         drive.followTrajectorySequence(trajHub);
@@ -91,9 +151,8 @@ public class RedRight extends LinearOpMode {
         trajScan = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(posScan)
                 .build();
-        trajHub = drive.trajectorySequenceBuilder(trajScan.end())
+        trajHub = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(posHub)
-                .forward(4)
                 .build();
         trajApproach = drive.trajectorySequenceBuilder(trajHub.end())
                 .back(4)
@@ -243,6 +302,35 @@ public class RedRight extends LinearOpMode {
         telemetry.addData("Arm Time", armTime.time());
         telemetry.addData("Just Moved", justMoved);
         telemetry.update();
+    }
+
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.isModelTensorFlow2 = true;
+        tfodParameters.inputSize = 320;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 
 

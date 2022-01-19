@@ -9,7 +9,7 @@ public class PoseStorage {
 
     // Positions as Pose2d
     public static Pose2d RedLeft, RedRight, BlueLeft, BlueRight;
-    public static Pose2d RedCarousel, BlueCarousel, RedHub, BlueHub, RedStorageUnit, BlueStorageUnit, RedWarehouse, BlueWarehouse;
+    public static Pose2d RedCarousel, BlueCarousel, RedHub, BlueHub, RedStorageUnit, BlueStorageUnit, RedWarehouse, BlueWarehouse, RedWarehouseSetup, BlueWarehouseSetup;
 
     //public static Vector2d RedCarousel, BlueCarousel, RedHub, BlueHub, RedFinish, BlueFinish;
 
@@ -31,8 +31,10 @@ public class PoseStorage {
         RedStorageUnit = new Pose2d(-68.66711740422015, -40.326774389878032, Math.toRadians(0));
         BlueStorageUnit = new Pose2d(-58.664135706521755, 37.818617399773153, Math.toRadians(5));
 
-        //warehouse poses
+        // Warehouse poses
+        RedWarehouseSetup = new Pose2d(12, -70, Math.toRadians(90));
         RedWarehouse = new Pose2d(50.66711740422015, -40.326774389878032, Math.toRadians(0));
+        BlueWarehouseSetup = new Pose2d(13, 67, Math.toRadians(270));
         BlueWarehouse = new Pose2d(45.664135706521755, 37.818617399773153, Math.toRadians(5));
 
 

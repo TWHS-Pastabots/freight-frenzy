@@ -47,16 +47,14 @@ public class DistancePipeline extends OpenCvPipeline
     @Override
     public Mat processFrame(Mat input)
     {
-        Mat HSV = new Mat();
-        Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
-        Mat mask = new Mat();
-        inRange(HSV, new Scalar(lower_h, lower_s, lower_v), new Scalar(upper_h, upper_s, upper_v), mask);
+        Mat edges = new Mat(input.rows(), input.cols(), input.type());
+        Mat gray = new Mat(input.rows(), input.cols(), input.type());
 
-        input.setTo(Scalar.all(0), mask);
+        Imgproc.cvtColor(input, gray, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.GaussianBlur(gray, edges, new Size(5, 5), 0);
+        Imgproc.Canny(edges, edges, 20, 105);
 
-        Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2GRAY);
-
-        return input;
+        return edges;
     }
 
     public int determineDistance() {

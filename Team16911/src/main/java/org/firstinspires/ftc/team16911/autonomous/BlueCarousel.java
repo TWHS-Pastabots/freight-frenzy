@@ -30,11 +30,10 @@ public class BlueCarousel extends LinearOpMode
 
 
     private int initialWaitTime = 0;
-    private final int[] positions = {122, 170, 230};
 
     private final Pose2d carousel = new Pose2d(3.75, -18, 0);
     private final Pose2d barcode = new Pose2d(20,0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(16, 27.75, 0);
+    private final Pose2d hubLevelOne = new Pose2d(16.3, 27.75, 0);
     private final Pose2d hubLevelTwo = new Pose2d(16.875, 27.75, 0);
     private final Pose2d hubLevelThree = new Pose2d(23, 27.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(0, 66, 0);
@@ -77,11 +76,11 @@ public class BlueCarousel extends LinearOpMode
         utilities.wait(initialWaitTime, telemetry);
 
         drive.followTrajectory(toCarousel);
-        utilities.spinCarouselAndMoveArm(2700, positions[1], telemetry);
+        utilities.spinCarouselAndMoveArm(2700, utilities.positions[1], telemetry);
 
         drive.followTrajectory(toBarcode);
         int barcodeLevel = utilities.getBarcodeLevelBlueSide();
-        utilities.moveArm(positions[barcodeLevel]);
+        utilities.moveArm(utilities.positions[barcodeLevel]);
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();

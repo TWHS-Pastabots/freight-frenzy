@@ -60,7 +60,7 @@ public class BarcodePipeline extends OpenCvPipeline {
     /*
      * Working variables
      */
-    Mat region1_Cb, region1_Y, region1_Cr, region2_Cb, region2_Y, region2_Cr, region3_Cb, region3_Cr, region3_Y;
+    Mat region1_Y, region2_Y, region3_Y;
     Mat YCrCb = new Mat();
     Mat Y = new Mat();
 

@@ -14,9 +14,9 @@ public class BlueWarehouse extends LinearOpMode
 {
     SampleMecanumDrive drive;
 
-    private Pose2d shippingHub = new Pose2d(19, -17, 0);
-    private Pose2d positionOne = new Pose2d(30, 0, Math.toRadians(90));
-    private Pose2d positionTwo = new Pose2d(64, -72, Math.toRadians(180));
+    private Pose2d shippingHub = new Pose2d(19, -18, 0);
+    private Pose2d positionOne = new Pose2d(24, 0, Math.toRadians(90));
+    private Pose2d positionTwo = new Pose2d(24, 48, Math.toRadians(90));
     private Pose2d positionThree = new Pose2d( 27, -72, Math.toRadians(180));
 
     private Trajectory toShippingHub;
@@ -27,14 +27,14 @@ public class BlueWarehouse extends LinearOpMode
 
     private final String STORAGE = "Storage";
     private final String NO_STORAGE = "No Storage";
-    private String endPoint = NO_STORAGE;
+    private String endPoint = STORAGE;
 
     public void runOpMode()
     {
         RavioliHardware hardware = new RavioliHardware();
         util utilities = new util(hardware);
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d());
+        drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(90)));
         hardware.init(hardwareMap);
 
         buildTrajectories();
@@ -48,19 +48,19 @@ public class BlueWarehouse extends LinearOpMode
         switch (endPoint)
         {
             case STORAGE:
-                utilities.moveArm(170);
+                utilities.moveArm(-360);
+                utilities.wait(2500);
                 drive.followTrajectory(toShippingHub);
-                utilities.wait(500);
                 utilities.openClaw();
-                utilities.wait(1000);
-                utilities.moveArm(250);
+                utilities.wait(500);
+                utilities.moveArm(-240);
                 drive.followTrajectory(returnTrajectory);
                 drive.followTrajectory(trajectoryOne);
                 drive.followTrajectory(trajectoryTwo);
-                drive.followTrajectory(trajectoryThree);
                 break;
             case NO_STORAGE:
-                utilities.moveArm(170);
+                utilities.moveArm(-360);
+                utilities.wait(2500);
                 drive.followTrajectory(toShippingHub);
                 utilities.wait(500);
                 utilities.openClaw();

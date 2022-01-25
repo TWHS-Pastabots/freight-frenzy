@@ -4,13 +4,19 @@ import static org.opencv.core.Core.inRange;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Config
 public class DistancePipeline extends OpenCvPipeline
@@ -30,6 +36,8 @@ public class DistancePipeline extends OpenCvPipeline
     static final int REGION_WIDTH = 20;
     static final int REGION_HEIGHT = 20;
 
+    public static double DISTANCE;
+
 
     Point region1_pointA = new Point(
             REGION_TOPLEFT_ANCHOR_POINT.x,
@@ -48,18 +56,55 @@ public class DistancePipeline extends OpenCvPipeline
     public Mat processFrame(Mat input)
     {
         Mat edges = new Mat(input.rows(), input.cols(), input.type());
-        Mat gray = new Mat(input.rows(), input.cols(), input.type());
+        Mat mask = new Mat(input.rows(), input.cols(), input.type());
+        Mat YcrCb = new Mat(input.rows(), input.cols(), input.type());
 
-        Imgproc.cvtColor(input, gray, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.GaussianBlur(gray, edges, new Size(5, 5), 0);
-        Imgproc.Canny(edges, edges, 20, 105);
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
 
-        return edges;
+
+        Imgproc.cvtColor(input, YcrCb, Imgproc.COLOR_BGR2YCrCb);
+        Core.inRange(YcrCb, new Scalar(0, 0, 0), new Scalar(255, 255, 150), mask);
+
+        Core.bitwise_not(mask, mask);
+
+        Imgproc.GaussianBlur(mask, mask, new Size(5, 5), 0);
+        Imgproc.Canny(mask, edges, 20, 105);
+        // Imgproc.dilate(edges, edges, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5)));
+
+        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        for(MatOfPoint contour : contours)
+        {
+            MatOfPoint2f cont = new MatOfPoint2f(contour.toArray());
+            double area = Imgproc.contourArea(contour);
+            if(area > 500)
+            {
+                double peri = Imgproc.arcLength(cont, true);
+                MatOfPoint2f approx = new MatOfPoint2f();
+                Imgproc.approxPolyDP(cont, approx, .02 * peri, true);
+                Point[] points = approx.toArray();
+
+                List<MatOfPoint> conts = new ArrayList<>();
+                conts.add(contour);
+
+                if(points.length == 4 || points.length == 5)
+                {
+                    Rect rect = Imgproc.boundingRect(approx);
+                    Imgproc.drawContours(input, conts, -1, new Scalar(0, 255, 0), 2);
+
+                    setDistance((double) (2 * 420) / rect.height);
+                }
+            }
+
+
+        }
+
+        return input;
     }
 
-    public int determineDistance() {
-        int dis = 0;
-
-        return dis;
+    private void setDistance(double dis)
+    {
+        DISTANCE = dis;
     }
 }

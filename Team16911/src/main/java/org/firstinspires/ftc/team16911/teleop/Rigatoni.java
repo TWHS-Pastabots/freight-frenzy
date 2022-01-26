@@ -15,16 +15,12 @@ public class Rigatoni extends OpMode
     int currentPosition = 0;
     int lastPosition = -100;
     int armMotorTwoOffset = 0;
-    final double HIGH_SPEED = .725;
-    final double SLOW_SPEED = .35;
-    double slowConstant = HIGH_SPEED;
+    double slowConstant = .725;
     boolean usePowerScaling = true;
+    boolean autoStrafe = false;
 
     boolean justMoved = false;
     boolean canRun = false;
-    boolean strafeRight = false;
-    boolean strafeLeft = false;
-    boolean strafingFromJoystick = false;
 
     double leftFrontPower;
     double leftRearPower;
@@ -34,7 +30,7 @@ public class Rigatoni extends OpMode
     ElapsedTime armTime = null;
     ElapsedTime buttonTime = null;
     ElapsedTime strafeTime = null;
-    ElapsedTime gameTime = null;
+    ElapsedTime carouselTime = null;
 
     public void init()
     {
@@ -44,7 +40,7 @@ public class Rigatoni extends OpMode
         armTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         strafeTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        gameTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        carouselTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -73,7 +69,7 @@ public class Rigatoni extends OpMode
 
         moveArm();
         spinCarousel();
-        operateClaw();
+        operateIntake();
     }
 
     public void stop()
@@ -111,33 +107,26 @@ public class Rigatoni extends OpMode
             rightRearPower /= max;
         }
 
-        strafe(y, x);
+        double slowConstantPositiveOffset = (1 - slowConstant) * gamepad1.right_trigger;
+        slowConstantPositiveOffset -= slowConstantPositiveOffset * Math.abs(gamepad1.left_stick_y);
 
-        if (gameTime.time() > 100)
-        {
-            telemetry.addData("Status", "Can Remove Limiter");
-            telemetry.update();
-        }
+        double slowConstantNegativeOffset = -.4 * gamepad1.left_trigger;
 
-        if (gamepad1.right_bumper && slowConstant == HIGH_SPEED && buttonTime.time() >= 500)
-        {
-            slowConstant = SLOW_SPEED;
-            buttonTime.reset();
-        }
-        else if (gamepad1.right_bumper && slowConstant == SLOW_SPEED && buttonTime.time() >= 500)
-        {
-            slowConstant = HIGH_SPEED;
-            buttonTime.reset();
-        }
-        else if (gamepad2.dpad_up && gameTime.time() > 100)
-        {
-            slowConstant = 1.0;
-        }
+        double finalSlowConstantOffset = slowConstantPositiveOffset + slowConstantNegativeOffset;
 
-        hardware.leftFront.setPower(leftFrontPower * slowConstant);
-        hardware.leftRear.setPower(leftRearPower * slowConstant);
-        hardware.rightFront.setPower(rightFrontPower * slowConstant);
-        hardware.rightRear.setPower(rightRearPower * slowConstant);
+        turn();
+
+        autoStrafe();
+
+        hardware.leftFront.setPower(leftFrontPower * (slowConstant + finalSlowConstantOffset));
+        hardware.leftRear.setPower(leftRearPower * (slowConstant + finalSlowConstantOffset));
+        hardware.rightFront.setPower(rightFrontPower * (slowConstant + finalSlowConstantOffset));
+        hardware.rightRear.setPower(rightRearPower * (slowConstant + finalSlowConstantOffset));
+    }
+
+    private void autoStrafe()
+    {
+
     }
 
     private void moveArm()
@@ -161,8 +150,8 @@ public class Rigatoni extends OpMode
             }
             else
             {
-                hardware.armMotorOne.setPower(gamepad2.right_trigger * .7);
-                hardware.armMotorTwo.setPower(gamepad2.right_trigger * .7);
+                hardware.armMotorOne.setPower(gamepad2.right_trigger * .835);
+                hardware.armMotorTwo.setPower(gamepad2.right_trigger * .835);
             }
 
             justMoved = true;
@@ -182,8 +171,8 @@ public class Rigatoni extends OpMode
             }
             else
             {
-                hardware.armMotorOne.setPower(gamepad2.left_trigger * -.23);
-                hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.23);
+                hardware.armMotorOne.setPower(gamepad2.left_trigger * -.2);
+                hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.2);
             }
 
             justMoved = true;
@@ -249,141 +238,75 @@ public class Rigatoni extends OpMode
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        /*telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
+        telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
         telemetry.addData("Arm One Target", hardware.armMotorOne.getTargetPosition());
         telemetry.addData("Arm Two Pos", hardware.armMotorTwo.getCurrentPosition());
         telemetry.addData("Arm Two Target", hardware.armMotorTwo.getTargetPosition());
         telemetry.addData("Current Position", currentPosition);
-        telemetry.update();*/
+        telemetry.update();
     }
 
 
     private void spinCarousel()
     {
         // Carousel Motor Code
-        if (gamepad1.right_trigger > 0)
+        if (gamepad1.cross)
         {
-            hardware.carouselMotorOne.setPower(gamepad1.right_trigger * .6);
-            hardware.carouselMotorTwo.setPower(gamepad1.right_trigger * .6);
+            carouselTime.reset();
+        }
+
+        if (carouselTime.time() <= 1200)
+        {
+            double power = .0003529 * carouselTime.time() + .52647;
+            hardware.carouselMotor.setPower(power);
         }
         else
         {
-            hardware.carouselMotorOne.setPower(-gamepad1.left_trigger * .6);
-            hardware.carouselMotorTwo.setPower(-gamepad1.left_trigger * .6);
+            hardware.carouselMotor.setPower(0);
         }
     }
 
-    private void operateClaw()
+    private void operateIntake()
     {
         if (gamepad2.right_bumper)
         {
-            hardware.armServo.setPower(1.0);
+            hardware.intakeMotor.setPower(.875);
         }
         else if (gamepad2.left_bumper)
         {
-            hardware.armServo.setPower(-1.0);
+            hardware.intakeMotor.setPower(-.6);
         }
         else
         {
-            hardware.armServo.setPower(0.0);
+            hardware.intakeMotor.setPower(0.0);
         }
     }
 
-    private void strafe(double y, double x)
+    private void turn()
     {
-        // Strafes from D-Pad Buttons
-        if (gamepad1.dpad_up || gamepad1.dpad_right)
+        if (gamepad1.right_bumper)
         {
-            strafeRight();
-            strafeLeft = false;
+            leftFrontPower = -.2;
+            leftRearPower = -.2;
+            rightRearPower = .2;
+            rightFrontPower = .2;
         }
-        else if (gamepad1.dpad_down || gamepad1.dpad_left)
+        else if (gamepad1.left_bumper)
         {
-            strafeLeft();
-            strafeRight = false;
-        }
-        else if (!strafingFromJoystick)
-        {
-            strafeRight = false;
-            strafeLeft = false;
-        }
-
-        // Strafes from joystick
-        if (Math.abs(y) <= .1 && x >= .9)
-        {
-            strafeRight();
-            strafeLeft = false;
-            strafingFromJoystick = true;
-        }
-        else if (Math.abs(y) <= .1 && x <= -.9)
-        {
-            strafeLeft();
-            strafeRight = false;
-            strafingFromJoystick = true;
-        }
-        else
-        {
-            strafingFromJoystick = false;
-        }
-    }
-
-    private void strafeRight()
-    {
-        if (!strafeRight)
-        {
-            strafeTime.reset();
-        }
-
-        strafeRight = true;
-
-        if (strafeTime.time() <= 400)
-        {
-            leftFrontPower = -.65;
-            leftRearPower = 1;
-            rightRearPower = -1;
-            rightFrontPower = .65;
-        }
-        else
-        {
-            leftFrontPower = -.875;
-            leftRearPower = 1;
-            rightRearPower = -1;
-            rightFrontPower = .875;
-        }
-    }
-
-    private void strafeLeft()
-    {
-        if (!strafeLeft)
-        {
-            strafeTime.reset();
-        }
-
-        strafeLeft = true;
-
-        if (strafeTime.time() <= 400)
-        {
-            leftFrontPower = 1;
-            leftRearPower = -.8;
-            rightRearPower = .8;
-            rightFrontPower = -1;
-        }
-        else
-        {
-            leftFrontPower = 1;
-            leftRearPower = -1;
-            rightRearPower = 1;
-            rightFrontPower = -1;
+            leftFrontPower = .2;
+            leftRearPower = .2;
+            rightRearPower = -.2;
+            rightFrontPower = -.2;
         }
     }
 
     private double getUpwardPower(int currentPosition)
     {
-        return -.00001 * currentPosition * currentPosition + currentPosition * .002 + .6;
+        return -.000015 * currentPosition * currentPosition + currentPosition * .003 + .65;
     }
 
     private double getDownwardPower(int currentPosition)
     {
-        return -.000003 * currentPosition * currentPosition + currentPosition * .0006 - .13;
+        return -.00001 * currentPosition * currentPosition + currentPosition * .002 - .2;
     }
 }

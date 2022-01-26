@@ -17,12 +17,10 @@ public class Rigatoni extends OpMode
     int armMotorTwoOffset = 0;
     double slowConstant = .725;
     boolean usePowerScaling = true;
+    boolean autoStrafe = false;
 
     boolean justMoved = false;
     boolean canRun = false;
-    boolean strafeRight = false;
-    boolean strafeLeft = false;
-    boolean strafingFromJoystick = false;
 
     double leftFrontPower;
     double leftRearPower;
@@ -118,10 +116,17 @@ public class Rigatoni extends OpMode
 
         turn();
 
+        autoStrafe();
+
         hardware.leftFront.setPower(leftFrontPower * (slowConstant + finalSlowConstantOffset));
         hardware.leftRear.setPower(leftRearPower * (slowConstant + finalSlowConstantOffset));
         hardware.rightFront.setPower(rightFrontPower * (slowConstant + finalSlowConstantOffset));
         hardware.rightRear.setPower(rightRearPower * (slowConstant + finalSlowConstantOffset));
+    }
+
+    private void autoStrafe()
+    {
+
     }
 
     private void moveArm()
@@ -265,11 +270,11 @@ public class Rigatoni extends OpMode
     {
         if (gamepad2.right_bumper)
         {
-            hardware.intakeMotor.setPower(.75);
+            hardware.intakeMotor.setPower(.875);
         }
         else if (gamepad2.left_bumper)
         {
-            hardware.intakeMotor.setPower(-.75);
+            hardware.intakeMotor.setPower(-.6);
         }
         else
         {
@@ -297,11 +302,11 @@ public class Rigatoni extends OpMode
 
     private double getUpwardPower(int currentPosition)
     {
-        return -.00001 * currentPosition * currentPosition + currentPosition * .002 + .6;
+        return -.000015 * currentPosition * currentPosition + currentPosition * .003 + .65;
     }
 
     private double getDownwardPower(int currentPosition)
     {
-        return -.000003 * currentPosition * currentPosition + currentPosition * .0006 - .13;
+        return -.00001 * currentPosition * currentPosition + currentPosition * .002 - .2;
     }
 }

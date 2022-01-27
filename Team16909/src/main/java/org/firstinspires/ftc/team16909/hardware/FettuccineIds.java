@@ -12,7 +12,8 @@ public class FettuccineIds
     public static final String CAROUSEL = "carousel";
     public static final String LEFT_ARM_MOTOR = "leftArm";
     public static final String RIGHT_ARM_MOTOR = "rightArm";
-    public static final String ARM_SERVO = "armServo";
+   // public static final String ARM_SERVO = "armServo";
+    //public static final String GRABBER_PIVOT = "grabberPivot";
     public static final String GRABBER = "grabber";
 
     public static final String ARM_ENCODER = "rightArm";

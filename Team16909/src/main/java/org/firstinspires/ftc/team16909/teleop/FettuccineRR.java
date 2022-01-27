@@ -76,9 +76,9 @@ public class FettuccineRR extends LinearOpMode {
             moveArmTwoPointZero();
 
             // ARM EXTENSION CODE
-            if (gamepad2.dpad_left) robot.armServo.setPower(-1.0);
-            else if (gamepad2.dpad_right) robot.armServo.setPower(1.0);
-            else robot.armServo.setPower(0.0);
+            //if (gamepad2.dpad_left) robot.armServo.setPower(-1.0);
+            //else if (gamepad2.dpad_right) robot.armServo.setPower(1.0);
+            //else robot.armServo.setPower(0.0);
 
             // GRABBER CODE
             if (gamepad2.dpad_up) grabHold = true;

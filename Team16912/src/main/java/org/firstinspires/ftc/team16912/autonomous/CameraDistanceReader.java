@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.team16912.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16912.util.LinguineHardware;
+import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -61,21 +62,89 @@ public class CameraDistanceReader extends LinearOpMode {
         if(isStarted())
         {
 
+            centerRobot();
+
             Trajectory runToBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
                     .forward(pipeline.DISTANCE - 5)
                     .build();
 
             openClaw();
-
             drive.followTrajectory(runToBlock);
-
-            runArmToStart();
-
+            runArmTo(250);
             closeClaw();
-
+            runArmTo(-1000);
         }
 
     }
+
+    private void centerRobot()
+    {
+        Rect block = pipeline.BLOCK;
+        int blockCenter = block.x + (block.width/2);
+        double pxpi = block.height/2.0;
+        double distToEdge = 0.0;
+        double strafeDistance = 0.0;
+
+        Trajectory alignBlock;
+
+        // Block is to the left
+        if(blockCenter < 160)
+        {
+            distToEdge = block.x;
+            strafeDistance = distToEdge/pxpi;
+
+            /*alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    .strafeLeft((strafeDistance)+1)
+                    .build();*/
+        }
+
+        // Block is to the right
+        else if (blockCenter > 160) {
+            distToEdge = 320 - (block.x + block.width);
+            strafeDistance = (distToEdge) / pxpi;
+            /*alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    .strafeRight((strafeDistance)-1)
+                    .build();*/
+        }
+
+        else {
+            /*alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    .forward(0)
+                    .build();*/
+        }
+
+        telemetry.addData("Strafe Distance:", strafeDistance);
+        telemetry.addData("Error:", getError(distToEdge, pipeline.DISTANCE));
+        telemetry.addData("Distance: ", pipeline.DISTANCE);
+        telemetry.addData("Distane to Edge: ", distToEdge);
+        telemetry.update();
+        //drive.followTrajectory(alignBlock);
+
+    }
+
+    private double getError(double distToEdge, double distToBlock)
+    {
+        double ycomp = 1.125 * Math.pow(1.0675, distToBlock);
+        double xcomp;
+
+        double xtop = (Math.pow(Math.abs(distToEdge - 160), 2));
+
+        Rect block = pipeline.BLOCK;
+        int blockCenter = block.x + (block.width/2);
+
+        if (blockCenter < 160) {
+            xcomp = xtop / 25000;
+        }
+
+        else if (blockCenter > 160) {
+            xcomp = xtop / 17750;
+        }
+
+        else xcomp = 0;
+
+        return ycomp * xcomp;
+    }
+
     // Closes claw
     private void closeClaw() { robot.servoClaw.setPosition(.7); }
 
@@ -83,8 +152,8 @@ public class CameraDistanceReader extends LinearOpMode {
     private void openClaw() { robot.servoClaw.setPosition(-1); }
 
     // Return arm to start
-    private void runArmToStart() {
-        while (robot.armEncoder.getCurrentPosition() < 200) {
+    private void runArmTo(int encoderPos) {
+        while (robot.armEncoder.getCurrentPosition() < encoderPos) {
             for (DcMotorEx motor : robot.motorArms) {
                 motor.setPower(.5);
             }

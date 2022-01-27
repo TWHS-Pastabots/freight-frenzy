@@ -36,7 +36,8 @@ public class DistancePipeline extends OpenCvPipeline
     static final int REGION_WIDTH = 20;
     static final int REGION_HEIGHT = 20;
 
-    public static double DISTANCE;
+    public double DISTANCE;
+    public Rect BLOCK;
 
 
     Point region1_pointA = new Point(
@@ -53,8 +54,7 @@ public class DistancePipeline extends OpenCvPipeline
 
 
     @Override
-    public Mat processFrame(Mat input)
-    {
+    public Mat processFrame(Mat input) {
         Mat edges = new Mat(input.rows(), input.cols(), input.type());
         Mat mask = new Mat(input.rows(), input.cols(), input.type());
         Mat YcrCb = new Mat(input.rows(), input.cols(), input.type());
@@ -74,12 +74,10 @@ public class DistancePipeline extends OpenCvPipeline
 
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        for(MatOfPoint contour : contours)
-        {
+        for (MatOfPoint contour : contours) {
             MatOfPoint2f cont = new MatOfPoint2f(contour.toArray());
             double area = Imgproc.contourArea(contour);
-            if(area > 500)
-            {
+            if (area > 500) {
                 double peri = Imgproc.arcLength(cont, true);
                 MatOfPoint2f approx = new MatOfPoint2f();
                 Imgproc.approxPolyDP(cont, approx, .02 * peri, true);
@@ -88,23 +86,20 @@ public class DistancePipeline extends OpenCvPipeline
                 List<MatOfPoint> conts = new ArrayList<>();
                 conts.add(contour);
 
-                if(points.length == 4 || points.length == 5)
-                {
+                if (points.length == 4 || points.length == 5) {
                     Rect rect = Imgproc.boundingRect(approx);
                     Imgproc.drawContours(input, conts, -1, new Scalar(0, 255, 0), 2);
 
-                    setDistance((double) (2 * 420) / rect.height);
+                    DISTANCE = (double) (2 * 420) / rect.height;
+                    BLOCK = rect;
+
+                    return input;
                 }
             }
 
 
         }
-
         return input;
     }
 
-    private void setDistance(double dis)
-    {
-        DISTANCE = dis;
-    }
 }

@@ -14,14 +14,13 @@ import java.util.List;
 public class ColorPipeline extends OpenCvPipeline {
 
     MatOfKeyPoint keypoints;
-    Mat result = new Mat();
 
     @Override
     public Mat processFrame(Mat input) {
         SimpleBlobDetector sbd = SimpleBlobDetector.create();
         sbd.detect(input, keypoints);
-        Features2d.drawKeypoints(input, keypoints, result, new Scalar(2,254,255), Features2d.DrawMatchesFlags_DRAW_RICH_KEYPOINTS);
-        return result;
+        Features2d.drawKeypoints(input, keypoints, input, new Scalar(2,254,255), Features2d.DrawMatchesFlags_DRAW_RICH_KEYPOINTS);
+        return input;
 
 
     }

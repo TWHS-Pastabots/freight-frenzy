@@ -34,9 +34,12 @@ public class FettuccineHardware
     public DcMotorEx carousel = null;
     public DcMotorEx leftArm = null;
     public DcMotorEx rightArm = null;
+    //public DcMotorEx grabberPivot = null;
+
 
     // Supplemental Servo Motors
-    public CRServo armServo = null;
+    //public CRServo armServo = null;
+
     public Servo grabber = null;
 
 
@@ -63,6 +66,9 @@ public class FettuccineHardware
         carousel = hardwareMap.get(DcMotorEx.class, FettuccineIds.CAROUSEL);
         leftArm = hardwareMap.get(DcMotorEx.class, FettuccineIds.LEFT_ARM_MOTOR);
         rightArm = hardwareMap.get(DcMotorEx.class, FettuccineIds.RIGHT_ARM_MOTOR);
+        //grabberPivot = hardwareMap.get(DcMotorEx.class, FettuccineIds.GRABBER_PIVOT);
+
+       // grabberPivot.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         // TEMP CODE
         leftArm.setTargetPosition(0);
@@ -71,13 +77,14 @@ public class FettuccineHardware
         encoderArm = new Encoder(hardwareMap.get(DcMotorEx.class, ARM_ENCODER));
 
         // Supplemental Servo Motors
-        armServo = hardwareMap.get(CRServo.class, FettuccineIds.ARM_SERVO);
+        //armServo = hardwareMap.get(CRServo.class, FettuccineIds.ARM_SERVO);
+
         grabber = hardwareMap.get(Servo.class, FettuccineIds.GRABBER);
 
 
         // Supplemental Directions
-        rightArm.setDirection(DcMotor.Direction.FORWARD);
-        leftArm.setDirection(DcMotor.Direction.REVERSE);
+        rightArm.setDirection(DcMotor.Direction.REVERSE);
+        leftArm.setDirection(DcMotor.Direction.FORWARD);
 
 
         grabber.setDirection(Servo.Direction.FORWARD);

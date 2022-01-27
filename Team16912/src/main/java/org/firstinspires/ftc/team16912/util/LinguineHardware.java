@@ -41,6 +41,7 @@ public class LinguineHardware extends RobotHardware {
         cSpinner = hardwareMap.get(DcMotorEx.class, LinguineIds.MOTOR_SPINNER);
         cSpinner.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
+        cSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         cSpinner.setPower(.0);
 
         // Arm Motors

@@ -9,6 +9,7 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 public class util
 {
+    public final int[] positions = {110, 170, 225};
     private RigatoniHardware hardware;
     private final int MAX_TRIGGER_DISTANCE = 10;
 
@@ -19,28 +20,24 @@ public class util
 
     public void dropCargo(int waitTime, Telemetry telemetry)
     {
-        hardware.armServo.setPower(-1);
+        hardware.intakeMotor.setPower(-1);
         wait(waitTime, telemetry);
-        hardware.armServo.setPower(0);
+        hardware.intakeMotor.setPower(0);
     }
 
     public void spinCarouselAndMoveArm(int waitTime, int position, Telemetry telemetry)
     {
-        hardware.carouselMotorOne.setPower(.5);
-        hardware.carouselMotorTwo.setPower(.5);
+        hardware.carouselMotor.setPower(.5);
         moveArm(position);
         wait(waitTime, telemetry);
-        hardware.carouselMotorOne.setPower(0.0);
-        hardware.carouselMotorTwo.setPower(0.0);
+        hardware.carouselMotor.setPower(0.0);
     }
 
     public void spinCarousel(int waitTime, Telemetry telemetry)
     {
-        hardware.carouselMotorOne.setPower(.5);
-        hardware.carouselMotorTwo.setPower(.5);
+        hardware.carouselMotor.setPower(.5);
         wait(waitTime, telemetry);
-        hardware.carouselMotorOne.setPower(0.0);
-        hardware.carouselMotorTwo.setPower(0.0);
+        hardware.carouselMotor.setPower(0.0);
     }
 
     public void moveArm(int position)
@@ -51,8 +48,8 @@ public class util
         hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        hardware.armMotorOne.setPower(.8);
-        hardware.armMotorTwo.setPower(.8);
+        hardware.armMotorOne.setPower(1);
+        hardware.armMotorTwo.setPower(1);
     }
 
     public void wait(int waitTime, Telemetry telemetry)
@@ -65,7 +62,6 @@ public class util
             telemetry.addData("Wait Time", waitTime / 1000);
             telemetry.addData("Time Left", (waitTime - time.time()) / 1000);
             telemetry.update();
-            continue;
         }
     }
 

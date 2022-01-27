@@ -30,16 +30,15 @@ public class RedCarousel extends LinearOpMode
 
 
     private int initialWaitTime = 0;
-    private final int[] positions = {100, 130, 200};
 
     private final Pose2d carousel = new Pose2d(3.75, 18, 0);
     private final Pose2d barcode = new Pose2d(20,-0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(15, -27.75, 0);
+    private final Pose2d hubLevelOne = new Pose2d(16.3, -27.75, 0);
     private final Pose2d hubLevelTwo = new Pose2d(16.875, -27.75, 0);
     private final Pose2d hubLevelThree = new Pose2d(23, -27.75, 0);
-    private final Pose2d warehouseOutside = new Pose2d(0, -56, 0);
-    private final Pose2d warehouseBottomPosition = new Pose2d(1.5, -36, 0);
-    private final Pose2d warehouse = new Pose2d(-.33, -80, 0);
+    private final Pose2d warehouseOutside = new Pose2d(0, -66, 0);
+    private final Pose2d warehouseBottomPosition = new Pose2d(3, -36, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, -81, 0);
     private final Pose2d barcodeBottomPositionOne = new Pose2d(15, -5, -Math.toRadians(45));
     private final Pose2d barcodeBottomPositionTwo = new Pose2d(15, 5, -Math.toRadians(45));
     private final Pose2d storageUnit = new Pose2d(30,24, -Math.toRadians(90));
@@ -55,7 +54,7 @@ public class RedCarousel extends LinearOpMode
     public void runOpMode()
     {
         // Configuration Variables
-        final int startPosition = 35;
+        final int startPosition = 60;
 
         // Initialize Hardware
         RigatoniHardware hardware = new RigatoniHardware();
@@ -77,18 +76,18 @@ public class RedCarousel extends LinearOpMode
         utilities.wait(initialWaitTime, telemetry);
 
         drive.followTrajectory(toCarousel);
-        utilities.spinCarouselAndMoveArm(2700, positions[1], telemetry);
+        utilities.spinCarouselAndMoveArm(2700, utilities.positions[1], telemetry);
 
         drive.followTrajectory(toBarcode);
         int barcodeLevel = utilities.getBarcodeLevelRedSide();
-        utilities.moveArm(positions[barcodeLevel]);
+        utilities.moveArm(utilities.positions[barcodeLevel]);
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
         utilities.eliminateOscillations();
-        utilities.dropCargo(2000, telemetry);
+        utilities.dropCargo(3500, telemetry);
 
         switch (path)
         {
@@ -131,7 +130,7 @@ public class RedCarousel extends LinearOpMode
         toHubLevelThree = drive.trajectoryBuilder(toBarcode.end())
                 .lineToLinearHeading(hubLevelThree).build();
 
-        fromHubLevelOneDirect = drive.trajectoryBuilder(toHubLevelOne.end(), -Math.toRadians(120))
+        fromHubLevelOneDirect = drive.trajectoryBuilder(toHubLevelOne.end(), -Math.toRadians(130))
                 .splineToLinearHeading(warehouseOutside, -Math.toRadians(90))
                 .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
 

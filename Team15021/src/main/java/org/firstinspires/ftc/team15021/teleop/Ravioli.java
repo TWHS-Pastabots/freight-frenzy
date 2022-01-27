@@ -54,13 +54,14 @@ public class Ravioli extends OpMode
     {
         // Mecanum drivecode
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-        double x = -gamepad1.left_stick_x; // Counteract imperfect strafing
+        double x = gamepad1.left_stick_x; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;
 
-        double leftFrontPower = y - x + rx;
-        double leftRearPower = y + x + rx;
+        double leftFrontPower = y + x + rx;
+        double leftRearPower = y - x + rx;
         double rightFrontPower = y - x - rx;
         double rightRearPower = y + x - rx;
+
 
         if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
                 Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1 )
@@ -125,8 +126,8 @@ public class Ravioli extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.right_trigger * .75);
-            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .75);
+            hardware.armMotorOne.setPower(gamepad2.right_trigger * .5);
+            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .5);
 
             justMoved = true;
         }
@@ -138,8 +139,8 @@ public class Ravioli extends OpMode
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.75);
-            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.75);
+            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.5);
+            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.5);
 
             justMoved = true;
         }
@@ -205,12 +206,12 @@ public class Ravioli extends OpMode
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
+        /*telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
         telemetry.addData("Arm One Target", hardware.armMotorOne.getTargetPosition());
         telemetry.addData("Arm Two Pos", hardware.armMotorTwo.getCurrentPosition());
         telemetry.addData("Arm Two Target", hardware.armMotorTwo.getTargetPosition());
         telemetry.addData("Current Position", currentPosition);
-        telemetry.update();
+        telemetry.update();*/
     }
     private void spinCarousel()
     {
@@ -227,15 +228,15 @@ public class Ravioli extends OpMode
 
     private void controlClaw()
     {
-        if (gamepad2.right_bumper)
+        if (gamepad2.left_bumper)
         {
             hardware.servoOne.setPosition(1);
-            hardware.servoTwo.setPosition(1);
+            telemetry.addData("Status", "Moved Servo");
+            telemetry.update();
         }
-        else if (gamepad2.left_bumper)
+        else if (gamepad2.right_bumper)
         {
-            hardware.servoOne.setPosition(-1);
-            hardware.servoTwo.setPosition(-1);
+            hardware.servoOne.setPosition(0);
         }
     }
 

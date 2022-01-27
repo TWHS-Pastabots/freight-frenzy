@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.team16910.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 
-@TeleOp(name = "Autonomous RED")
-public class AutonomousTime extends LinearOpMode {
+@TeleOp(name = "Autonomous SPECIAL B")
+public class AutonomousTimeSpecialB extends LinearOpMode {
 
 
     SpaghettiHardware robot = new SpaghettiHardware();
@@ -26,25 +24,19 @@ public class AutonomousTime extends LinearOpMode {
 
         initTime = runTime.seconds();
 
-            while (runTime.seconds() - initTime < .25) runForwards();
-            resetInit();
-
-            while (runTime.seconds() - initTime < .1) stay();
-            resetInit();
-
-            while (runTime.seconds() - initTime < 1.0) runLeft();
-            resetInit();
-
-            while (runTime.seconds() - initTime < .1) stay();
-            resetInit();
-
-            while (runTime.seconds() - initTime < 3.0) spinCarousel();
-            resetInit();
-
-            while (runTime.seconds() - initTime < .1) stay();
-            resetInit();
-
             while (runTime.seconds() - initTime < .75) runForwards();
+            resetInit();
+
+            while (runTime.seconds() - initTime < .1) stay();
+            resetInit();
+
+            while (runTime.seconds() - initTime < .75) turnRight();
+            resetInit();
+
+            while (runTime.seconds() - initTime < .1) stay();
+            resetInit();
+
+            while (runTime.seconds() - initTime < 1.8) runForwardsFast();
             resetInit();
 
         stop();
@@ -79,6 +71,14 @@ public class AutonomousTime extends LinearOpMode {
         robot.rightFront.setPower(-.5);
     }
 
+    private void runForwardsFast()
+    {
+        robot.leftFront.setPower(-1.0);
+        robot.leftRear.setPower(-1.0);
+        robot.rightRear.setPower(-1.0);
+        robot.rightFront.setPower(-1.0);
+    }
+
     private void runBackwards()
     {
         robot.leftFront.setPower(-.5);
@@ -105,8 +105,8 @@ public class AutonomousTime extends LinearOpMode {
 
     private void spinCarousel()
     {
-        robot.leftSpinnyWheel.setPower(.4);
-        robot.rightSpinnyWheel.setPower(0.4);
+        robot.rightSpinnyWheel.setPower(0.6);
+        robot.leftSpinnyWheel.setPower(.6);
     }
 
     private void stay()

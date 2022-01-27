@@ -21,8 +21,5 @@ android {
     }
 }
 
-dependencies {
-    implementation files('C:\\Users\\Dani\\Desktop\\tornadofx-android-compat-1.0.1.jar')
-}
 
 apply from: '../build.dependencies.gradle'

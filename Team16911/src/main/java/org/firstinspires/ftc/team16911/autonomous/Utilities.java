@@ -7,20 +7,20 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-public class util
+public class Utilities
 {
     public final int[] positions = {110, 170, 225};
     private RigatoniHardware hardware;
     private final int MAX_TRIGGER_DISTANCE = 10;
 
-    util(RigatoniHardware hardware)
+    Utilities(RigatoniHardware hardware)
     {
         this.hardware = hardware;
     }
 
     public void dropCargo(int waitTime, Telemetry telemetry)
     {
-        hardware.intakeMotor.setPower(-1);
+        hardware.intakeMotor.setPower(-.85);
         wait(waitTime, telemetry);
         hardware.intakeMotor.setPower(0);
     }

@@ -69,9 +69,9 @@ public class RavioliHardware
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     private void initializeServoes(HardwareMap hardwareMap)

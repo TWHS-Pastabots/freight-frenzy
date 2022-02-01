@@ -4,13 +4,22 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team15021.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team15021.hardware.RavioliHardware;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous(name = "BlueCarousel")
-public class BlueCarousel extends LinearOpMode
-{
+
+@Autonomous(name = "camTest")
+public class cameraTest extends LinearOpMode{
+
+
     SampleMecanumDrive drive;
 
     private Pose2d shippingHub = new Pose2d(17.5, 29, 0);
@@ -25,47 +34,67 @@ public class BlueCarousel extends LinearOpMode
     private final String NO_STORAGE = "No Storage";
     private String endPoint = STORAGE;
 
-    public void runOpMode()
-    {
+    OpenCvInternalCamera webcam;
+    CodeBarPipeline pipeline;
+
+
+
+    public void runOpMode() throws InterruptedException{
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        pipeline = new CodeBarPipeline();
+        webcam.setPipeline(pipeline);
+
+        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+
+
+
         RavioliHardware hardware = new RavioliHardware();
         util utilities = new util(hardware);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(90)));
         hardware.init(hardwareMap);
 
-        buildTrajectories();
-        utilities.closeClaw();
+        while (!gamepad1.triangle) {
+            telemetry.addData("Left Brightness: ", pipeline.R1Y);
+            telemetry.addData("Middle Brightness: ", pipeline.R2Y);
+            telemetry.addData("Right Brightness: ", pipeline.R3Y);
+            telemetry.update();
+        }
 
+        buildTrajectories();
         configuration();
 
-        waitForStart();
-        if(!opModeIsActive()) {return;}
 
-        switch (endPoint)
+        waitForStart();
+
+        while (isStarted()&&!isStopRequested())
         {
-            case STORAGE:
-                utilities.wait(8000);
-                utilities.moveArm(-360);
-                utilities.wait(3000);
-                drive.followTrajectory(toShippingHub);
-                utilities.wait(500);
-                utilities.openClaw();
-                utilities.wait(1000);
-                drive.followTrajectory(trajectoryOne);
-                utilities.spinCarousel();
-                utilities.moveArm(-240);
-                drive.followTrajectory(trajectoryTwo);
-                break;
-            case NO_STORAGE:
-                utilities.moveArm(-100);
-                drive.followTrajectory(toShippingHub);
-                utilities.wait(500);
-                utilities.openClaw();
-                utilities.wait(1000);
-                drive.followTrajectory(trajectoryOne);
-                utilities.spinCarousel();
+
+            CodeBarPipeline.ObjectPosition pos = pipeline.getAnalysis();
+            telemetry.addData("aaa", "aaaa");
+            telemetry.update();
+
+            // No camera yet so robot will always deliver to top for now
+
         }
+
     }
+
 
     private void buildTrajectories()
     {
@@ -78,7 +107,6 @@ public class BlueCarousel extends LinearOpMode
         trajectoryTwo = drive.trajectoryBuilder(trajectoryOne.end())
                 .lineToLinearHeading(positionTwo).build();
     }
-
     private void configuration()
     {
         while (!gamepad1.cross && !isStarted())

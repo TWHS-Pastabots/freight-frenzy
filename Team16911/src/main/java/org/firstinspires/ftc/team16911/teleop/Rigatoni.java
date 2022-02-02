@@ -80,6 +80,9 @@ public class Rigatoni extends OpMode
         moveArm();
         spinCarousel();
         operateIntake();
+        //turnServo();
+
+        telemetry.update();
     }
 
     public void stop()
@@ -338,24 +341,24 @@ public class Rigatoni extends OpMode
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         }
 
+        telemetry.addData("Using Power Scaling", usePowerScaling);
         telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
         telemetry.addData("Arm One Target", hardware.armMotorOne.getTargetPosition());
         telemetry.addData("Arm Two Pos", hardware.armMotorTwo.getCurrentPosition());
         telemetry.addData("Arm Two Target", hardware.armMotorTwo.getTargetPosition());
         telemetry.addData("Current Position", currentPosition);
-        telemetry.update();
     }
 
 
     private void spinCarousel()
     {
         // Carousel Motor Code
-        if (gamepad2.circle)
+        if (gamepad1.circle)
         {
             carouselTime.reset();
             hardware.carouselMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         }
-        else if (gamepad2.square)
+        else if (gamepad1.square)
         {
             carouselTime.reset();
             hardware.carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -386,6 +389,11 @@ public class Rigatoni extends OpMode
         {
             hardware.intakeMotor.setPower(0.0);
         }
+    }
+
+    private void turnServo()
+    {
+        hardware.cappingServo.setPower(gamepad2.right_stick_y);
     }
 
     private double getUpwardPower(int currentPosition)

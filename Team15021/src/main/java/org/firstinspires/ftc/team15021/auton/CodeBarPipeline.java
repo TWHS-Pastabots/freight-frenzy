@@ -9,11 +9,13 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class CodeBarPipeline extends OpenCvPipeline {
+public class CodeBarPipeline extends OpenCvPipeline
+{
     /*
      * An enum to define the object position
      */
-    public enum ObjectPosition {
+    public enum ObjectPosition
+    {
         LEFT, // Deliver Bottom
         CENTER, // Deliver Middle
         RIGHT // Deliver Top
@@ -28,9 +30,9 @@ public class CodeBarPipeline extends OpenCvPipeline {
     /*
      * The core values which define the location and size of the sample regions
      */
-    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0, 138);
-    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(150, 138);
-    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(290, 138);
+    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0, 200);
+    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(150, 200);
+    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(300, 200);
     static final int REGION_WIDTH = 20;
     static final int REGION_HEIGHT = 20;
 
@@ -72,13 +74,15 @@ public class CodeBarPipeline extends OpenCvPipeline {
      * This function takes the RGB frame, converts to YCrCb,
      * and extracts the Cb channel to the 'Cb' variable
      */
-    void inputToCb(Mat input) {
+    void inputToCb(Mat input)
+    {
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
         Core.extractChannel(YCrCb, Y, 0);
     }
 
     @Override
-    public void init(Mat firstFrame) {
+    public void init(Mat firstFrame)
+    {
 
         inputToCb(firstFrame);
 
@@ -93,7 +97,8 @@ public class CodeBarPipeline extends OpenCvPipeline {
     }
 
     @Override
-    public Mat processFrame(Mat input) {
+    public Mat processFrame(Mat input)
+    {
 
         inputToCb(input);
 
@@ -159,7 +164,8 @@ public class CodeBarPipeline extends OpenCvPipeline {
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
         }
-        if (minY == R2Y){
+        if (minY == R2Y)
+        {
             position = ObjectPosition.RIGHT; // Record our analysis
 
             /*

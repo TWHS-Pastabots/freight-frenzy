@@ -13,8 +13,8 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
 
-@Autonomous(preselectTeleOp = "Right BLUE")
-public class BlueRight extends LinearOpMode
+@Autonomous(preselectTeleOp = "Storage BLUE")
+public class BlueStorage extends LinearOpMode
 {
     int current_pos = 0;
     //int leftArmOffset = 0;

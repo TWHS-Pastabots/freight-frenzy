@@ -10,24 +10,24 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
-@Autonomous(name = "RedWarehouse")
-public class RedWarehouse extends LinearOpMode
+@Autonomous(name = "BlueWarehouseTemp")
+public class BlueWarehouseTemp extends LinearOpMode
 {
     private SampleMecanumDrive drive;
 
     private int initialWaitTime = 0;
 
-    private final Pose2d barcode = new Pose2d(20, .5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(16.5, 18.75, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(17, 18.75, 0);
-    private final Pose2d hubLevelThreePose = new Pose2d(23, 18.75, 0);
-    private final Pose2d warehouseOutside = new Pose2d(-.25, -25, 0);
-    private final Pose2d warehouse = new Pose2d(-.25, -32, 0);
-    private final Pose2d blockPickupOne = new Pose2d(7, -37, Math.toRadians(-90));
-    private final Pose2d blockPickupTwo = new Pose2d(7, -48, Math.toRadians(-90));
-    private final Pose2d returnTrajectorySetup = new Pose2d(4, -38, 0);
-    private final Pose2d toHubOne = new Pose2d(0, -5, 0);
-    private final Pose2d toHubTwo = new Pose2d(23, 21, 0);
+    private final Pose2d barcode = new Pose2d(20, -.5, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(16.5, -18.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(17, -18.75, 0);
+    private final Pose2d hubLevelThreePose = new Pose2d(23, -18.75, 0);
+    private final Pose2d warehouseOutside = new Pose2d(-.25, 25, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, 32, 0);
+    private final Pose2d blockPickupOne = new Pose2d(7, 37, Math.toRadians(90));
+    private final Pose2d blockPickupTwo = new Pose2d(7, 48, Math.toRadians(90));
+    private final Pose2d returnTrajectorySetup = new Pose2d(4, 38, 0);
+    private final Pose2d toHubOne = new Pose2d(0, 5, 0);
+    private final Pose2d toHubTwo = new Pose2d(23, -21, 0);
 
     private Trajectory toBarcode;
     private final Trajectory[] toHubTrajectories = new Trajectory[3];
@@ -59,7 +59,7 @@ public class RedWarehouse extends LinearOpMode
         utilities.moveArm(utilities.positions[1]);
 
         drive.followTrajectory(toBarcode);
-        int barcodeLevel = utilities.getBarcodeLevelRedSide();
+        int barcodeLevel = utilities.getBarcodeLevelBlueSide();
         utilities.moveArm(utilities.positions[barcodeLevel]);
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
@@ -76,8 +76,8 @@ public class RedWarehouse extends LinearOpMode
         utilities.intakeCargo();
 
         Trajectory blockPickupTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(0))
-                .splineToSplineHeading(blockPickupOne, Math.toRadians(-90))
-                .splineToSplineHeading(blockPickupTwo, Math.toRadians(-90)).build();
+                .splineToSplineHeading(blockPickupOne, Math.toRadians(90))
+                .splineToSplineHeading(blockPickupTwo, Math.toRadians(90)).build();
 
         drive.followTrajectory(blockPickupTrajectory);
         drive.update();
@@ -85,11 +85,11 @@ public class RedWarehouse extends LinearOpMode
         utilities.stopIntake();
         utilities.moveArm(utilities.positions[2]);
 
-        Trajectory toHubTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(90))
-                .splineToSplineHeading(returnTrajectorySetup, Math.toRadians(140))
-                .splineToLinearHeading(warehouse, Math.toRadians(90))
-                .splineToLinearHeading(toHubOne, Math.toRadians(90))
-                .splineToLinearHeading(toHubTwo, Math.toRadians(30)).build();
+        Trajectory toHubTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(-90))
+                .splineToSplineHeading(returnTrajectorySetup, Math.toRadians(-140))
+                .splineToLinearHeading(warehouse, Math.toRadians(-90))
+                .splineToLinearHeading(toHubOne, Math.toRadians(-90))
+                .splineToLinearHeading(toHubTwo, Math.toRadians(-30)).build();
 
         drive.followTrajectory(toHubTrajectory);
         drive.update();
@@ -126,17 +126,17 @@ public class RedWarehouse extends LinearOpMode
         toHubLevelThree = drive.trajectoryBuilder(toBarcode.end())
                 .lineToLinearHeading(hubLevelThreePose).build();
 
-        fromHubLevelOne = drive.trajectoryBuilder(toHubLevelOne.end(), -Math.toRadians(135))
-                .splineToLinearHeading(warehouseOutside, -Math.toRadians(90))
-                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+        fromHubLevelOne = drive.trajectoryBuilder(toHubLevelOne.end(), Math.toRadians(135))
+                .splineToLinearHeading(warehouseOutside, Math.toRadians(90))
+                .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
 
-        fromHubLevelTwo = drive.trajectoryBuilder(toHubLevelTwo.end(), -Math.toRadians(140))
-                .splineToLinearHeading(warehouseOutside, -Math.toRadians(90))
-                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+        fromHubLevelTwo = drive.trajectoryBuilder(toHubLevelTwo.end(), Math.toRadians(140))
+                .splineToLinearHeading(warehouseOutside, Math.toRadians(90))
+                .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
 
-        fromHubLevelThree = drive.trajectoryBuilder(toHubLevelThree.end(), -Math.toRadians(140))
-                .splineToLinearHeading(warehouseOutside, -Math.toRadians(90))
-                .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
+        fromHubLevelThree = drive.trajectoryBuilder(toHubLevelThree.end(), Math.toRadians(140))
+                .splineToLinearHeading(warehouseOutside, Math.toRadians(90))
+                .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
 
         toHubTrajectories[0] = toHubLevelOne;
         toHubTrajectories[1] = toHubLevelTwo;

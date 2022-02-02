@@ -7,11 +7,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.team16911.drive.DriveConstants;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 /*
  * This routine determines the effective track width. The procedure works by executing a point turn
@@ -34,6 +36,14 @@ public class TrackWidthTuner extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        RigatoniHardware hardware = new RigatoniHardware();
+        hardware.init(hardwareMap);
+        hardware.armMotorOne.setTargetPosition(60);
+        hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorOne.setPower(1);
+        hardware.armMotorTwo.setTargetPosition(60);
+        hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorTwo.setPower(1);
         // TODO: if you haven't already, set the localizer to something that doesn't depend on
         // drive encoders for computing the heading
 

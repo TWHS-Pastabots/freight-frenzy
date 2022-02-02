@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team16910.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,6 +20,8 @@ public class Spaghetti extends OpMode {
     ElapsedTime armTime = null;
     boolean canRun = false;
     boolean justMoved = false;
+    double tempSpeedMultiplier = 1.5;
+    ElapsedTime elapsedTime = new ElapsedTime();
 
     public void init()
     {
@@ -59,7 +62,7 @@ public class Spaghetti extends OpMode {
         double x = -gamepad1.left_stick_x;// Counteract imperfect strafing
         double special_x = -gamepad1.left_stick_x *.8;
         double rx = -gamepad1.right_stick_x;
-        double special_rx = -gamepad1.right_stick_x * .8;
+        double special_rx = -gamepad1.right_trigger *.6;
 
         double rightFrontPower = y + x + rx;
         double rightRearPower = y - x + rx;
@@ -83,6 +86,7 @@ public class Spaghetti extends OpMode {
             rightRearPower /= max;
         }
 
+        //Slowmode Code
         if (gamepad1.dpad_down)
         {
             leftFrontPower = -.3;
@@ -117,24 +121,26 @@ public class Spaghetti extends OpMode {
 
         if(gamepad1.right_trigger > 0)
         {
-            robot.leftFront.setPower(rx * .2);
-            robot.leftRear.setPower(rx * .2);
-            robot.rightRear.setPower(rx * .2);
-            robot.rightFront.setPower(rx * .2);
+            robot.leftFront.setPower(-.4);
+            robot.leftRear.setPower(-.4);
+            robot.rightRear.setPower(.4);
+            robot.rightFront.setPower(.4);
         }
 
         if (gamepad1.left_trigger > 0)
         {
-            robot.leftFront.setPower(rx * .2);
-            robot.leftRear.setPower(rx * .2);
-            robot.rightRear.setPower(rx * .2);
-            robot.rightFront.setPower(rx * .2);
+            robot.leftFront.setPower(.4);
+            robot.leftRear.setPower(.4);
+            robot.rightRear.setPower(.4);
+            robot.rightFront.setPower(.4);
         }
 
-        robot.leftFront.setPower(leftFrontPower);
-        robot.leftRear.setPower(leftRearPower);
-        robot.rightFront.setPower(rightFrontPower);
-        robot.rightRear.setPower(rightRearPower);
+        robot.leftFront.setPower(leftFrontPower*tempSpeedMultiplier);
+        robot.leftRear.setPower(leftRearPower*tempSpeedMultiplier);
+        robot.rightFront.setPower(rightFrontPower*tempSpeedMultiplier);
+        robot.rightRear.setPower(rightRearPower*tempSpeedMultiplier);
+
+
     }
 
     private void moveArm()

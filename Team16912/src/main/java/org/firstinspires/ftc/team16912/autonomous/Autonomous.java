@@ -24,13 +24,15 @@ public class Autonomous extends LinearOpMode {
 
     ElapsedTime runTime = new ElapsedTime();
 
-    Trajectory toShipment, toCarousel, toFinish, moveBack;
+    Trajectory toShipment, moveBack, toCarousel, toWarehouse, toFinish, toSetup;
 
     Pose2d startPose;
 
     private String alliance = "blue", side = "left";
     boolean isWaiting = false;
-    public int HubDist = -13;
+
+    private boolean goToCarousel;
+
 
     OpenCvInternalCamera webcam;
     BarcodePipeline pipeline;
@@ -77,6 +79,9 @@ public class Autonomous extends LinearOpMode {
         config();
         drive.setPoseEstimate(startPose);
 
+        goToCarousel = (alliance.equals("red") && side.equals("left"))
+                            || (alliance.equals("blue") && side.equals("right"));
+
 
         initTrajectories();
 
@@ -93,20 +98,11 @@ public class Autonomous extends LinearOpMode {
             // No camera yet so robot will always deliver to top for now
             deliverShipment(barcodeToInt(pos));
 
-            robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
-            spinCarousel();
+            if (goToCarousel) {
+                spinCarousel();
+            }
 
             closeClaw();
-
-            //slow down spinner
-            robot.cSpinner.setVelocity(300);
-
-            //wait 1.5 seconds for the duck to fall
-            sleep(2500);
-            robot.cSpinner.setVelocity(0);
-
-            runArmToStart();
-
             setToFinish();
         }
 
@@ -123,14 +119,35 @@ public class Autonomous extends LinearOpMode {
                         .lineToLinearHeading(PoseStorage.RedHub)
                         .build();
                 moveBack = drive.trajectoryBuilder(toShipment.end())
-                        .forward(HubDist)
+                        .forward(-13)
                         .build();
-                toCarousel = drive.trajectoryBuilder(moveBack.end())
-                        .lineToLinearHeading(PoseStorage.RedCarousel)
-                        .build();
-                toFinish = drive.trajectoryBuilder(toCarousel.end())
-                        .lineToLinearHeading(PoseStorage.RedFinish)
-                        .build();
+
+
+                switch (side) {
+
+                    case ("left"): {
+                        toCarousel = drive.trajectoryBuilder(moveBack.end())
+                                .lineToLinearHeading(PoseStorage.RedCarousel)
+                                .build();
+                        toFinish = drive.trajectoryBuilder(toCarousel.end())
+                                .lineToLinearHeading(PoseStorage.RedStorageUnit)
+                                .build();
+                        break;
+                    }
+
+                    case ("right"): {
+
+                        toSetup = drive.trajectoryBuilder(moveBack.end())
+                                .lineToLinearHeading(PoseStorage.RedWarehouseSetup)
+                                .addTemporalMarker(.25, ()-> runArmToStart())
+                                .build();
+
+                        toWarehouse = drive.trajectoryBuilder(toSetup.end())
+                                .strafeRight(32)
+                                .build();
+                        break;
+                    }
+                }
 
 
                 break;
@@ -143,16 +160,38 @@ public class Autonomous extends LinearOpMode {
                         .build();
 
                 moveBack = drive.trajectoryBuilder(toShipment.end())
-                        .forward(HubDist)
+                        .forward(-10)
                         .build();
 
-                toCarousel = drive.trajectoryBuilder(moveBack.end())
-                        .lineToLinearHeading(PoseStorage.BlueCarousel)
-                        .build();
+                switch (side) {
 
-                toFinish = drive.trajectoryBuilder(toCarousel.end())
-                        .lineToLinearHeading(PoseStorage.BlueFinish)
-                        .build();
+                    case ("left"): {
+
+
+                        toSetup = drive.trajectoryBuilder(moveBack.end())
+                                .lineToLinearHeading(PoseStorage.BlueWarehouseSetup)
+                                .addTemporalMarker(.25, ()-> runArmToStart())
+                                .build();
+
+                        toWarehouse = drive.trajectoryBuilder(toSetup.end())
+                                .strafeLeft(32)
+                                .build();
+
+                        break;
+                    }
+
+                    case ("right"): {
+                        toCarousel = drive.trajectoryBuilder(moveBack.end())
+                                .lineToLinearHeading(PoseStorage.BlueCarousel)
+                                .build();
+
+                        toFinish = drive.trajectoryBuilder(toCarousel.end())
+                                .lineToLinearHeading(PoseStorage.BlueStorageUnit)
+                                .build();
+
+                        break;
+                    }
+                }
 
                 break;
             }
@@ -187,7 +226,7 @@ public class Autonomous extends LinearOpMode {
             }
 
             case 3: {
-                encoderPos = -3750;
+                encoderPos = -3650;
                 break;
             }
 
@@ -253,11 +292,22 @@ public class Autonomous extends LinearOpMode {
 
         }
 
-        robot.cSpinner.setVelocity(3000);
+        // set spinner speed
+        robot.cSpinner.setVelocity(300);
+
+        // wait 2.5 seconds for the duck to fall
+        sleep(2500);
+        robot.cSpinner.setVelocity(0);
 
     }
 
-    private void setToFinish() { drive.followTrajectory(toFinish); }
+    private void setToFinish() {
+        if (goToCarousel) drive.followTrajectory(toFinish);
+        else {
+            drive.followTrajectory(toSetup);
+            drive.followTrajectory(toWarehouse);
+        }
+    }
 
     // Closes claw
     private void closeClaw() { robot.servoClaw.setPosition(.7); }
@@ -275,7 +325,7 @@ public class Autonomous extends LinearOpMode {
         for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
     }
 
-    private void wait5() { sleep (10000); }
+    private void wait5() { sleep (12000); }
 
     // Alliance configuration
     private void config() {
@@ -344,5 +394,4 @@ public class Autonomous extends LinearOpMode {
         telemetry.addLine("CONFIRMED. READY TO START");
         telemetry.update();
     }
-
 }

@@ -2,7 +2,9 @@ package org.firstinspires.ftc.team16910.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
@@ -18,6 +20,8 @@ public class Spaghetti extends OpMode {
     ElapsedTime armTime = null;
     boolean canRun = false;
     boolean justMoved = false;
+    double tempSpeedMultiplier = 1.5;
+    ElapsedTime elapsedTime = new ElapsedTime();
 
     public void init()
     {
@@ -53,14 +57,17 @@ public class Spaghetti extends OpMode {
     private void drive()
     {
         // Mecanum drivecode
-        double y = gamepad1.left_stick_y; // Remember, this is reversed!
-        double x = gamepad1.left_stick_x; // Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x;
+        double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+        double special_y = -gamepad1.left_stick_y *.8;
+        double x = -gamepad1.left_stick_x;// Counteract imperfect strafing
+        double special_x = -gamepad1.left_stick_x *.8;
+        double rx = -gamepad1.right_stick_x;
+        double special_rx = -gamepad1.right_trigger *.6;
 
-        double leftFrontPower = y + x + rx;
-        double leftRearPower = y - x + rx;
-        double rightFrontPower = y - x - rx;
-        double rightRearPower = y + x - rx;
+        double rightFrontPower = y + x + rx;
+        double rightRearPower = y - x + rx;
+        double leftFrontPower = y - x - rx;
+        double leftRearPower = y + x - rx;
 
         if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
                 Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1 )
@@ -79,25 +86,61 @@ public class Spaghetti extends OpMode {
             rightRearPower /= max;
         }
 
-        if (gamepad1.dpad_up || gamepad1.dpad_right)
+        //Slowmode Code
+        if (gamepad1.dpad_down)
         {
-            leftFrontPower = -.75;
-            rightRearPower = -.75;
-            rightFrontPower = .75;
-            leftRearPower = .75;
+            leftFrontPower = -.3;
+            leftRearPower = -.3;
+            rightRearPower = -.3;
+            rightFrontPower = -.3;
+
         }
-        else if (gamepad1.dpad_down || gamepad1.dpad_left)
+        else if (gamepad1.dpad_up)
         {
-            leftFrontPower = .75;
-            rightRearPower = .75;
-            rightFrontPower = -.75;
-            leftRearPower = -.75;
+            leftFrontPower = .3;
+            leftRearPower = .3;
+            rightRearPower = .3;
+            rightFrontPower = .3;
         }
 
-        robot.leftFront.setPower(leftFrontPower);
-        robot.leftRear.setPower(leftRearPower);
-        robot.rightFront.setPower(rightFrontPower);
-        robot.rightRear.setPower(rightRearPower);
+        else if (gamepad1.dpad_right)
+        {
+            leftFrontPower = .3;
+            leftRearPower = -.3;
+            rightRearPower = .3;
+            rightFrontPower = -.3;
+        }
+
+        else if (gamepad1.dpad_left)
+        {
+            leftFrontPower = -.3;
+            leftRearPower = .3;
+            rightRearPower = -.3;
+            rightFrontPower = .3;
+        }
+
+        if(gamepad1.right_trigger > 0)
+        {
+            robot.leftFront.setPower(-.4);
+            robot.leftRear.setPower(-.4);
+            robot.rightRear.setPower(.4);
+            robot.rightFront.setPower(.4);
+        }
+
+        if (gamepad1.left_trigger > 0)
+        {
+            robot.leftFront.setPower(.4);
+            robot.leftRear.setPower(.4);
+            robot.rightRear.setPower(.4);
+            robot.rightFront.setPower(.4);
+        }
+
+        robot.leftFront.setPower(leftFrontPower*tempSpeedMultiplier);
+        robot.leftRear.setPower(leftRearPower*tempSpeedMultiplier);
+        robot.rightFront.setPower(rightFrontPower*tempSpeedMultiplier);
+        robot.rightRear.setPower(rightRearPower*tempSpeedMultiplier);
+
+
     }
 
     private void moveArm()
@@ -114,8 +157,8 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(gamepad2.right_trigger * .9);
-            robot.armMotorTwo.setPower(gamepad2.right_trigger * .9);
+            robot.armMotorOne.setPower(gamepad2.right_trigger * .4);
+            robot.armMotorTwo.setPower(gamepad2.right_trigger * .4);
 
             justMoved = true;
         }
@@ -127,8 +170,8 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(gamepad2.left_trigger * -.7);
-            robot.armMotorTwo.setPower(gamepad2.left_trigger * -.7);
+            robot.armMotorOne.setPower(gamepad2.left_trigger * -.4);
+            robot.armMotorTwo.setPower(gamepad2.left_trigger * -.4);
 
             justMoved = true;
         }
@@ -193,14 +236,23 @@ public class Spaghetti extends OpMode {
         // Carousel Motor Code
         if (gamepad2.right_bumper)
         {
-            robot.spinnyWheel.setDirection(DcMotorEx.Direction.FORWARD);
-            robot.spinnyWheel.setPower(.6);
+            //robot.spinnyWheel.setDirection(DcMotorEx.Direction.FORWARD);
+            robot.rightSpinnyWheel.setPower(.6);
+            robot.leftSpinnyWheel.setPower(0.6);
+        }
+
+        else if (gamepad2.left_bumper)
+        {
+            robot.rightSpinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
+            robot.leftSpinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
+            robot.rightSpinnyWheel.setPower(-.6);
+            robot.leftSpinnyWheel.setPower(-0.6);
         }
 
         else
         {
-            robot.spinnyWheel.setPower(0.0);
-            robot.spinnyWheel.setPower(0.0);
+            robot.rightSpinnyWheel.setPower(0.0);
+            robot.leftSpinnyWheel.setPower(0.0);
         }
     }
 
@@ -210,12 +262,6 @@ public class Spaghetti extends OpMode {
         {
             robot.stabilizingServoOne.setPower(-1.0);
             robot.stabilizingServoTwo.setPower(1.0);
-        }
-
-        if(gamepad2.left_bumper)
-        {
-            robot.stabilizingServoOne.setPower(1.0);
-            robot.stabilizingServoTwo.setPower(-1.0);
         }
 
         if(gamepad2.square)

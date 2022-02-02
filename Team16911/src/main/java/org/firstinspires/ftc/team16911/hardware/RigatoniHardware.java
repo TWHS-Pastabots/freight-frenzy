@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team16911.hardware;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -16,9 +15,8 @@ public class RigatoniHardware
     public DcMotorEx rightRear = null;
     public DcMotorEx armMotorOne = null;
     public DcMotorEx armMotorTwo = null;
-    public DcMotorEx carouselMotorOne = null;
-    public DcMotorEx carouselMotorTwo = null;
-    public CRServo armServo = null;
+    public DcMotorEx carouselMotor = null;
+    public DcMotorEx intakeMotor = null;
     public DistanceSensor leftDistanceSensor = null;
     public DistanceSensor rightDistanceSensor = null;
     public DcMotorEx[] motors;
@@ -30,7 +28,7 @@ public class RigatoniHardware
         initializePrimaryMotors(hardwareMap);
         initializeArmMotors(hardwareMap);
         initializeCarousel(hardwareMap);
-        initializeServos(hardwareMap);
+        initializeIntakeMotor(hardwareMap);
         initializeColorSensors(hardwareMap);
     }
 
@@ -43,10 +41,10 @@ public class RigatoniHardware
         rightRear = hardwareMap.get(DcMotorEx.class, RigatoniIds.RIGHT_REAR_MOTOR);
 
         // Set Motors to Run in Right Direction
-        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear};
 
@@ -71,7 +69,7 @@ public class RigatoniHardware
 
         // Set Motors to Run in Right Direction
         armMotorOne.setDirection(DcMotorEx.Direction.FORWARD);
-        armMotorTwo.setDirection(DcMotorEx.Direction.FORWARD);
+        armMotorTwo.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Reset Arm Motors
         armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -84,24 +82,21 @@ public class RigatoniHardware
 
     private void initializeCarousel(HardwareMap hardwareMap)
     {
-        carouselMotorOne = hardwareMap.get(DcMotorEx.class, RigatoniIds.CAROUSEL_MOTOR_ONE);
-        carouselMotorTwo = hardwareMap.get(DcMotorEx.class, RigatoniIds.CAROUSEL_MOTOR_TWO);
+        carouselMotor = hardwareMap.get(DcMotorEx.class, RigatoniIds.CAROUSEL_MOTOR);
 
-        carouselMotorOne.setPower(0.0);
-        carouselMotorTwo.setPower(0.0);
+        carouselMotor.setPower(0.0);
 
-        carouselMotorOne.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
-        carouselMotorTwo.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        carouselMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
 
-        carouselMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        carouselMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        carouselMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    private void initializeServos(HardwareMap hardwareMap)
+    private void initializeIntakeMotor(HardwareMap hardwareMap)
     {
-        armServo = hardwareMap.get(CRServo.class, RigatoniIds.ARM_SERVO);
+        intakeMotor = hardwareMap.get(DcMotorEx.class, RigatoniIds.INTAKE_MOTOR);
 
-        armServo.setDirection(CRServo.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        intakeMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
 
     private void initializeColorSensors(HardwareMap hardwareMap)

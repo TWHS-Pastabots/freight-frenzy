@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team16910.teleop;
+package org.firstinspires.ftc.team16910.drive.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -16,7 +16,7 @@ import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "drive")
-public class SpaghettiRR extends LinearOpMode {
+public class RedLeft extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {

@@ -67,8 +67,9 @@ public class FettuccineRRv2 extends LinearOpMode {
         while (!isStopRequested()) {
 
             // External Op Methods
-            armExtensionCode();
+            //armExtensionCode();
             armPivotCode();
+            //grabberPivotCode();
             carouselCode();
             grabberCode();
 
@@ -89,8 +90,8 @@ public class FettuccineRRv2 extends LinearOpMode {
             // Drive Main Code
             drive.setWeightedDrivePower(
                     new Pose2d(
+                            (gamepad1.left_stick_x + dpadLR) * mult,
                             (-gamepad1.left_stick_y + dpadFB) * mult,
-                            (-gamepad1.left_stick_x + dpadLR) * mult,
                             -gamepad1.right_stick_x * mult
                     )
             );
@@ -106,6 +107,12 @@ public class FettuccineRRv2 extends LinearOpMode {
         }
     }
 
+   /* private void grabberPivotCode()
+    {
+        robot.grabberPivot.setPower(gamepad2.left_stick_y * 0.1);
+    }
+*/
+
     private void armPivotCode()
     {
         int rightTargetPos = robot.rightArm.getTargetPosition();
@@ -116,8 +123,8 @@ public class FettuccineRRv2 extends LinearOpMode {
 
         if (gamepad2.right_trigger > 0 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(Math.min(rightTargetPos + 20, 150));
-            robot.leftArm.setTargetPosition(Math.min(leftTargetPos + 20, 150));
+            robot.rightArm.setTargetPosition(rightTargetPos + 20);
+            robot.leftArm.setTargetPosition(leftTargetPos + 20);
 
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -129,8 +136,8 @@ public class FettuccineRRv2 extends LinearOpMode {
         }
         else if (gamepad2.left_trigger > 0 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(Math.max(0, rightTargetPos - 20));
-            robot.leftArm.setTargetPosition(Math.max(0, leftTargetPos - 20));
+            robot.rightArm.setTargetPosition(Math.max(-40, rightTargetPos - 20));
+            robot.leftArm.setTargetPosition(Math.max(-40, leftTargetPos - 20));
 
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -142,8 +149,8 @@ public class FettuccineRRv2 extends LinearOpMode {
         }
         else if (gamepad2.triangle && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(170);
-            robot.leftArm.setTargetPosition(170);
+            robot.rightArm.setTargetPosition(270);
+            robot.leftArm.setTargetPosition(270);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() + 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() + 10);
 
@@ -157,8 +164,8 @@ public class FettuccineRRv2 extends LinearOpMode {
         }
         else if (gamepad2.circle && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(0);
-            robot.leftArm.setTargetPosition(0);
+            robot.rightArm.setTargetPosition(-40);
+            robot.leftArm.setTargetPosition(-40);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 
@@ -219,19 +226,19 @@ public class FettuccineRRv2 extends LinearOpMode {
         else robot.carousel.setPower(0);
     }
 
-    private void armExtensionCode()
+    /*private void armExtensionCode()
     {
         if (gamepad2.dpad_left) robot.armServo.setPower(-1.0);
         else if (gamepad2.dpad_right) robot.armServo.setPower(1.0);
         else robot.armServo.setPower(0.0);
-    }
+    }*/
 
     private void grabberCode()
     {
         if (gamepad2.dpad_up) grabHold = true;
         else if (gamepad2.dpad_down) grabHold = false;
 
-        if (grabHold) robot.grabber.setPosition(0.2);
+        if (grabHold) robot.grabber.setPosition(0);
         else if (!grabHold) robot.grabber.setPosition(0.5);
     }
 }

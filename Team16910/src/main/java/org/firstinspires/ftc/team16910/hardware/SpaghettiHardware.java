@@ -16,7 +16,8 @@ public class SpaghettiHardware
     public DcMotorEx leftRear = null;
     public DcMotorEx rightFront = null;
     public DcMotorEx rightRear = null;
-    public DcMotorEx spinnyWheel = null;
+    public DcMotorEx leftSpinnyWheel = null;
+    public DcMotorEx rightSpinnyWheel = null;
     public DcMotorEx armMotorOne = null;
     public DcMotorEx armMotorTwo = null;
     public CRServo stabilizingServoOne = null;
@@ -35,7 +36,8 @@ public class SpaghettiHardware
         rightRear = hardwareMap.get(DcMotorEx.class, SpaghettiIds.RIGHT_REAR_MOTOR);
 
         // Supplementary Motors
-        spinnyWheel = hardwareMap.get(DcMotorEx.class, SpaghettiIds.SPINNY_WHEEL);
+        rightSpinnyWheel = hardwareMap.get(DcMotorEx.class, SpaghettiIds.RIGHT_SPINNY_WHEEL);
+        leftSpinnyWheel = hardwareMap.get(DcMotorEx.class, SpaghettiIds.LEFT_SPINNY_WHEEL);
         armMotorOne = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_ONE);
         armMotorTwo = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_TWO);
 
@@ -45,14 +47,16 @@ public class SpaghettiHardware
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
-        motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear, spinnyWheel,};
+        motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear, leftSpinnyWheel, rightSpinnyWheel};
 
         // Set Zero Power Behavior and Initialize
         for (DcMotorEx motor : motors)
         {
             motor.setPower(0);
-            motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            //motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //manan tried changing this to RUN_USING instead of RUN_WITHOUT, change it back if it causes issues
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
         initializeArmMotors(hardwareMap);

@@ -13,4 +13,9 @@ public class LinguineIds extends ComponentIds {
 
     // Claw Servo
     public static final String SERVO_CLAW = "servoClawRight";
+
+    // Cap Servos
+    public static final String UD_SERVO = "servoUD";
+    public static final String LR_SERVO = "servoLR";
+    public static final String TAPE_SERVO = "servoTape";
 }

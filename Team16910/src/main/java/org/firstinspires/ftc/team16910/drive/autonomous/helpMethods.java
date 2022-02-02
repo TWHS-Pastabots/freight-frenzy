@@ -20,9 +20,7 @@ public class helpMethods
     static int currentPosition = 0;
     static int leftArmOffset = 0;
 
-
-
-    public void helpMethods(SpaghettiHardware robot)
+    helpMethods(SpaghettiHardware robot)
     {
         this.robot = robot;
 

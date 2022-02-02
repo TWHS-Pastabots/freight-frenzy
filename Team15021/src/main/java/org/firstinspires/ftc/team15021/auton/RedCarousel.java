@@ -44,6 +44,7 @@ public class RedCarousel extends LinearOpMode
         switch (endPoint)
         {
             case STORAGE:
+                utilities.wait(8000);
                 utilities.moveArm(-360);
                 utilities.wait(3000);
                 drive.followTrajectory(toShippingHub);

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 
-@TeleOp(name = "Auto. Arm Test BLUE")
+
 public class AutonomousTimeArmTestB extends LinearOpMode {
 
 

@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.team15021.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team15021.hardware.RavioliHardware;
-import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 @TeleOp(name = "Ravioli")
 public class Ravioli extends OpMode
@@ -19,7 +17,9 @@ public class Ravioli extends OpMode
     int currentPosition = 0;
     int lastPosition = -100;
     int armMotorTwoOffset = 0;
-    double slowConstant = 1.0;
+    final double FAST_SPEED = .8;
+    final double SLOW_SPEED = .5;
+    double slowConstant = FAST_SPEED;
     boolean justMoved = false;
     boolean canRun = false;
     ElapsedTime armTime = null;
@@ -95,14 +95,14 @@ public class Ravioli extends OpMode
             leftRearPower = -1;
         }
 
-        if (gamepad1.square && slowConstant == 1.0 && buttonTime.time() >= 500)
+        if (gamepad1.square && slowConstant == FAST_SPEED && buttonTime.time() >= 500)
         {
-            slowConstant = .5;
+            slowConstant = SLOW_SPEED;
             buttonTime.reset();
         }
-        else if (gamepad1.square && slowConstant == 0.5 && buttonTime.time() >= 500)
+        else if (gamepad1.square && slowConstant == SLOW_SPEED && buttonTime.time() >= 500)
         {
-            slowConstant = 1.0;
+            slowConstant = FAST_SPEED;
             buttonTime.reset();
         }
 
@@ -114,104 +114,12 @@ public class Ravioli extends OpMode
 
     private void moveArm()
     {
-        currentPosition = hardware.armMotorOne.getCurrentPosition();
-        armMotorTwoOffset = hardware.armMotorTwo.getCurrentPosition() - currentPosition;
+        hardware.armMotorOne.setPower(gamepad2.right_trigger);
+        hardware.armMotorTwo.setPower(gamepad2.right_trigger);
 
-        // Runs driver controlled code
-        if (gamepad2.right_trigger > 0)
-        {
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.armMotorOne.setPower(-gamepad2.left_trigger);
+        hardware.armMotorTwo.setPower(-gamepad2.left_trigger);
 
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-            hardware.armMotorOne.setPower(gamepad2.right_trigger * .5);
-            hardware.armMotorTwo.setPower(gamepad2.right_trigger * .5);
-
-            justMoved = true;
-        }
-        else if (gamepad2.left_trigger > 0)
-        {
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-            hardware.armMotorOne.setPower(gamepad2.left_trigger * -.5);
-            hardware.armMotorTwo.setPower(gamepad2.left_trigger * -.5);
-
-            justMoved = true;
-        }
-        else if (justMoved)
-        {
-            hardware.armMotorOne.setTargetPosition(currentPosition);
-            hardware.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);
-
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-            hardware.armMotorOne.setPower(1);
-            hardware.armMotorTwo.setPower(1);
-
-            justMoved = false;
-        }
-
-        if (currentPosition == lastPosition)
-        {
-            if (!canRun)
-            {
-                armTime.reset();
-            }
-            canRun = true;
-        }
-        else
-        {
-            lastPosition = currentPosition;
-            canRun = false;
-        }
-
-        if (canRun && currentPosition == lastPosition && armTime.milliseconds() >= 150)
-        {
-            hardware.armMotorOne.setTargetPosition(currentPosition);
-            hardware.armMotorTwo.setTargetPosition(currentPosition + armMotorTwoOffset);
-
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-            hardware.armMotorOne.setPower(1);
-            hardware.armMotorTwo.setPower(1);
-        }
-
-        // Runs to highest position
-        if (gamepad2.triangle)
-        {
-            hardware.armMotorOne.setTargetPosition(maxPosition);
-            hardware.armMotorTwo.setTargetPosition(maxPosition + armMotorTwoOffset);
-
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-            hardware.armMotorOne.setPower(.7);
-            hardware.armMotorTwo.setPower(.7);
-
-            justMoved = false;
-        }
-
-        // Resets zero position for calibration
-        if (gamepad2.dpad_down)
-        {
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        }
-
-        /*telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
-        telemetry.addData("Arm One Target", hardware.armMotorOne.getTargetPosition());
-        telemetry.addData("Arm Two Pos", hardware.armMotorTwo.getCurrentPosition());
-        telemetry.addData("Arm Two Target", hardware.armMotorTwo.getTargetPosition());
-        telemetry.addData("Current Position", currentPosition);
-        telemetry.update();*/
     }
     private void spinCarousel()
     {

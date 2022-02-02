@@ -37,7 +37,7 @@ public class RedWarehouse extends LinearOpMode
         // Initialize Hardware
         RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
-        util utilities = new util(hardware);
+        Utilities utilities = new Utilities(hardware);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
@@ -62,7 +62,7 @@ public class RedWarehouse extends LinearOpMode
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
         utilities.eliminateOscillations();
-        utilities.dropCargo(3500, telemetry);
+        utilities.dropCargo(1750, telemetry);
 
         drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
     }

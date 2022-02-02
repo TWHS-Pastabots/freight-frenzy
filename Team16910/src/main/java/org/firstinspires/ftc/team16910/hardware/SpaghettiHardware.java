@@ -53,8 +53,10 @@ public class SpaghettiHardware
         for (DcMotorEx motor : motors)
         {
             motor.setPower(0);
-            motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            //motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //manan tried changing this to RUN_USING instead of RUN_WITHOUT, change it back if it causes issues
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
         initializeArmMotors(hardwareMap);

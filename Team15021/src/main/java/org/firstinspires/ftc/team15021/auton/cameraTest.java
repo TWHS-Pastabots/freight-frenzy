@@ -39,7 +39,8 @@ public class cameraTest extends LinearOpMode{
 
 
 
-    public void runOpMode() throws InterruptedException{
+    public void runOpMode() throws InterruptedException
+    {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         pipeline = new CodeBarPipeline();
@@ -47,14 +48,17 @@ public class cameraTest extends LinearOpMode{
 
         webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
 
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
             @Override
-            public void onOpened() {
+            public void onOpened()
+            {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
             }
 
             @Override
-            public void onError(int errorCode) {
+            public void onError(int errorCode)
+            {
                 /*
                  * This will be called if the camera could not be opened
                  */
@@ -69,7 +73,8 @@ public class cameraTest extends LinearOpMode{
         drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(90)));
         hardware.init(hardwareMap);
 
-        while (!gamepad1.triangle) {
+        while (!gamepad1.triangle)
+        {
             telemetry.addData("Left Brightness: ", pipeline.R1Y);
             telemetry.addData("Middle Brightness: ", pipeline.R2Y);
             telemetry.addData("Right Brightness: ", pipeline.R3Y);
@@ -79,19 +84,18 @@ public class cameraTest extends LinearOpMode{
         buildTrajectories();
         configuration();
 
-
         waitForStart();
 
-        while (isStarted()&&!isStopRequested())
-        {
+        if(!opModeIsActive()) {return;}
 
-            CodeBarPipeline.ObjectPosition pos = pipeline.getAnalysis();
-            telemetry.addData("aaa", "aaaa");
-            telemetry.update();
+
+        CodeBarPipeline.ObjectPosition pos = pipeline.getAnalysis();
+        telemetry.addData("aaa", "aaaa");
+        telemetry.update();
 
             // No camera yet so robot will always deliver to top for now
 
-        }
+
 
     }
 

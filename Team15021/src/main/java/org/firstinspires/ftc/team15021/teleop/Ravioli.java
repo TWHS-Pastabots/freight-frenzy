@@ -13,15 +13,9 @@ public class Ravioli extends OpMode
 
     // Initialization
     RavioliHardware hardware;
-    int maxPosition = 100;
-    int currentPosition = 0;
-    int lastPosition = -100;
-    int armMotorTwoOffset = 0;
     final double FAST_SPEED = .8;
     final double SLOW_SPEED = .5;
     double slowConstant = FAST_SPEED;
-    boolean justMoved = false;
-    boolean canRun = false;
     ElapsedTime armTime = null;
     ElapsedTime buttonTime = null;
 
@@ -154,13 +148,4 @@ public class Ravioli extends OpMode
         telemetry.update();
     }
 
-    private double getUpwardPower(int currentPosition)
-    {
-        return -.00012 * currentPosition * currentPosition + currentPosition * .012 + .35;
-    }
-
-    private double getDownwardPower(int currentPosition)
-    {
-        return -.000033 * currentPosition * currentPosition + currentPosition * .0033 - .075;
-    }
 }

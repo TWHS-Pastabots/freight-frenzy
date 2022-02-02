@@ -5,8 +5,11 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.team16911.autonomous.Utilities;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -33,6 +36,14 @@ public class BackAndForth extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        RigatoniHardware hardware = new RigatoniHardware();
+        hardware.init(hardwareMap);
+        hardware.armMotorOne.setTargetPosition(60);
+        hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorOne.setPower(1);
+        hardware.armMotorTwo.setTargetPosition(60);
+        hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorTwo.setPower(1);
 
         Trajectory trajectoryForward = drive.trajectoryBuilder(new Pose2d())
                 .forward(DISTANCE)

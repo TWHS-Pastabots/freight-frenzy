@@ -17,12 +17,10 @@ public class TestAutonomous extends LinearOpMode
 
     private int initialWaitTime = 0;
 
-    private final Pose2d positionOne = new Pose2d(15, 0, 0);
-    private final Pose2d positionTwo = new Pose2d(30, -15, 0);
-    private final Pose2d positionThree = new Pose2d(30, 15, 0);
-    private final Pose2d positionFour = new Pose2d(30,  0, 0);
-    private final Pose2d positionFive = new Pose2d(0, 0, 0);
-
+    private final Pose2d positionOne = new Pose2d(8, -5, Math.toRadians(-90));
+    private final Pose2d positionTwo = new Pose2d(8, -18, Math.toRadians(-90));
+    private final Pose2d positionThree = new Pose2d(0, 27, 0);
+    private final Pose2d positionFour = new Pose2d(19, 53, 0);
 
     public void runOpMode()
     {
@@ -32,64 +30,37 @@ public class TestAutonomous extends LinearOpMode
         // Initialize Hardware
         RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
+        Utilities utilities = new Utilities(hardware);
 
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
 
+        utilities.moveArm(utilities.positions[1]);
 
         waitForStart();
         if(!opModeIsActive()) {return;}
+        utilities.moveArm(20);
 
-        while (!gamepad1.circle)
-        {
-            continue;
-        }
 
-        Trajectory firstTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(positionOne).build();
+        utilities.intakeCargo();
 
-        drive.followTrajectory(firstTrajectory);
+        Trajectory blockPickupTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(0))
+                .splineToSplineHeading(positionOne, Math.toRadians(-90))
+                .splineToSplineHeading(positionTwo, Math.toRadians(-90)).build();
 
-        while (!gamepad1.circle)
-        {
-            continue;
-        }
+        drive.followTrajectory(blockPickupTrajectory);
 
-        Trajectory secondTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(positionTwo).build();
+        utilities.stopIntake();
+        utilities.moveArm(utilities.positions[2]);
 
-        drive.followTrajectory(secondTrajectory);
+        Trajectory toHubTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(0, 0, 0), Math.toRadians(90))
+                .splineToLinearHeading(positionThree, Math.toRadians(90))
+                .splineToLinearHeading(positionFour, Math.toRadians(30)).build();
 
-        while (!gamepad1.circle)
-        {
-            continue;
-        }
+        drive.followTrajectory(toHubTrajectory);
 
-        Trajectory thirdTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(positionThree).build();
-
-        drive.followTrajectory(thirdTrajectory);
-
-        while (!gamepad1.circle)
-        {
-            continue;
-        }
-
-        Trajectory fourthTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(positionFour).build();
-
-        drive.followTrajectory(fourthTrajectory);
-
-        while (!gamepad1.circle)
-        {
-            continue;
-        }
-
-        Trajectory fifthTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(positionFive).build();
-
-        drive.followTrajectory(fifthTrajectory);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME, telemetry);
     }
-
 }

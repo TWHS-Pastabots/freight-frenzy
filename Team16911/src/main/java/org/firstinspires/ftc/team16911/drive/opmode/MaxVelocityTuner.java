@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16911.drive.DriveConstants;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 import java.util.Objects;
 
@@ -36,6 +37,14 @@ public class MaxVelocityTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        RigatoniHardware hardware = new RigatoniHardware();
+        hardware.init(hardwareMap);
+        hardware.armMotorOne.setTargetPosition(60);
+        hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorOne.setPower(1);
+        hardware.armMotorTwo.setTargetPosition(60);
+        hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorTwo.setPower(1);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 

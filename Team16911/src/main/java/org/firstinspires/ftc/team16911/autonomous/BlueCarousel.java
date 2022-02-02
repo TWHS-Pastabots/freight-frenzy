@@ -34,10 +34,10 @@ public class BlueCarousel extends LinearOpMode
 
     private final Pose2d carousel = new Pose2d(10, -23.25, Math.toRadians(90));
     private final Pose2d barcode = new Pose2d(20,0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(16.3, 27.75, 0);
-    private final Pose2d hubLevelTwo = new Pose2d(16.875, 27.75, 0);
+    private final Pose2d hubLevelOne = new Pose2d(17, 27.75, 0);
+    private final Pose2d hubLevelTwo = new Pose2d(17.5, 27.75, 0);
     private final Pose2d hubLevelThree = new Pose2d(23, 27.75, 0);
-    private final Pose2d warehouseOutside = new Pose2d(0, 66, 0);
+    private final Pose2d warehouseOutside = new Pose2d(-.25, 65, 0);
     private final Pose2d warehouseBottomPosition = new Pose2d(3, 36, 0);
     private final Pose2d warehouse = new Pose2d(-.25, 85, 0);
     private final Pose2d barcodeBottomPositionOne = new Pose2d(15, 5, Math.toRadians(45));
@@ -89,7 +89,7 @@ public class BlueCarousel extends LinearOpMode
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
         utilities.eliminateOscillations();
-        utilities.dropCargo(1750, telemetry);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME, telemetry);
 
         switch (path)
         {

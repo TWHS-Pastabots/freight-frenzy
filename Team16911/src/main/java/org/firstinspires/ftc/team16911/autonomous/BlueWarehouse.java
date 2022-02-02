@@ -18,8 +18,8 @@ public class BlueWarehouse extends LinearOpMode
     private int initialWaitTime = 0;
 
     private final Pose2d barcode = new Pose2d(20, -.5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(16.3, -18.75, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(16.875, -18.75, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(16.5, -18.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(17, -18.75, 0);
     private final Pose2d hubLevelThreePose = new Pose2d(23, -18.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(0,  27, 0);
     private final Pose2d warehouse = new Pose2d(-.25, 32, 0);
@@ -62,7 +62,7 @@ public class BlueWarehouse extends LinearOpMode
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
         utilities.eliminateOscillations();
-        utilities.dropCargo(1750, telemetry);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME, telemetry);
 
         drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
     }

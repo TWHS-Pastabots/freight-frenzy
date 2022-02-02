@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team16912.util;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -24,6 +25,10 @@ public class LinguineHardware extends RobotHardware {
     public Servo servoClaw = null;
 
     public Encoder armEncoder = null;
+
+    public CRServo tapeServo = null;
+    public CRServo LRServo = null;
+    public CRServo UDServo = null;
 
     @Override
     public void init(HardwareMap hardwareMap, boolean shouldInitializeComponents) {
@@ -57,6 +62,10 @@ public class LinguineHardware extends RobotHardware {
         motorArm1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         servoClaw = hardwareMap.get(Servo.class, LinguineIds.SERVO_CLAW);
+
+        UDServo = hardwareMap.get(CRServo.class, LinguineIds.UD_SERVO);
+        LRServo = hardwareMap.get(CRServo.class, LinguineIds.LR_SERVO);
+        tapeServo = hardwareMap.get(CRServo.class, LinguineIds.TAPE_SERVO);
 
         armEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LinguineIds.MOTOR_ARM_1));
     }

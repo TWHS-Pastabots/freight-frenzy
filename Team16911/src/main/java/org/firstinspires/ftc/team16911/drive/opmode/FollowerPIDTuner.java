@@ -4,8 +4,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 import org.firstinspires.ftc.team16911.trajectorysequence.TrajectorySequence;
 
 /*
@@ -29,6 +31,14 @@ public class FollowerPIDTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        RigatoniHardware hardware = new RigatoniHardware();
+        hardware.init(hardwareMap);
+        hardware.armMotorOne.setTargetPosition(60);
+        hardware.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorOne.setPower(1);
+        hardware.armMotorTwo.setTargetPosition(60);
+        hardware.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.armMotorTwo.setPower(1);
 
         Pose2d startPose = new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0);
 

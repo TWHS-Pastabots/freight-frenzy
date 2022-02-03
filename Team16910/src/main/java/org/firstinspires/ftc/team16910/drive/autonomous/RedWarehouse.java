@@ -15,8 +15,8 @@ import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
 
 import java.security.spec.PSSParameterSpec;
 
-@Autonomous(preselectTeleOp = "Left RED")
-public class RedLeft extends LinearOpMode
+@Autonomous(preselectTeleOp = "Warehouse BLUE")
+public class RedWarehouse extends LinearOpMode
 {
     int current_pos = 0;
     //int leftArmOffset = 0;
@@ -31,8 +31,8 @@ public class RedLeft extends LinearOpMode
     //Positions
     private final Pose2d move_Forward = new Pose2d(-9, 0, 0);
     private final Pose2d scan_pos = new Pose2d(15.792390179769374, 0, Math.toRadians(180));
-    private final Pose2d hub_pos = new Pose2d(15.792390179769374, -20.07919092716424, Math.toRadians(180));
-    private final Pose2d carousel_approach = new Pose2d(15.579214625984648, -66.8355575585923, Math.toRadians(180));
+    private final Pose2d hub_pos = new Pose2d(15.792390179769374, -23.07919092716424, Math.toRadians(180));
+    private final Pose2d carousel_approach = new Pose2d(13.579214625984648, -66.8355575585923, Math.toRadians(180));
     private final Pose2d carousel_pos = new Pose2d(0.256660589321775, -66.78512696747305, Math.toRadians(351.6687646887457-180));
     private final Pose2d warehouse_pos = new Pose2d(32.74436593969421, 60.00664056942736, Math.toRadians(270));
 
@@ -82,7 +82,7 @@ public class RedLeft extends LinearOpMode
         // Action Method Init
         //action = new helpMethods(robot);
 
-        blueLeftTraj();
+        redWarehouseTraj();
 
         while (!isStarted())
         {
@@ -166,7 +166,7 @@ public class RedLeft extends LinearOpMode
         }
 
      */
-    private void blueLeftTraj()
+    private void redWarehouseTraj()
     {
         scan_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 //.lineToLinearHeading(move_Forward)
@@ -176,12 +176,12 @@ public class RedLeft extends LinearOpMode
         hub_traj = drive.trajectorySequenceBuilder(scan_traj.end())
                 .lineToLinearHeading(hub_pos)
                 .build();
-        carousel_traj = drive.trajectorySequenceBuilder(hub_traj.end())
+        /*carousel_traj = drive.trajectorySequenceBuilder(hub_traj.end())
                 .lineToLinearHeading(carousel_approach)
                 .lineToLinearHeading(carousel_pos)
-                .build();
+                .build();*/
         warehouse_traj = drive.trajectorySequenceBuilder(carousel_traj.end())
-                .lineToLinearHeading(carousel_approach)
+                //.lineToLinearHeading(carousel_approach)
                 .turn(Math.toRadians(90))
                 .lineToLinearHeading(warehouse_pos)
                 .build();

@@ -82,7 +82,7 @@ public class BlueWarehouse extends LinearOpMode
         // Action Method Init
         //action = new helpMethods(robot);
 
-        blueLeftTraj();
+        blueWarehouseTraj();
 
         while (!isStarted())
         {
@@ -166,7 +166,7 @@ public class BlueWarehouse extends LinearOpMode
     }
 
  */
-    private void blueLeftTraj()
+    private void blueWarehouseTraj()
     {
         scan_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 //.lineToLinearHeading(move_Forward)

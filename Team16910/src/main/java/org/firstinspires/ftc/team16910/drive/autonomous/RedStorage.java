@@ -13,8 +13,8 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
 
-@Autonomous(preselectTeleOp = "Right BLUE")
-public class BlueRight extends LinearOpMode
+@Autonomous(preselectTeleOp = "Storage BLUE")
+public class RedStorage extends LinearOpMode
 {
     int current_pos = 0;
     //int leftArmOffset = 0;
@@ -42,20 +42,20 @@ public class BlueRight extends LinearOpMode
      */
 
 
-    private final Pose2d move_Forward = new Pose2d(-8.013438741993097, -0.028127556611040036, 0);
+    private final Pose2d move_Forward = new Pose2d(8.013438741993097, 0.028127556611040036, 0);
     //private final Pose2d carousel_approach = new Pose2d(-8.013438741993097, -10.324558386544119, Math.toRadians(180));
-    private final Pose2d carousel_pos = new Pose2d(-5.06136975539866, 20.991465591563607, Math.toRadians(180));
-    private final Pose2d hub_approach = new Pose2d(-21.102410493136468, 25.8890852672091, Math.toRadians(180));
-    private final Pose2d hub_pos = new Pose2d(-19.37210776664967, -20.922848844623836, Math.toRadians(180));
-    private final Pose2d warehouse_approach = new Pose2d(-18.107768895372946, -18.16996569873317, Math.toRadians(270));
-    private final Pose2d warehouse_pos = new Pose2d(-12.677835090257663, -104.63167609093415, Math.toRadians(270));
+    private final Pose2d carousel_pos = new Pose2d(5.06136975539866, -20.991465591563607, Math.toRadians(180));
+    private final Pose2d hub_approach = new Pose2d(21.102410493136468, -25.8890852672091, Math.toRadians(180));
+    private final Pose2d hub_pos = new Pose2d(19.37210776664967, 20.922848844623836, Math.toRadians(180));
+    private final Pose2d warehouse_approach = new Pose2d(18.107768895372946, 18.16996569873317, Math.toRadians(270));
+    private final Pose2d storage_pos = new Pose2d(8.013438741993097, -30.991465591563607, Math.toRadians(270));
 
     //Positions
 
     //Trajectories
     private TrajectorySequence carousel_traj;
     private TrajectorySequence hub_traj;
-    private TrajectorySequence warehouse_traj;
+    private TrajectorySequence storage_traj;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -73,7 +73,7 @@ public class BlueRight extends LinearOpMode
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        blueRightTraj();
+        redStorageTraj();
 
         while (!isStarted())
         {
@@ -137,10 +137,10 @@ public class BlueRight extends LinearOpMode
         robot.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        drive.followTrajectorySequence(warehouse_traj);
+        drive.followTrajectorySequence(storage_traj);
 
     }
-    private void blueRightTraj()
+    private void redStorageTraj()
     {
         carousel_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(move_Forward)
@@ -152,9 +152,9 @@ public class BlueRight extends LinearOpMode
                 .lineToLinearHeading(hub_approach)
                 .lineToLinearHeading(hub_pos)
                 .build();
-        warehouse_traj = drive.trajectorySequenceBuilder(hub_traj.end())
+        storage_traj = drive.trajectorySequenceBuilder(hub_traj.end())
                 .turn(Math.toRadians(90))
-                .lineToLinearHeading(warehouse_pos)
+                .lineToLinearHeading(storage_pos)
                 .build();
     }
 

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.team16909.autonomousv2.blocks.BlueBlocks;
 import org.firstinspires.ftc.team16909.autonomousv2.blocks.RedBlocks;
 import org.firstinspires.ftc.team16909.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16909.hardware.FettuccineHardware;
@@ -18,7 +19,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous(preselectTeleOp = "FettuccineRRv2")
-public class RedAuton extends LinearOpMode {
+public class BlueAuton extends LinearOpMode {
 
     FettuccineHardware robot = null;
     SampleMecanumDrive drive = null;
@@ -54,16 +55,16 @@ public class RedAuton extends LinearOpMode {
 
     // LISTS
     private ArrayList<String> startChoices = new ArrayList<String>() {{
-       add("RedC");
-       add("RedW");
+       add("BlueC");
+       add("BlueW");
     }};
     private ArrayList<String> blockChoices = new ArrayList<String>() {{
-        add("RedPushbackC");
-        add("RedPushbackW");
-        add("RedHub");
-        add("RedCarousel");
-        add("RedUnit");
-        add("RedWarehouse");
+        add("BluePushbackC");
+        add("BluePushbackW");
+        add("BlueHub");
+        add("BlueCarousel");
+        add("BlueUnit");
+        add("BlueWarehouse");
         add("Finish");
     }};
 
@@ -78,7 +79,7 @@ public class RedAuton extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         actions = new Actions(robot);
 
-       RedBlocks  redBlocks = new RedBlocks(drive, robot, actions);
+       BlueBlocks redBlocks = new BlueBlocks(drive, robot, actions);
 
        int i = 0;
        while (ok == 0) {
@@ -113,7 +114,6 @@ public class RedAuton extends LinearOpMode {
                     else i = blockChoices.size() - 1;
                     waitFor(0.1);
                 } else if (gamepad1.dpad_up) ok2 = 1;
-                for (int n = 0; n < sequence.size(); n++) telemetry.addLine(sequence.get(n));
                 telemetry.update();
             }
             if (blockChoices.get(i).equals("Finish")) ok = 1;
@@ -160,7 +160,7 @@ public class RedAuton extends LinearOpMode {
 
         ElapsedTime totalTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        while (totalTime.seconds() < 2)
+        while (totalTime.seconds() < 5)
         {
             if(pipeline.error){
                 telemetry.addData("Exception: ", pipeline.debug.getStackTrace());
@@ -189,8 +189,8 @@ public class RedAuton extends LinearOpMode {
 //                }
 //            }
 
-            if (pipeline.getRectMidpointX() > 140 && pipeline.getRectMidpointX() < 220) camLevel = 1;
-            else if (pipeline.getRectMidpointX() > 220 && pipeline.getRectMidpointX() < 550) camLevel = 2;
+            if (pipeline.getRectMidpointX() < 220) camLevel = 1;
+            else if (pipeline.getRectMidpointX() > 220 && pipeline.getRectMidpointX() < 400) camLevel = 2;
             else camLevel = 3;
             telemetry.addData("Level", camLevel);
             telemetry.update();
@@ -205,12 +205,12 @@ public class RedAuton extends LinearOpMode {
             telemetry.addData("Block", sequence.get(n));
             telemetry.update();
             current = sequence.get(n);
-            if (current.equals("RedPushbackC")) initPos = redBlocks.RedPushbackC(startPos);
-            else if (current.equals("RedPushbackW")) initPos = redBlocks.RedPushbackW(startPos);
-            else if (current.equals("RedHub")) initPos = redBlocks.RedHub(initPos, camLevel, 1);
-            else if (current.equals("RedCarousel")) initPos = redBlocks.RedCarousel(initPos);
-            else if (current.equals("RedUnit")) initPos = redBlocks.RedUnit(initPos);
-            else if (current.equals("RedWarehouse")) initPos = redBlocks.RedWarehouse(initPos);
+            if (current.equals("BluePushbackC")) initPos = redBlocks.BluePushbackC(startPos);
+            else if (current.equals("BluePushbackW")) initPos = redBlocks.BluePushbackW(startPos);
+            else if (current.equals("BlueHub")) initPos = redBlocks.BlueHub(initPos, camLevel, 1);
+            else if (current.equals("BlueCarousel")) initPos = redBlocks.BlueCarousel(initPos);
+            else if (current.equals("BlueUnit")) initPos = redBlocks.BlueUnit(initPos);
+            else if (current.equals("BlueWarehouse")) initPos = redBlocks.BlueWarehouse(initPos);
 
 
         }

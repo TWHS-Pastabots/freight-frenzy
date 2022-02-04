@@ -19,39 +19,41 @@ public class RedBlocks {
 
     // Blue Starting Positions
     public final Pose2d posRedStartC = new Pose2d(-36, -66.5, Math.toRadians(90));
-    public final Pose2d posRedStartW = new Pose2d(12, -66.5, Math.toRadians(90));
+    public final Pose2d posRedStartW = new Pose2d(119, -66.5, Math.toRadians(90));
 
     // Blue Pushback
-    public final Pose2d posRedPushback = new Pose2d(-36, 0,Math.toRadians(90));
+    public final Pose2d posRedPushbackC = new Pose2d(-36, -60, Math.toRadians(90));
+    public final Pose2d posRedPushbackW = new Pose2d(11, -60, Math.toRadians(90));
 
     //===============================
 
     // OBJECTIVES
 
     // Blue Shipping Hub
-    public final Pose2d posRedHubApproach = new Pose2d(-12, -36, Math.toRadians(90));
-    public final Pose2d posRedHub = new Pose2d(-12, -36, Math.toRadians(90));
+    public final Pose2d posRedHubApproach = new Pose2d(-2, -60, Math.toRadians(90));
+    public final Pose2d posRedHub = new Pose2d(-2, -42, Math.toRadians(180));
 
     //Blue Carousel
-    public final Pose2d posRedCarousel = new Pose2d(-60, -48, Math.toRadians(180));
+    public final Pose2d posRedCarousel = new Pose2d(-63, -62, Math.toRadians(90));
 
     //================================
 
     // PARKING
 
     // Blue Storage Unit
-    public final Pose2d posRedUnitPark = new Pose2d(-60, -36, Math.toRadians(0));
+    public final Pose2d posRedUnitPark = new Pose2d(-63, -36, Math.toRadians(0));
 
     // Blue Warehouse
-    public final Pose2d posRedWarehouseApproach = new Pose2d(12, -63, Math.toRadians(90));
-    public final Pose2d posRedWarehouseEnter = new Pose2d(36, -63, Math.toRadians(90));
-    public final Pose2d posRedWarehousePark = new Pose2d(36, -51, Math.toRadians(90));
+    public final Pose2d posRedWarehouseApproach = new Pose2d(11, -68.5, Math.toRadians(90));
+    public final Pose2d posRedWarehouseEnter = new Pose2d(52, -68.5, Math.toRadians(90));
+    public final Pose2d posRedWarehousePark = new Pose2d(52, -51, Math.toRadians(90));
 
     //=================================
 
     // TRAJECTORIES
 
-    TrajectorySequence trajRedPushback = null;
+    TrajectorySequence trajRedPushbackC = null;
+    TrajectorySequence trajRedPushbackW = null;
     TrajectorySequence trajRedHubTo = null;
     TrajectorySequence trajRedHubAway = null;
     TrajectorySequence trajRedCarousel = null;
@@ -69,12 +71,20 @@ public class RedBlocks {
         return posRedStartW;
     }
 
-    public Pose2d RedPushback(Pose2d start) {
-        trajRedPushback = drive.trajectorySequenceBuilder(start)
-                .lineToLinearHeading(posRedPushback)
+    public Pose2d RedPushbackC(Pose2d start) {
+        trajRedPushbackC = drive.trajectorySequenceBuilder(start)
+                .lineToLinearHeading(posRedPushbackC)
                 .build();
-        drive.followTrajectorySequence(trajRedPushback);
-        return posRedPushback;
+        drive.followTrajectorySequence(trajRedPushbackC);
+        return posRedPushbackC;
+    }
+
+    public Pose2d RedPushbackW(Pose2d start) {
+        trajRedPushbackW = drive.trajectorySequenceBuilder(start)
+                .lineToLinearHeading(posRedPushbackW)
+                .build();
+        drive.followTrajectorySequence(trajRedPushbackW);
+        return posRedPushbackW;
     }
 
     public Pose2d RedHub(Pose2d start, int level, int posTrim) {
@@ -86,10 +96,12 @@ public class RedBlocks {
         trajRedHubAway = drive.trajectorySequenceBuilder(trajRedHubTo.end())
                 .lineToLinearHeading(posRedHubApproach)
                 .build();
-        robot.grabber.setPosition(0.2);
-        action.moveArm(level, 0);
-        drive.followTrajectorySequence(trajRedHubTo);
         robot.grabber.setPosition(0.5);
+        action.waitFor(0.5);
+        action.moveArm(level, 0);
+        action.waitFor(2);
+        drive.followTrajectorySequence(trajRedHubTo);
+        robot.grabber.setPosition(0);
         action.waitFor(1);
         drive.followTrajectorySequence(trajRedHubAway);
         action.moveArm(0, 0);
@@ -100,7 +112,8 @@ public class RedBlocks {
         trajRedCarousel = drive.trajectorySequenceBuilder(start)
                 .lineToLinearHeading(posRedCarousel)
                 .build();
-        action.moveCarousel(4, 0.5);
+        drive.followTrajectorySequence(trajRedCarousel);
+        action.moveCarousel(4, 0.4);
         return posRedCarousel;
     }
 
@@ -108,6 +121,7 @@ public class RedBlocks {
         trajRedUnit = drive.trajectorySequenceBuilder(start)
                 .lineToLinearHeading(posRedUnitPark)
                 .build();
+        drive.followTrajectorySequence(trajRedUnit);
         return posRedUnitPark;
     }
 
@@ -117,6 +131,7 @@ public class RedBlocks {
                 .lineToLinearHeading(posRedWarehouseEnter)
                 .lineToLinearHeading(posRedWarehousePark)
                 .build();
+        drive.followTrajectorySequence(trajRedWarehouse);
         return posRedWarehousePark;
     }
 

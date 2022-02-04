@@ -52,7 +52,7 @@ public class FettuccineRRv2 extends LinearOpMode {
 
         // Drive Motors
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Arm Variables
         armTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -90,7 +90,7 @@ public class FettuccineRRv2 extends LinearOpMode {
             // Drive Main Code
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            (gamepad1.left_stick_x + dpadLR) * mult,
+                            (gamepad1.left_stick_x - dpadLR) * mult,
                             (-gamepad1.left_stick_y + dpadFB) * mult,
                             -gamepad1.right_stick_x * mult
                     )
@@ -100,6 +100,7 @@ public class FettuccineRRv2 extends LinearOpMode {
 
             Pose2d poseEstimate = drive.getPoseEstimate();
 
+            telemetry.addData("arm", currentPosition);
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
@@ -149,11 +150,14 @@ public class FettuccineRRv2 extends LinearOpMode {
         }
         else if (gamepad2.triangle && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(270);
-            robot.leftArm.setTargetPosition(270);
+            robot.rightArm.setTargetPosition(574);
+            robot.leftArm.setTargetPosition(574);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() + 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() + 10);
 
+
+            //mid 659
+            //low 753
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -235,8 +239,8 @@ public class FettuccineRRv2 extends LinearOpMode {
 
     private void grabberCode()
     {
-        if (gamepad2.dpad_up) grabHold = true;
-        else if (gamepad2.dpad_down) grabHold = false;
+        if (gamepad2.dpad_up) grabHold = false;
+        else if (gamepad2.dpad_down) grabHold = true;
 
         if (grabHold) robot.grabber.setPosition(0);
         else if (!grabHold) robot.grabber.setPosition(0.5);

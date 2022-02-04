@@ -19,17 +19,18 @@ public class BlueBlocks {
 
     // Blue Starting Positions
     public final Pose2d posBlueStartC = new Pose2d(-36, 66.5, Math.toRadians(-90));
-    public final Pose2d posBlueStartW = new Pose2d(12, 66.5, Math.toRadians(-90));
+    public final Pose2d posBlueStartW = new Pose2d(11, 66.5, Math.toRadians(-90));
 
     // Blue Pushback
-    public final Pose2d posBluePushback = new Pose2d(-36, 0,Math.toRadians(-90));
+    public final Pose2d posBluePushbackC = new Pose2d(-36, 60, Math.toRadians(-90));
+    public final Pose2d posBluePushbackW = new Pose2d(11, 60, Math.toRadians(-90));
 
     //===============================
 
     // OBJECTIVES
 
     // Blue Shipping Hub
-    public final Pose2d posBlueHubApproach = new Pose2d(-12, 36, Math.toRadians(-90));
+    public final Pose2d posBlueHubApproach = new Pose2d(-12, 60, Math.toRadians(-90));
     public final Pose2d posBlueHub = new Pose2d(-12, 36, Math.toRadians(-90));
 
     //Blue Carousel
@@ -40,18 +41,19 @@ public class BlueBlocks {
     // PARKING
 
     // Blue Storage Unit
-    public final Pose2d posBlueUnitPark = new Pose2d(-60, 36, Math.toRadians(0));
+    public final Pose2d posBlueUnitPark = new Pose2d(-63, 36, Math.toRadians(0));
 
     // Blue Warehouse
-    public final Pose2d posBlueWarehouseApproach = new Pose2d(12, 63, Math.toRadians(-90));
-    public final Pose2d posBlueWarehouseEnter = new Pose2d(36, 63, Math.toRadians(-90));
-    public final Pose2d posBlueWarehousePark = new Pose2d(36, 51, Math.toRadians(-90));
+    public final Pose2d posBlueWarehouseApproach = new Pose2d(11, 66.5, Math.toRadians(-90));
+    public final Pose2d posBlueWarehouseEnter = new Pose2d(52, 66.5, Math.toRadians(-90));
+    public final Pose2d posBlueWarehousePark = new Pose2d(52, 51, Math.toRadians(-90));
 
     //=================================
 
     // TRAJECTORIES
 
-    TrajectorySequence trajBluePushback = null;
+    TrajectorySequence trajBluePushbackC = null;
+    TrajectorySequence trajBluePushbackW = null;
     TrajectorySequence trajBlueHubTo = null;
     TrajectorySequence trajBlueHubAway = null;
     TrajectorySequence trajBlueCarousel = null;
@@ -69,15 +71,23 @@ public class BlueBlocks {
         return posBlueStartW;
     }
 
-    public Pose2d bluePushback(Pose2d start) {
-        trajBluePushback = drive.trajectorySequenceBuilder(start)
-                .lineToLinearHeading(posBluePushback)
+    public Pose2d BluePushbackC(Pose2d start) {
+        trajBluePushbackC = drive.trajectorySequenceBuilder(start)
+                .lineToLinearHeading(posBluePushbackC)
                 .build();
-        drive.followTrajectorySequence(trajBluePushback);
-        return posBluePushback;
+        drive.followTrajectorySequence(trajBluePushbackC);
+        return posBluePushbackC;
     }
 
-    public Pose2d blueHub(Pose2d start, int level, int posTrim) {
+    public Pose2d BluePushbackW(Pose2d start) {
+        trajBluePushbackW = drive.trajectorySequenceBuilder(start)
+                .lineToLinearHeading(posBluePushbackW)
+                .build();
+        drive.followTrajectorySequence(trajBluePushbackW);
+        return posBluePushbackW;
+    }
+
+    public Pose2d BlueHub(Pose2d start, int level, int posTrim) {
         trajBlueHubTo = drive.trajectorySequenceBuilder(start)
                 .lineToLinearHeading(posBlueHubApproach)
                 .lineToLinearHeading(posBlueHub)
@@ -96,27 +106,30 @@ public class BlueBlocks {
         return posBlueHubApproach;
     }
 
-    public Pose2d blueCarousel(Pose2d start) {
+    public Pose2d BlueCarousel(Pose2d start) {
         trajBlueCarousel = drive.trajectorySequenceBuilder(start)
                 .lineToLinearHeading(posBlueCarousel)
                 .build();
+        drive.followTrajectorySequence(trajBlueCarousel);
         action.moveCarousel(4,-0.5);
         return posBlueCarousel;
     }
 
-    public Pose2d blueUnit(Pose2d start) {
+    public Pose2d BlueUnit(Pose2d start) {
         trajBlueUnit = drive.trajectorySequenceBuilder(start)
                 .lineToLinearHeading(posBlueUnitPark)
                 .build();
+        drive.followTrajectorySequence(trajBlueUnit);
         return posBlueUnitPark;
     }
 
-    public Pose2d blueWarehouse(Pose2d start) {
+    public Pose2d BlueWarehouse(Pose2d start) {
         trajBlueWarehouse = drive.trajectorySequenceBuilder(start)
                 .lineToLinearHeading(posBlueWarehouseApproach)
                 .lineToLinearHeading(posBlueWarehouseEnter)
                 .lineToLinearHeading(posBlueWarehousePark)
                 .build();
+        drive.followTrajectorySequence(trajBlueWarehouse);
         return posBlueWarehousePark;
     }
 }

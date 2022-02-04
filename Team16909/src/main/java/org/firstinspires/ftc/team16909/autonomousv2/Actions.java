@@ -66,46 +66,46 @@ public class Actions {
 
         if (position == 3 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(140 + trim);
-            robot.leftArm.setTargetPosition(140 + trim);
+            robot.rightArm.setTargetPosition(540 + trim);
+            robot.leftArm.setTargetPosition(540 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() + 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() + 10);
 
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftArm.setPower(0.6);
-            robot.rightArm.setPower(0.6);
+            robot.leftArm.setPower(0.7);
+            robot.rightArm.setPower(0.7);
 
             armTime.reset();
         }
         else if (position == 2 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(73 + trim);
-            robot.leftArm.setTargetPosition(73 + trim);
+            robot.rightArm.setTargetPosition(600 + trim);
+            robot.leftArm.setTargetPosition(600 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftArm.setPower(0.6);
-            robot.rightArm.setPower(0.6);
+            robot.leftArm.setPower(0.7);
+            robot.rightArm.setPower(0.7);
 
             armTime.reset();
         }
         else if (position == 1 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(15 + trim);
-            robot.leftArm.setTargetPosition(15 + trim);
+            robot.rightArm.setTargetPosition(733 + trim);
+            robot.leftArm.setTargetPosition(733 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftArm.setPower(0.6);
-            robot.rightArm.setPower(0.6);
+            robot.leftArm.setPower(0.7);
+            robot.rightArm.setPower(0.7);
 
             armTime.reset();
         }

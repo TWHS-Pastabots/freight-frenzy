@@ -24,7 +24,7 @@ public class Autonomous extends LinearOpMode {
 
     ElapsedTime runTime = new ElapsedTime();
 
-    Trajectory toShipment, moveBack, toCarousel, toWarehouse, toFinish, toSetup;
+    Trajectory start, toShipment, moveBack, toCarousel, toWarehouse, toFinish, toSetup;
 
     Pose2d startPose;
 
@@ -95,7 +95,6 @@ public class Autonomous extends LinearOpMode {
 
             if (isWaiting) wait5();
 
-            // No camera yet so robot will always deliver to top for now
             deliverShipment(barcodeToInt(pos));
 
             if (goToCarousel) {
@@ -103,7 +102,8 @@ public class Autonomous extends LinearOpMode {
             }
 
             closeClaw();
-            setToFinish();
+            goToFinish();
+            runArmToStart();
         }
 
     }
@@ -112,10 +112,14 @@ public class Autonomous extends LinearOpMode {
     private void initTrajectories() {
 
 
+        start = drive.trajectoryBuilder(startPose)
+                .forward(12)
+                .build();
+
         switch(alliance) {
 
             case ("red"): {
-                toShipment = drive.trajectoryBuilder(drive.getPoseEstimate())
+                toShipment = drive.trajectoryBuilder(start.end())
                         .lineToLinearHeading(PoseStorage.RedHub)
                         .build();
                 moveBack = drive.trajectoryBuilder(toShipment.end())
@@ -143,7 +147,7 @@ public class Autonomous extends LinearOpMode {
                                 .build();
 
                         toWarehouse = drive.trajectoryBuilder(toSetup.end())
-                                .strafeRight(32)
+                                .strafeRight(50)
                                 .build();
                         break;
                     }
@@ -155,7 +159,7 @@ public class Autonomous extends LinearOpMode {
 
             case ("blue"): {
 
-                toShipment = drive.trajectoryBuilder(drive.getPoseEstimate())
+                toShipment = drive.trajectoryBuilder(start.end())
                         .lineToLinearHeading(PoseStorage.BlueHub)
                         .build();
 
@@ -174,7 +178,7 @@ public class Autonomous extends LinearOpMode {
                                 .build();
 
                         toWarehouse = drive.trajectoryBuilder(toSetup.end())
-                                .strafeLeft(32)
+                                .strafeLeft(50)
                                 .build();
 
                         break;
@@ -301,7 +305,7 @@ public class Autonomous extends LinearOpMode {
 
     }
 
-    private void setToFinish() {
+    private void goToFinish() {
         if (goToCarousel) drive.followTrajectory(toFinish);
         else {
             drive.followTrajectory(toSetup);

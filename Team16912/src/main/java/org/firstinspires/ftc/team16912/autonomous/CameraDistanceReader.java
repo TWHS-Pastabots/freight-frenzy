@@ -18,11 +18,6 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "Camera Distance Reader")
 public class CameraDistanceReader extends LinearOpMode {
 
-    int cameraGroundHeight = 65; // Height of the center of the lens from the ground
-    int blockHeight = 50; // Height of the freight block
-
-    private int distance;
-
     DistancePipeline pipeline;
     OpenCvInternalCamera webcam;
 
@@ -65,12 +60,12 @@ public class CameraDistanceReader extends LinearOpMode {
             centerRobot();
 
             Trajectory runToBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
-                    .forward(pipeline.DISTANCE - 5)
+                    .forward(pipeline.DISTANCE - 6)
                     .build();
 
             openClaw();
             drive.followTrajectory(runToBlock);
-            runArmTo(250);
+            runArmTo(170);
             closeClaw();
             runArmTo(-1000);
         }
@@ -91,26 +86,26 @@ public class CameraDistanceReader extends LinearOpMode {
         if(blockCenter < 160)
         {
             distToEdge = block.x;
-            strafeDistance = distToEdge/pxpi;
+            strafeDistance = distToEdge/pxpi + getError(distToEdge, pipeline.DISTANCE);
 
-            /*alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
+            alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
                     .strafeLeft((strafeDistance)+1)
-                    .build();*/
+                    .build();
         }
 
         // Block is to the right
         else if (blockCenter > 160) {
             distToEdge = 320 - (block.x + block.width);
             strafeDistance = (distToEdge) / pxpi;
-            /*alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
+            alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
                     .strafeRight((strafeDistance)-1)
-                    .build();*/
+                    .build();
         }
 
         else {
-            /*alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
+            alignBlock = drive.trajectoryBuilder(drive.getPoseEstimate())
                     .forward(0)
-                    .build();*/
+                    .build();
         }
 
         telemetry.addData("Strafe Distance:", strafeDistance);
@@ -118,7 +113,7 @@ public class CameraDistanceReader extends LinearOpMode {
         telemetry.addData("Distance: ", pipeline.DISTANCE);
         telemetry.addData("Distane to Edge: ", distToEdge);
         telemetry.update();
-        //drive.followTrajectory(alignBlock);
+        drive.followTrajectory(alignBlock);
 
     }
 
@@ -127,15 +122,17 @@ public class CameraDistanceReader extends LinearOpMode {
         double ycomp = 1.125 * Math.pow(1.0675, distToBlock);
         double xcomp;
 
-        double xtop = (Math.pow(Math.abs(distToEdge - 160), 2));
+        double xtop = (Math.pow((distToEdge - 160), 2));
 
         Rect block = pipeline.BLOCK;
         int blockCenter = block.x + (block.width/2);
 
+        // Left
         if (blockCenter < 160) {
             xcomp = xtop / 25000;
         }
 
+        // Right
         else if (blockCenter > 160) {
             xcomp = xtop / 17750;
         }

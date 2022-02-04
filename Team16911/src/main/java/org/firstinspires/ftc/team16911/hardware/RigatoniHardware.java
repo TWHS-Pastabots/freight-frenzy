@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team16911.hardware;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -17,6 +18,7 @@ public class RigatoniHardware
     public DcMotorEx armMotorTwo = null;
     public DcMotorEx carouselMotor = null;
     public DcMotorEx intakeMotor = null;
+    public CRServo cappingServo = null;
     public DistanceSensor leftDistanceSensor = null;
     public DistanceSensor rightDistanceSensor = null;
     public DcMotorEx[] motors;
@@ -29,7 +31,8 @@ public class RigatoniHardware
         initializeArmMotors(hardwareMap);
         initializeCarousel(hardwareMap);
         initializeIntakeMotor(hardwareMap);
-        initializeColorSensors(hardwareMap);
+        initializeDistanceSensors(hardwareMap);
+        //initializeCappingServo(hardwareMap);
     }
 
     private void initializePrimaryMotors(HardwareMap hardwareMap)
@@ -41,10 +44,10 @@ public class RigatoniHardware
         rightRear = hardwareMap.get(DcMotorEx.class, RigatoniIds.RIGHT_REAR_MOTOR);
 
         // Set Motors to Run in Right Direction
-        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear};
 
@@ -99,9 +102,16 @@ public class RigatoniHardware
         intakeMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
 
-    private void initializeColorSensors(HardwareMap hardwareMap)
+    private void initializeDistanceSensors(HardwareMap hardwareMap)
     {
         leftDistanceSensor = hardwareMap.get(DistanceSensor.class, RigatoniIds.LEFT_DISTANCE_SENSOR);
         rightDistanceSensor = hardwareMap.get(DistanceSensor.class, RigatoniIds.RIGHT_DISTANCE_SENSOR);
+    }
+
+    private void initializeCappingServo(HardwareMap hardwareMap)
+    {
+        cappingServo = hardwareMap.get(CRServo.class, RigatoniIds.CAPPING_SERVO);
+        cappingServo.setDirection(CRServo.Direction.FORWARD);
+        cappingServo.setPower(0);
     }
 }

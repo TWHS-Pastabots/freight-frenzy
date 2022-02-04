@@ -1,1 +1,4 @@
 apply from: '../build.module.gradle'
+dependencies {
+    implementation 'org.openftc:easyopencv:1.5.1'
+}

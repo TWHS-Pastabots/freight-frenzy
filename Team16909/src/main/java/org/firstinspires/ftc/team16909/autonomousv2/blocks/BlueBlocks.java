@@ -30,11 +30,12 @@ public class BlueBlocks {
     // OBJECTIVES
 
     // Blue Shipping Hub
-    public final Pose2d posBlueHubApproach = new Pose2d(-12, 60, Math.toRadians(-90));
-    public final Pose2d posBlueHub = new Pose2d(-12, 36, Math.toRadians(-90));
+    public final Pose2d posBlueHubApproach = new Pose2d(-15, 60, Math.toRadians(-90));
+    public final Pose2d posBlueHub = new Pose2d(-15, 42, Math.toRadians(0));
+    public final Pose2d posBlueHubLow = new Pose2d(-15, 38, Math.toRadians(-180));
 
     //Blue Carousel
-    public final Pose2d posBlueCarousel = new Pose2d(-60, 48, Math.toRadians(-180));
+    public final Pose2d posBlueCarousel = new Pose2d(-60, 48, Math.toRadians(0));
 
     //================================
 
@@ -44,8 +45,8 @@ public class BlueBlocks {
     public final Pose2d posBlueUnitPark = new Pose2d(-63, 36, Math.toRadians(0));
 
     // Blue Warehouse
-    public final Pose2d posBlueWarehouseApproach = new Pose2d(11, 66.5, Math.toRadians(-90));
-    public final Pose2d posBlueWarehouseEnter = new Pose2d(52, 66.5, Math.toRadians(-90));
+    public final Pose2d posBlueWarehouseApproach = new Pose2d(11, 68.5, Math.toRadians(-90));
+    public final Pose2d posBlueWarehouseEnter = new Pose2d(52, 68.5, Math.toRadians(-90));
     public final Pose2d posBlueWarehousePark = new Pose2d(52, 51, Math.toRadians(-90));
 
     //=================================
@@ -88,21 +89,32 @@ public class BlueBlocks {
     }
 
     public Pose2d BlueHub(Pose2d start, int level, int posTrim) {
-        trajBlueHubTo = drive.trajectorySequenceBuilder(start)
-                .lineToLinearHeading(posBlueHubApproach)
-                .lineToLinearHeading(posBlueHub)
-                .forward(posTrim)
-                .build();
+        if (level > 1) {
+            trajBlueHubTo = drive.trajectorySequenceBuilder(start)
+                    .lineToLinearHeading(posBlueHubApproach)
+                    .lineToLinearHeading(posBlueHub)
+                    .forward(posTrim)
+                    .build();
+        } else {
+            trajBlueHubTo = drive.trajectorySequenceBuilder(start)
+                    .lineToLinearHeading(posBlueHubApproach)
+                    .lineToLinearHeading(posBlueHubLow)
+                    .forward(posTrim)
+                    .build();
+        }
         trajBlueHubAway = drive.trajectorySequenceBuilder(trajBlueHubTo.end())
                 .lineToLinearHeading(posBlueHubApproach)
                 .build();
-        robot.grabber.setPosition(0.2);
-        action.moveArm(level, 0);
-        drive.followTrajectorySequence(trajBlueHubTo);
         robot.grabber.setPosition(0.5);
+        action.waitFor(0.5);
+        action.moveArm(level, 0);
+        action.waitFor(2);
+        drive.followTrajectorySequence(trajBlueHubTo);
+        robot.grabber.setPosition(0);
         action.waitFor(1);
         drive.followTrajectorySequence(trajBlueHubAway);
         action.moveArm(0, 0);
+        action.waitFor(1);
         return posBlueHubApproach;
     }
 
@@ -111,7 +123,7 @@ public class BlueBlocks {
                 .lineToLinearHeading(posBlueCarousel)
                 .build();
         drive.followTrajectorySequence(trajBlueCarousel);
-        action.moveCarousel(4,-0.5);
+        action.moveCarousel(4,-0.4);
         return posBlueCarousel;
     }
 

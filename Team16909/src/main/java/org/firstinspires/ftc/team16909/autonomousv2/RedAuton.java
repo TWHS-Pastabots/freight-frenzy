@@ -27,6 +27,8 @@ public class RedAuton extends LinearOpMode {
     private Pose2d startPos = null;
     private Pose2d initPos = null;
 
+    private double delay = 0;
+
     // "Ok" Button
     private int ok = 0;
     private int ok2 = 0;
@@ -78,7 +80,23 @@ public class RedAuton extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         actions = new Actions(robot);
 
-       RedBlocks  redBlocks = new RedBlocks(drive, robot, actions);
+        RedBlocks redBlocks = new RedBlocks(drive, robot, actions);
+
+        while (ok == 0) {
+            telemetry.addData("Delay", delay);
+            if (gamepad1.dpad_right) {
+                if (delay < 10) delay++;
+                waitFor(0.1);
+            } else if (gamepad1.dpad_left) {
+                if (delay > 0) delay--;
+                waitFor(0.1);
+            } else if (gamepad1.dpad_up) ok = 1;
+            telemetry.update();
+        }
+        ok = 0;
+        telemetry.addData("Added Delay", delay);
+        telemetry.update();
+        waitFor(1);
 
        int i = 0;
        while (ok == 0) {
@@ -195,6 +213,8 @@ public class RedAuton extends LinearOpMode {
             telemetry.addData("Level", camLevel);
             telemetry.update();
         }
+
+        waitFor(delay);
 
         String current = null;
         drive.setPoseEstimate(startPos);

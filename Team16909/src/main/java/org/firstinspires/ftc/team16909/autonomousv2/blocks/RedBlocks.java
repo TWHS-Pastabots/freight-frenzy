@@ -19,7 +19,7 @@ public class RedBlocks {
 
     // Blue Starting Positions
     public final Pose2d posRedStartC = new Pose2d(-36, -66.5, Math.toRadians(90));
-    public final Pose2d posRedStartW = new Pose2d(119, -66.5, Math.toRadians(90));
+    public final Pose2d posRedStartW = new Pose2d(11, -66.5, Math.toRadians(90));
 
     // Blue Pushback
     public final Pose2d posRedPushbackC = new Pose2d(-36, -60, Math.toRadians(90));
@@ -32,6 +32,7 @@ public class RedBlocks {
     // Blue Shipping Hub
     public final Pose2d posRedHubApproach = new Pose2d(-2, -60, Math.toRadians(90));
     public final Pose2d posRedHub = new Pose2d(-2, -42, Math.toRadians(180));
+    public final Pose2d posRedHubLow = new Pose2d(-2, -38, Math.toRadians(0));
 
     //Blue Carousel
     public final Pose2d posRedCarousel = new Pose2d(-63, -62, Math.toRadians(90));
@@ -88,11 +89,19 @@ public class RedBlocks {
     }
 
     public Pose2d RedHub(Pose2d start, int level, int posTrim) {
-        trajRedHubTo = drive.trajectorySequenceBuilder(start)
-                .lineToLinearHeading(posRedHubApproach)
-                .lineToLinearHeading(posRedHub)
-                .forward(posTrim)
-                .build();
+        if (level > 1) {
+            trajRedHubTo = drive.trajectorySequenceBuilder(start)
+                    .lineToLinearHeading(posRedHubApproach)
+                    .lineToLinearHeading(posRedHub)
+                    .forward(posTrim)
+                    .build();
+        } else {
+            trajRedHubTo = drive.trajectorySequenceBuilder(start)
+                    .lineToLinearHeading(posRedHubApproach)
+                    .lineToLinearHeading(posRedHubLow)
+                    .forward(posTrim)
+                    .build();
+        }
         trajRedHubAway = drive.trajectorySequenceBuilder(trajRedHubTo.end())
                 .lineToLinearHeading(posRedHubApproach)
                 .build();
@@ -105,6 +114,7 @@ public class RedBlocks {
         action.waitFor(1);
         drive.followTrajectorySequence(trajRedHubAway);
         action.moveArm(0, 0);
+        action.waitFor(1);
         return posRedHubApproach;
     }
 

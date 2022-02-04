@@ -74,8 +74,8 @@ public class Actions {
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftArm.setPower(0.7);
-            robot.rightArm.setPower(0.7);
+            robot.leftArm.setPower(0.6);
+            robot.rightArm.setPower(0.6);
 
             armTime.reset();
         }
@@ -89,23 +89,23 @@ public class Actions {
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftArm.setPower(0.7);
-            robot.rightArm.setPower(0.7);
+            robot.leftArm.setPower(0.6);
+            robot.rightArm.setPower(0.6);
 
             armTime.reset();
         }
         else if (position == 1 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(733 + trim);
-            robot.leftArm.setTargetPosition(733 + trim);
+            robot.rightArm.setTargetPosition(20 + trim);
+            robot.leftArm.setTargetPosition(20 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 
             robot.leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftArm.setPower(0.7);
-            robot.rightArm.setPower(0.7);
+            robot.leftArm.setPower(0.6);
+            robot.rightArm.setPower(0.6);
 
             armTime.reset();
         }

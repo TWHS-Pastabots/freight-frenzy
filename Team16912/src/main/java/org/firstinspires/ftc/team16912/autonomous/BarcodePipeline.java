@@ -12,10 +12,18 @@ public class BarcodePipeline extends OpenCvPipeline {
     /*
      * An enum to define the object position
      */
-    public enum ObjectPosition {
-        LEFT, // Deliver Bottom
-        CENTER, // Deliver Middle
-        RIGHT // Deliver Top
+    public enum ObjectPosition
+    {
+        LEFT(-4200), // Deliver Bottom
+        CENTER(-3000), // Deliver Middle
+        RIGHT(-3650); // Deliver Top
+
+        private int encoderPos = 0;
+
+        ObjectPosition(int encoderPos)
+        {
+            this.encoderPos = encoderPos;
+        }
     }
 
     /*
@@ -69,7 +77,7 @@ public class BarcodePipeline extends OpenCvPipeline {
 
     /*
      * This function takes the RGB frame, converts to YCrCb,
-     * and extracts the Cb channel to the 'Cb' variable
+     * and extracts the Y channel to the 'Y' variable
      */
     void inputToCb(Mat input) {
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
@@ -199,8 +207,8 @@ public class BarcodePipeline extends OpenCvPipeline {
     /*
      * Call this from the OpMode thread to obtain the latest analysis
      */
-    public ObjectPosition getAnalysis() {
-        return position;
+    public int getAnalysis() {
+        return position.encoderPos;
     }
 
 }

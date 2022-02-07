@@ -33,7 +33,8 @@ public class Linguine extends LinearOpMode {
 
 
         // Loop
-        while (isActive()) {
+        while (isActive())
+        {
 
             // Mecanum drive code
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
@@ -84,18 +85,18 @@ public class Linguine extends LinearOpMode {
             // Reset Arm
             if (gamepad2.triangle) runArmToStart();
 
-            if (gamepad1.dpad_up) tapeUp();
-            else if (gamepad1.dpad_down) tapeDown();
-            else if (gamepad1.dpad_left) tapeLeft();
-            else if (gamepad1.dpad_right) tapeRight();
-            else {
-                robot.LRServo.setPower(0);
-                robot.UDServo.setPower(0);
-            }
-
-            if (gamepad1.left_trigger > 0) robot.tapeServo.setPower(gamepad1.left_trigger);
-            else if (gamepad1.right_trigger > 0) robot.tapeServo.setPower(-gamepad1.right_trigger);
-            else robot.tapeServo.setPower(0);
+//            if (gamepad1.dpad_up) tapeUp();
+//            else if (gamepad1.dpad_down) tapeDown();
+//            else if (gamepad1.dpad_left) tapeLeft();
+//            else if (gamepad1.dpad_right) tapeRight();
+//            else {
+//                robot.LRServo.setPower(0);
+//                robot.UDMotor.setPower(0);
+//            }
+//
+//            if (gamepad1.left_trigger > 0) robot.tapeServo.setPower(gamepad1.left_trigger);
+//            else if (gamepad1.right_trigger > 0) robot.tapeServo.setPower(-gamepad1.right_trigger);
+//            else robot.tapeServo.setPower(0);
 
 
 
@@ -105,7 +106,7 @@ public class Linguine extends LinearOpMode {
             if (gamepad2.dpad_right) setSpinnerDirection('f');
             else if (gamepad2.dpad_left) setSpinnerDirection('r');
 
-            robot.cSpinner.setVelocity(gamepad2.right_trigger * 500);
+            robot.cSpinner.setVelocity(gamepad2.right_trigger * 200);
 
 
 
@@ -162,12 +163,12 @@ public class Linguine extends LinearOpMode {
     private void openClaw() { robot.servoClaw.setPosition(-1); }
 
 
-    private void tapeUp() { robot.UDServo.setPower(.15); }
-    private void tapeDown() { robot.UDServo.setPower(-.15); }
-    private void tapeLeft() { robot.LRServo.setPower(-.3); }
-    private void tapeRight() { robot.LRServo.setPower(.3); }
-    private void tapeOut(double p) { robot.tapeServo.setPower(p); }
-    private void tapeIn(double p) { robot.tapeServo.setPower(-p); }
+//    private void tapeUp() { robot.UDMotor.setPower(.3); }
+//    private void tapeDown() { robot.UDMotor.setPower(-.3); }
+//    private void tapeLeft() { robot.LRServo.setPower(-.3); }
+//    private void tapeRight() { robot.LRServo.setPower(.3); }
+//    private void tapeOut(double p) { robot.tapeServo.setPower(p); }
+//    private void tapeIn(double p) { robot.tapeServo.setPower(-p); }
 
 
 

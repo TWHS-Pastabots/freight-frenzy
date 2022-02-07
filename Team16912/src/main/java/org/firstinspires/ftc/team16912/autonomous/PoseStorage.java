@@ -11,7 +11,26 @@ public class PoseStorage {
     public static Pose2d RedLeft, RedRight, BlueLeft, BlueRight;
     public static Pose2d RedCarousel, BlueCarousel, RedHub, BlueHub, RedStorageUnit, BlueStorageUnit, RedWarehouse, BlueWarehouse, RedWarehouseSetup, BlueWarehouseSetup;
 
-    //public static Vector2d RedCarousel, BlueCarousel, RedHub, BlueHub, RedFinish, BlueFinish;
+    public static Pose2d DetStartPose(int allI, int sideI)
+    {
+        // Red
+        if(allI == 0)
+        {
+            //Left
+            if(sideI == 0)
+            {
+                return RedLeft;
+            }
+            return RedRight;
+        }
+        // Blue
+        if(sideI == 0)
+        {
+            return BlueLeft;
+        }
+        return BlueRight;
+    }
+
 
     public static void initPoses() {
 
@@ -23,7 +42,7 @@ public class PoseStorage {
         BlueRight = new Pose2d(-35.04860248750233, 64.287627195530014, Math.toRadians(270));
 
 
-//        // Component poses
+        // Component poses
         RedCarousel = new Pose2d(-61.32295700521856,-62.766810012697775,Math.toRadians(269.28168016088995));
         BlueCarousel = new Pose2d(-59.43131663678813, 56.86792328414704,Math.toRadians(172.84226364522823));
         RedHub = new Pose2d( -14.000456450593105,-60.08996787199466,Math.toRadians(271.0642161002907));
@@ -36,17 +55,6 @@ public class PoseStorage {
         RedWarehouse = new Pose2d(50.66711740422015, -40.326774389878032, Math.toRadians(0));
         BlueWarehouseSetup = new Pose2d(13, 67, Math.toRadians(270));
         BlueWarehouse = new Pose2d(45.664135706521755, 37.818617399773153, Math.toRadians(5));
-
-
-
-        // Component Vectors
-        //RedCarousel = new Vector2d(-54.70231421283885,-45.391167741221004);
-//        BlueCarousel = new Vector2d(-64.43131663678813, 53.86792328414704);
-//        RedHub = new Vector2d( -8.000056450593105,-24.00006787199466);
-//        BlueHub = new Vector2d( -14.638173890493668, 51.95355503292278);
-//        RedFinish = new Vector2d(-58.66711740422015, -29.326774389878032);
-//        BlueFinish = new Vector2d(-61.664135706521755, 28.818617399773153);
-
     }
 
 }

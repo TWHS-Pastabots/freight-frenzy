@@ -4,9 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.team16912.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16912.util.LinguineHardware;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -28,14 +26,16 @@ public class Autonomous extends LinearOpMode {
 
     Pose2d startPose;
 
-    private String alliance = "blue", side = "left";
-    boolean isWaiting = false;
+    private String alliance = "BLUE", side = "LEFT";
+    private int waitTime = 0;
 
     private boolean goToCarousel;
 
 
     OpenCvInternalCamera webcam;
     BarcodePipeline pipeline;
+
+    private final int armStartPosition = -1000;
 
 
 
@@ -56,9 +56,8 @@ public class Autonomous extends LinearOpMode {
 
             @Override
             public void onError(int errorCode) {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
+                telemetry.addData("Error", "*Camera could not be opened*");
+                telemetry.update();
             }
         });
 
@@ -79,8 +78,8 @@ public class Autonomous extends LinearOpMode {
         config();
         drive.setPoseEstimate(startPose);
 
-        goToCarousel = (alliance.equals("red") && side.equals("left"))
-                            || (alliance.equals("blue") && side.equals("right"));
+        goToCarousel = (alliance.equals("RED") && side.equals("LEFT"))
+                            || (alliance.equals("BLUE") && side.equals("RIGHT"));
 
 
         initTrajectories();
@@ -91,19 +90,20 @@ public class Autonomous extends LinearOpMode {
 
         if (isStarted()) {
 
-            BarcodePipeline.ObjectPosition pos = pipeline.getAnalysis();
+            sleep(waitTime);
 
-            if (isWaiting) wait5();
+            drive.followTrajectory(start);
 
-            deliverShipment(barcodeToInt(pos));
+            deliverShipment();
 
             if (goToCarousel) {
+                drive.followTrajectory(toCarousel);
+                runArmTo(armStartPosition);
                 spinCarousel();
             }
 
             closeClaw();
             goToFinish();
-            runArmToStart();
         }
 
     }
@@ -118,7 +118,7 @@ public class Autonomous extends LinearOpMode {
 
         switch(alliance) {
 
-            case ("red"): {
+            case ("RED"): {
                 toShipment = drive.trajectoryBuilder(start.end())
                         .lineToLinearHeading(PoseStorage.RedHub)
                         .build();
@@ -129,7 +129,7 @@ public class Autonomous extends LinearOpMode {
 
                 switch (side) {
 
-                    case ("left"): {
+                    case ("LEFT"): {
                         toCarousel = drive.trajectoryBuilder(moveBack.end())
                                 .lineToLinearHeading(PoseStorage.RedCarousel)
                                 .build();
@@ -139,11 +139,11 @@ public class Autonomous extends LinearOpMode {
                         break;
                     }
 
-                    case ("right"): {
+                    case ("RIGHT"): {
 
                         toSetup = drive.trajectoryBuilder(moveBack.end())
                                 .lineToLinearHeading(PoseStorage.RedWarehouseSetup)
-                                .addTemporalMarker(.25, ()-> runArmToStart())
+                                .addTemporalMarker(.25, this::runArmToStart)
                                 .build();
 
                         toWarehouse = drive.trajectoryBuilder(toSetup.end())
@@ -157,7 +157,7 @@ public class Autonomous extends LinearOpMode {
                 break;
             }
 
-            case ("blue"): {
+            case ("BLUE"): {
 
                 toShipment = drive.trajectoryBuilder(start.end())
                         .lineToLinearHeading(PoseStorage.BlueHub)
@@ -169,12 +169,12 @@ public class Autonomous extends LinearOpMode {
 
                 switch (side) {
 
-                    case ("left"): {
+                    case ("LEFT"): {
 
 
                         toSetup = drive.trajectoryBuilder(moveBack.end())
                                 .lineToLinearHeading(PoseStorage.BlueWarehouseSetup)
-                                .addTemporalMarker(.25, ()-> runArmToStart())
+                                .addTemporalMarker(.25, this::runArmToStart)
                                 .build();
 
                         toWarehouse = drive.trajectoryBuilder(toSetup.end())
@@ -184,7 +184,7 @@ public class Autonomous extends LinearOpMode {
                         break;
                     }
 
-                    case ("right"): {
+                    case ("RIGHT"): {
                         toCarousel = drive.trajectoryBuilder(moveBack.end())
                                 .lineToLinearHeading(PoseStorage.BlueCarousel)
                                 .build();
@@ -202,44 +202,10 @@ public class Autonomous extends LinearOpMode {
         }
     }
 
-    private int barcodeToInt(BarcodePipeline.ObjectPosition position) {
 
-        switch (position) {
-            case LEFT:
-                return 1;
-
-            case CENTER:
-                return 2;
-
-            case RIGHT:
-                return 3;
-        }
-
-        return 0;
-    }
-
-    private void deliverShipment(int pos) {
-
-        int encoderPos = 0;
-
-        switch (pos) {
-
-            case 2: {
-                encoderPos = -3000;
-                break;
-            }
-
-            case 3: {
-                encoderPos = -3650;
-                break;
-            }
-
-            case 1: {
-                encoderPos = -4200;
-                break;
-            }
-
-        }
+    private void deliverShipment()
+    {
+        int encoderPos = pipeline.getAnalysis();
 
         telemetry.addData("Delivering to: ", encoderPos);
         telemetry.update();
@@ -248,14 +214,7 @@ public class Autonomous extends LinearOpMode {
         drive.followTrajectory(toShipment);
 
         // Run arm to deliver position
-        while (robot.armEncoder.getCurrentPosition() > encoderPos) {
-            for (DcMotorEx motor : robot.motorArms) motor.setPower(-.5);
-            telemetry.addData("Arm Position: ", robot.armEncoder.getCurrentPosition());
-            telemetry.update();
-        }
-
-        for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
-
+        runArmTo(encoderPos);
         // Move forwards based on which level
 
         drive.followTrajectory(moveBack);
@@ -271,25 +230,21 @@ public class Autonomous extends LinearOpMode {
         initTime = runTime.seconds();
         while (runTime.seconds() - initTime < 1) closeClaw();
         sleep(50);
-
-
-        // Run arm to start position
-        while (robot.armEncoder.getCurrentPosition() > 0)
-            for (DcMotorEx motor : robot.motorArms) motor.setPower(-.5);
     }
 
     private void spinCarousel() {
 
-        drive.followTrajectory(toCarousel);
+
 
         switch (alliance) {
 
-            case "blue": {
+            case "BLUE": {
                 robot.cSpinner.setDirection(DcMotorEx.Direction.REVERSE);
                 break;
             }
 
-            case "red": {
+            case "RED": {
+
                 robot.cSpinner.setDirection(DcMotorEx.Direction.FORWARD);
                 break;
             }
@@ -329,71 +284,134 @@ public class Autonomous extends LinearOpMode {
         for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
     }
 
-    private void wait5() { sleep (12000); }
+    private void runArmTo(int targetPos)
+    {
+        if(robot.armEncoder.getCurrentPosition() < targetPos)
+        {
+            while(robot.armEncoder.getCurrentPosition() < targetPos)
+            {
+                for (DcMotorEx motor : robot.motorArms) {
+                    motor.setPower(.5);
+                }
+            }
+        }
+        else if(robot.armEncoder.getCurrentPosition() > targetPos)
+        {
+            while(robot.armEncoder.getCurrentPosition() > targetPos)
+            {
+                for (DcMotorEx motor : robot.motorArms) {
+                    motor.setPower(-.5);
+                }
+            }
+        }
+        for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
+    }
+
 
     // Alliance configuration
-    private void config() {
+    private void config()
+    {
+        String[] alliances = new String[]{"RED", "BLUE"};
+        String[] sides = new String[]{"LEFT", "RIGHT"};
+        int allianceIndex = 0;
+        int sideIndex = 0;
+
+        double LastClick = runTime.milliseconds();
 
         // Alliance Config
-        while (!gamepad1.right_bumper) {
+        while (!gamepad1.cross)
+        {
+            if(runTime.milliseconds() - LastClick < 150) continue;
 
-            if (gamepad1.circle) {
-                alliance = "red";
-                side = "right";
-                startPose = PoseStorage.RedRight;
+            if(gamepad1.dpad_right)
+            {
+                sideIndex++;
+                if(sideIndex >= sides.length)
+                {
+                    sideIndex = 0;
+                    allianceIndex++;
+                }
+            }
+            else if (gamepad1.dpad_left)
+            {
+                sideIndex--;
+                if(sideIndex < 0)
+                {
+                    sideIndex = sides.length-1;
+                    allianceIndex--;
+                }
+                if(allianceIndex < 0)
+                {
+                    allianceIndex = alliances.length-1;
+                }
             }
 
-            else if (gamepad1.square) {
-                alliance = "red";
-                side = "left";
-                startPose = PoseStorage.RedLeft;
-            }
+            allianceIndex %= alliances.length;
+            alliance = alliances[allianceIndex];
+            side = sides[sideIndex];
+            startPose = PoseStorage.DetStartPose(allianceIndex, sideIndex);
 
-            else if (gamepad1.triangle) {
-                alliance = "blue";
-                side = "right";
-                startPose = PoseStorage.BlueRight;
-            }
 
-            else if (gamepad1.cross) {
-                alliance = "blue";
-                side = "left";
-                startPose = PoseStorage.BlueLeft;
-            }
+//            if (gamepad1.circle) {
+//                alliance = "red";
+//                side = "right";
+//                startPose = PoseStorage.RedRight;
+//            }
+//
+//            else if (gamepad1.square) {
+//                alliance = "red";
+//                side = "left";
+//                startPose = PoseStorage.RedLeft;
+//            }
+//
+//            else if (gamepad1.triangle) {
+//                alliance = "blue";
+//                side = "right";
+//                startPose = PoseStorage.BlueRight;
+//            }
+//
+//            else if (gamepad1.cross) {
+//                alliance = "blue";
+//                side = "left";
+//                startPose = PoseStorage.BlueLeft;
+//            }
 
-            telemetry.addData("Start Position: ", alliance.toUpperCase() + " " + side.toUpperCase());
+            telemetry.addData("Start Position: ", alliance + " " + side + "\nPress X to confirm");
             telemetry.update();
+            LastClick = runTime.milliseconds();
         }
 
         telemetry.clearAll();
         telemetry.addLine("ALLIANCE SELECTION CONFIRMED");
         telemetry.update();
-
-        sleep(1000);
+        sleep(500);
         telemetry.clear();
-        telemetry.addLine("Select wait time");
-        telemetry.update();
 
-        sleep(1000);
-        telemetry.clear();
-        telemetry.update();
+//        sleep(1000);
+//        telemetry.clear();
+//        telemetry.update();
 
-        // Add Wait5
-        while (!gamepad1.left_bumper) {
-            if (gamepad1.cross && !isWaiting) {
-                isWaiting = true;
-                telemetry.addLine("Waiting 5 seconds on start");
+        // Select wait time
+        while (!gamepad1.cross)
+        {
+            if(runTime.milliseconds() - LastClick < 200) continue;
+
+            if (gamepad1.dpad_up)
+            {
+                waitTime += 1000;
             }
 
-            else if (gamepad1.cross && isWaiting) {
-                isWaiting = false;
-                telemetry.addLine("No wait on start");
+            else if (gamepad1.dpad_down)
+            {
+                if(waitTime > 0) waitTime -= 1000;
             }
 
+            telemetry.addLine("Waiting " + waitTime/1000 + " seconds on start" + "\nPress X to start");
             telemetry.update();
-
+            LastClick = runTime.milliseconds();
         }
 
+        sleep(500);
         telemetry.clearAll();
         telemetry.addLine("CONFIRMED. READY TO START");
         telemetry.update();

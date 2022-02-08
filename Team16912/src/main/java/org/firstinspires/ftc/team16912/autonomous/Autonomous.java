@@ -38,7 +38,6 @@ public class Autonomous extends LinearOpMode {
     private final int armStartPosition = -1000;
 
 
-
     public void runOpMode() {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -104,6 +103,7 @@ public class Autonomous extends LinearOpMode {
 
             closeClaw();
             goToFinish();
+            pickupBlock(1);
         }
 
     }
@@ -123,7 +123,7 @@ public class Autonomous extends LinearOpMode {
                         .lineToLinearHeading(PoseStorage.RedHub)
                         .build();
                 moveBack = drive.trajectoryBuilder(toShipment.end())
-                        .forward(-13)
+                        .forward(-12)
                         .build();
 
 
@@ -164,7 +164,7 @@ public class Autonomous extends LinearOpMode {
                         .build();
 
                 moveBack = drive.trajectoryBuilder(toShipment.end())
-                        .forward(-10)
+                        .forward(-9)
                         .build();
 
                 switch (side) {
@@ -178,7 +178,7 @@ public class Autonomous extends LinearOpMode {
                                 .build();
 
                         toWarehouse = drive.trajectoryBuilder(toSetup.end())
-                                .strafeLeft(50)
+                                .strafeLeft(40)
                                 .build();
 
                         break;
@@ -252,10 +252,10 @@ public class Autonomous extends LinearOpMode {
         }
 
         // set spinner speed
-        robot.cSpinner.setVelocity(300);
+        robot.cSpinner.setVelocity(200);
 
         // wait 2.5 seconds for the duck to fall
-        sleep(2500);
+        sleep(3000);
         robot.cSpinner.setVelocity(0);
 
     }
@@ -415,5 +415,29 @@ public class Autonomous extends LinearOpMode {
         telemetry.clearAll();
         telemetry.addLine("CONFIRMED. READY TO START");
         telemetry.update();
+    }
+
+    private void pickupBlock(int count) {
+        if (count != 0) {
+            for (int i = 0; i < count; i++) {
+                if(alliance.equals("RED")) {
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(toWarehouse.end())
+                            .forward(10)
+                            .build()
+                    );
+
+                    drive.turn(Math.toRadians(-110));
+
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .forward(7)
+                            .build()
+                    );
+                }
+
+            }
+        }
+
     }
 }

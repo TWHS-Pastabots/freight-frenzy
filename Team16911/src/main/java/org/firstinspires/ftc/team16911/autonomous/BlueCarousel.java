@@ -34,8 +34,8 @@ public class BlueCarousel extends LinearOpMode
 
     private final Pose2d carousel = new Pose2d(10, -23.25, Math.toRadians(90));
     private final Pose2d barcode = new Pose2d(20,0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(17, 27.75, 0);
-    private final Pose2d hubLevelTwo = new Pose2d(17.5, 27.75, 0);
+    private final Pose2d hubLevelOne = new Pose2d(16.8, 27.75, 0);
+    private final Pose2d hubLevelTwo = new Pose2d(17, 27.75, 0);
     private final Pose2d hubLevelThree = new Pose2d(23, 27.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, 65, 0);
     private final Pose2d warehouseBottomPosition = new Pose2d(3, 36, 0);

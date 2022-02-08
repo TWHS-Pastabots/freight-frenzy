@@ -21,6 +21,7 @@ public class RigatoniHardware
     public CRServo cappingServo = null;
     public DistanceSensor leftDistanceSensor = null;
     public DistanceSensor rightDistanceSensor = null;
+    public DistanceSensor backDistanceSensor = null;
     public DcMotorEx[] motors;
 
     public void init(HardwareMap hardwareMap)
@@ -106,6 +107,7 @@ public class RigatoniHardware
     {
         leftDistanceSensor = hardwareMap.get(DistanceSensor.class, RigatoniIds.LEFT_DISTANCE_SENSOR);
         rightDistanceSensor = hardwareMap.get(DistanceSensor.class, RigatoniIds.RIGHT_DISTANCE_SENSOR);
+        backDistanceSensor = hardwareMap.get(DistanceSensor.class, RigatoniIds.BACK_DISTANCE_SENSOR);
     }
 
     private void initializeCappingServo(HardwareMap hardwareMap)

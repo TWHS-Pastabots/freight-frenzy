@@ -18,14 +18,14 @@ public class BlueWarehouseTemp extends LinearOpMode
     private int initialWaitTime = 0;
 
     private final Pose2d barcode = new Pose2d(20, -.5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(16.5, -18.75, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(16.8, -18.75, 0);
     private final Pose2d hubLevelTwoPose = new Pose2d(17, -18.75, 0);
     private final Pose2d hubLevelThreePose = new Pose2d(23, -18.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, 25, 0);
     private final Pose2d warehouse = new Pose2d(-.25, 32, 0);
     private final Pose2d blockPickupOne = new Pose2d(7, 37, Math.toRadians(90));
-    private final Pose2d blockPickupTwo = new Pose2d(7, 48, Math.toRadians(90));
-    private final Pose2d returnTrajectorySetup = new Pose2d(4, 38, 0);
+    private final Pose2d blockPickupTwo = new Pose2d(7, 44, Math.toRadians(90));
+    private final Pose2d returnTrajectorySetup = new Pose2d(4, 33, 0);
     private final Pose2d toHubOne = new Pose2d(0, 5, 0);
     private final Pose2d toHubTwo = new Pose2d(23, -21, 0);
 

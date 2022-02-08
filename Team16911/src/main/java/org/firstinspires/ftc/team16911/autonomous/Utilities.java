@@ -10,7 +10,7 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 public class Utilities
 {
     public final int[] positions = {110, 170, 225};
-    public final int CARGO_DROP_TIME = 700;
+    public final int CARGO_DROP_TIME = 1100;
     private RigatoniHardware hardware;
     private final int MAX_TRIGGER_DISTANCE = 10;
 
@@ -21,14 +21,14 @@ public class Utilities
 
     public void dropCargo(int waitTime, Telemetry telemetry)
     {
-        hardware.intakeMotor.setPower(-.85);
+        hardware.intakeMotor.setPower(-.775);
         wait(waitTime, telemetry);
         hardware.intakeMotor.setPower(0);
     }
 
     public void intakeCargo()
     {
-        hardware.intakeMotor.setPower(1.0);
+        hardware.intakeMotor.setPower(.85);
     }
 
     public void stopIntake()

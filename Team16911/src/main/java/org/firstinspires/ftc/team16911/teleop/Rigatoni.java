@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 @TeleOp(name = "Rigatoni")
@@ -141,23 +140,7 @@ public class Rigatoni extends OpMode
     {
         rx = rx * .45;
 
-        if (gamepad1.dpad_right)
-        {
-            autoStrafeRight = true;
-            autoStrafeLeft = false;
-            autoDriveForward = false;
-            autoDriveBackward = false;
-            autoDriveTime.reset();
-        }
-        else if (gamepad1.dpad_left)
-        {
-            autoStrafeRight = false;
-            autoStrafeLeft = true;
-            autoDriveForward = false;
-            autoDriveBackward = false;
-            autoDriveTime.reset();
-        }
-        else if (gamepad1.dpad_up)
+        if (gamepad1.dpad_up)
         {
             autoStrafeRight = false;
             autoStrafeLeft = false;
@@ -182,21 +165,7 @@ public class Rigatoni extends OpMode
             autoDriveBackward = false;
         }
 
-        if (autoStrafeRight && autoDriveTime.time() < MAX_AUTO_STRAFE_TIME)
-        {
-            leftFrontPower = 1 - rx;
-            leftRearPower = -1 - rx;
-            rightFrontPower = -1 + rx;
-            rightRearPower = 1 + rx;
-        }
-        else if (autoStrafeLeft && autoDriveTime.time() < MAX_AUTO_STRAFE_TIME)
-        {
-            leftFrontPower = -1 - rx;
-            leftRearPower = 1 - rx;
-            rightFrontPower = 1 + rx;
-            rightRearPower = -1 + rx;
-        }
-        else if (autoDriveForward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
+        if (autoDriveForward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
         {
             double power = .85;
             leftFrontPower = power - rx;
@@ -383,7 +352,7 @@ public class Rigatoni extends OpMode
         }
         else if (gamepad2.left_bumper)
         {
-            hardware.intakeMotor.setPower(-.55);
+            hardware.intakeMotor.setPower(-.5);
         }
         else
         {

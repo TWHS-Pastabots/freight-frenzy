@@ -17,6 +17,7 @@ public class RigatoniIds
     public static final String CAPPING_SERVO = "cappingServo";
     public static final String LEFT_DISTANCE_SENSOR = "leftDistanceSensor";
     public static final String RIGHT_DISTANCE_SENSOR = "rightDistanceSensor";
+    public static final String BACK_DISTANCE_SENSOR = "backDistanceSensor";
 
     public static final String LEFT_ENCODER = "leftRear";
     public static final String RIGHT_ENCODER = "rightRear";

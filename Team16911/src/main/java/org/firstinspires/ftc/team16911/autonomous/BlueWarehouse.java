@@ -18,7 +18,7 @@ public class BlueWarehouse extends LinearOpMode
     private int initialWaitTime = 0;
 
     private final Pose2d barcode = new Pose2d(20, -.5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(16.5, -18.75, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(16.8, -18.75, 0);
     private final Pose2d hubLevelTwoPose = new Pose2d(17, -18.75, 0);
     private final Pose2d hubLevelThreePose = new Pose2d(23, -18.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(0,  27, 0);
@@ -115,7 +115,7 @@ public class BlueWarehouse extends LinearOpMode
         {
             if (gamepad1.dpad_up && buttonTime.time() > lockoutTime)
             {
-                initialWaitTime = Math.min(10000, initialWaitTime + 1000);
+                initialWaitTime = Math.min(20000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
             else if (gamepad1.dpad_down && buttonTime.time() > lockoutTime)

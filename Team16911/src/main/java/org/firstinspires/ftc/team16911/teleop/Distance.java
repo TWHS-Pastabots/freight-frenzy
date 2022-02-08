@@ -11,11 +11,6 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 public class Distance extends OpMode
 {
     RigatoniHardware hardware;
-    final int TARGET_DISTANCE = 16;
-    final double SLOW_CONSTANT = .6;
-    final int MAX_ERROR = 2;
-    final int MID_ERROR = 1;
-    boolean automaticStrafe = false;
 
     public void init()
     {
@@ -37,14 +32,13 @@ public class Distance extends OpMode
     {
         double leftDistance = hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH);
         double rightDistance = hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
-        double averageDistance = (leftDistance + rightDistance) / 2;
-        double powerA = 0;
-        double powerB = 0;
+        double backDistance = hardware.backDistanceSensor.getDistance(DistanceUnit.INCH);
 
         if (gamepad1.circle)
         {
             telemetry.addData("Left Distance", leftDistance);
             telemetry.addData("Right Distance", rightDistance);
+            telemetry.addData("Back Distance", backDistance);
             telemetry.update();
         }
     }

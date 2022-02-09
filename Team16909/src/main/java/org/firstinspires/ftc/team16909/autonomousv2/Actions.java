@@ -66,8 +66,8 @@ public class Actions {
 
         if (position == 3 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(140 + trim);
-            robot.leftArm.setTargetPosition(140 + trim);
+            robot.rightArm.setTargetPosition(540 + trim);
+            robot.leftArm.setTargetPosition(540 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() + 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() + 10);
 
@@ -81,8 +81,8 @@ public class Actions {
         }
         else if (position == 2 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(73 + trim);
-            robot.leftArm.setTargetPosition(73 + trim);
+            robot.rightArm.setTargetPosition(600 + trim);
+            robot.leftArm.setTargetPosition(600 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 
@@ -96,8 +96,8 @@ public class Actions {
         }
         else if (position == 1 && armTime.time() >= 40)
         {
-            robot.rightArm.setTargetPosition(15 + trim);
-            robot.leftArm.setTargetPosition(15 + trim);
+            robot.rightArm.setTargetPosition(20 + trim);
+            robot.leftArm.setTargetPosition(20 + trim);
 //            robot.rightArm.setTargetPosition(robot.rightArm.getCurrentPosition() - 10);
 //            robot.leftArm.setTargetPosition(robot.leftArm.getCurrentPosition() - 10);
 

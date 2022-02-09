@@ -1,12 +1,11 @@
-package org.firstinspires.ftc.team16909.autonomous;
+package org.firstinspires.ftc.team16909.autonomousv2;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.team16909.autonomous.ContourPipeline;
+import org.firstinspires.ftc.team16909.autonomousv2.ContourPipeline;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -20,21 +19,21 @@ public class OpenCVTutorial extends LinearOpMode {
     private OpenCvCamera webcam;
     private ContourPipeline pipeline;
 
-    private double crThreshHigh = 150;
-    private double crThreshLow = 120;
-    private double cbThreshHigh = 255;
-    private double cbThreshLow = 255;
+    private double crThreshHigh = 170;
+    private double crThreshLow = 0;
+    private double cbThreshHigh = 170;
+    private double cbThreshLow = 0;
 
     private int minRectangleArea = 2000;
     private double leftBarcodeRangeBoundary = 0.3; //i.e 30% of the way across the frame from the left
-    private double rightBarcodeRangeBoundary = 0.6; //i.e 60% of the way across the frame from the left
+    private double rightBarcodeRangeBoundary = 0.9; //i.e 60% of the way across the frame from the left
 
     private double lowerRuntime = 0;
     private double upperRuntime = 0;
 
-    // Pink Range                                      Y      Cr     Cb
-    public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 150.0, 120.0);
-    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 255.0, 255.0);
+    // Green Range                                      Y      Cr     Cb
+    public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 0.0, 0.0);
+    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 170.0, 170.0);
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -44,7 +43,8 @@ public class OpenCVTutorial extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         //OpenCV Pipeline
 
-        pipeline = new ContourPipeline(0.2, 0.2, 0.2, 0.2);
+        pipeline = new ContourPipeline(0.0, 0.0, 0.4, 0.0);
+        //previously all 0.2
 
         pipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
         pipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
@@ -104,6 +104,7 @@ public class OpenCVTutorial extends LinearOpMode {
 
             telemetry.update();
         }
+
     }
     public void testing(ContourPipeline pipeline){
         if(lowerRuntime + 0.05 < getRuntime()){

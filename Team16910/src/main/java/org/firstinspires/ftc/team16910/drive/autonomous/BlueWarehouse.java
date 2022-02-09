@@ -13,8 +13,10 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
 
-@Autonomous(preselectTeleOp = "Right BLUE")
-public class BlueRight extends LinearOpMode
+import java.security.spec.PSSParameterSpec;
+
+@Autonomous(preselectTeleOp = "Warehouse BLUE")
+public class BlueWarehouse extends LinearOpMode
 {
     int current_pos = 0;
     //int leftArmOffset = 0;
@@ -26,28 +28,13 @@ public class BlueRight extends LinearOpMode
     SampleMecanumDrive drive = null;
     helpMethods helpMethods;
 
-    /*
-    path:
-    close grabber
-    move forward just a bit
-    move right
-    spin carousel
-    move to carousel approach
-    move to hub_pos
-    move arm forward
-    release grabber
-    move arm backward
-    rotate left 90
-    move to warehouse pos
-     */
-
     //Positions
-    private final Pose2d initial_carousel_approach = new Pose2d(9, 0, 0);
-    private final Pose2d scan_pos = new Pose2d(18.792390179769374, 0, 0);
-    private final Pose2d hub_pos = new Pose2d(18.792390179769374, -20.07919092716424, 0);
-    private final Pose2d carousel_approach = new Pose2d(15.579214625984648, -66.8355575585923, 0);
-    private final Pose2d carousel_pos = new Pose2d(7.256660589321775, -66.78512696747305, Math.toRadians(351.6687646887457));
-    private final Pose2d warehouse_pos = new Pose2d(39.74436593969421, 56.00664056942736, Math.toRadians(90));
+    private final Pose2d move_Forward = new Pose2d(-9, 0, 0);
+    private final Pose2d scan_pos = new Pose2d(-15.792390179769374, 0, Math.toRadians(180));
+    private final Pose2d hub_pos = new Pose2d(-15.792390179769374, 23.07919092716424, Math.toRadians(180));
+    private final Pose2d carousel_approach = new Pose2d(-13.579214625984648, 66.8355575585923, Math.toRadians(180));
+    private final Pose2d carousel_pos = new Pose2d(-0.256660589321775, 66.78512696747305, Math.toRadians(351.6687646887457-180));
+    private final Pose2d warehouse_pos = new Pose2d(-32.74436593969421, -60.00664056942736, Math.toRadians(270));
 
     //Trajectories
     private TrajectorySequence scan_traj;
@@ -95,7 +82,7 @@ public class BlueRight extends LinearOpMode
         // Action Method Init
         //action = new helpMethods(robot);
 
-        blueLeftTraj();
+        blueWarehouseTraj();
 
         while (!isStarted())
         {
@@ -106,14 +93,30 @@ public class BlueRight extends LinearOpMode
         waitForStart();
         if (!opModeIsActive()) return;
         robot.grabberServo.setPosition(1);
+        robot.leftFront.setPower(-.3);
+        robot.leftRear.setPower(-.3);
+        robot.rightFront.setPower(-.3);
+        robot.rightRear.setPower(-.3);
+        helpMethods.waitFor(.3);
         drive.followTrajectorySequence(scan_traj);
         helpMethods.waitFor(1);
         drive.followTrajectorySequence(hub_traj);
-        robot.armMotorOne.setPower(0.5);
-        robot.armMotorOne.setPower(-0.5);
-        helpMethods.waitFor(1.2);
+
+        robot.armMotorOne.setPower(-0.6);
+        robot.armMotorTwo.setPower(-0.6);
+
+        robot.armMotorOne.setTargetPosition(-150);
+        robot.armMotorTwo.setTargetPosition(-150);
+
+        robot.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        /*robot.armMotorOne.setPower(-0.5);
+        robot.armMotorTwo.setPower(-0.5);
+        helpMethods.waitFor(1.5);
         robot.armMotorOne.setPower(0);
-        robot.armMotorTwo.setPower(0);
+        robot.armMotorTwo.setPower(0);*/
+
         /*
         robot.armMotorOne.setTargetPosition(60);
         robot.armMotorTwo.setTargetPosition(60);
@@ -138,35 +141,47 @@ public class BlueRight extends LinearOpMode
         helpMethods.waitFor(3);
         robot.leftSpinnyWheel.setPower(0);
         robot.rightSpinnyWheel.setPower(0);
+
+        robot.armMotorOne.setPower(-0.6);
+        robot.armMotorTwo.setPower(-0.6);
+
+        robot.armMotorOne.setTargetPosition(10);
+        robot.armMotorTwo.setTargetPosition(10);
+
+        robot.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         drive.followTrajectorySequence(warehouse_traj);
 
     }
-    /*
-        private int armPosition(int level)
+/*
+    private int armPosition(int level)
+    {
+        switch (level)
+        case 1:
         {
-            switch (level)
-            case 1:
-            {
-
-            }
 
         }
 
-     */
-    private void blueLeftTraj()
+    }
+
+ */
+    private void blueWarehouseTraj()
     {
         scan_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                //.lineToLinearHeading(move_Forward)
+                .turn(Math.toRadians(180))
                 .lineToLinearHeading(scan_pos)
                 .build();
         hub_traj = drive.trajectorySequenceBuilder(scan_traj.end())
                 .lineToLinearHeading(hub_pos)
                 .build();
-        carousel_traj = drive.trajectorySequenceBuilder(hub_traj.end())
+        /*carousel_traj = drive.trajectorySequenceBuilder(hub_traj.end())
                 .lineToLinearHeading(carousel_approach)
                 .lineToLinearHeading(carousel_pos)
-                .build();
+                .build();*/
         warehouse_traj = drive.trajectorySequenceBuilder(carousel_traj.end())
-                .lineToLinearHeading(carousel_approach)
+                //.lineToLinearHeading(carousel_approach)
                 .turn(Math.toRadians(90))
                 .lineToLinearHeading(warehouse_pos)
                 .build();

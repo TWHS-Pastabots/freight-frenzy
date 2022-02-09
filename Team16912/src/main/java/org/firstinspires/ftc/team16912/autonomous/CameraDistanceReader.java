@@ -18,11 +18,6 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "Camera Distance Reader")
 public class CameraDistanceReader extends LinearOpMode {
 
-    int cameraGroundHeight = 65; // Height of the center of the lens from the ground
-    int blockHeight = 50; // Height of the freight block
-
-    private int distance;
-
     DistancePipeline pipeline;
     OpenCvInternalCamera webcam;
 

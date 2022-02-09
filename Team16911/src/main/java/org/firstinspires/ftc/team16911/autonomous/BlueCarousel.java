@@ -34,12 +34,12 @@ public class BlueCarousel extends LinearOpMode
 
     private final Pose2d carousel = new Pose2d(10, -23.25, Math.toRadians(90));
     private final Pose2d barcode = new Pose2d(20,0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(17, 27.75, 0);
-    private final Pose2d hubLevelTwo = new Pose2d(17.5, 27.75, 0);
+    private final Pose2d hubLevelOne = new Pose2d(17.25, 27.75, 0);
+    private final Pose2d hubLevelTwo = new Pose2d(18, 27.75, 0);
     private final Pose2d hubLevelThree = new Pose2d(23, 27.75, 0);
-    private final Pose2d warehouseOutside = new Pose2d(-.25, 65, 0);
+    private final Pose2d warehouseOutside = new Pose2d(-.25, 60, 0);
     private final Pose2d warehouseBottomPosition = new Pose2d(3, 36, 0);
-    private final Pose2d warehouse = new Pose2d(-.25, 85, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, 81, 0);
     private final Pose2d barcodeBottomPositionOne = new Pose2d(15, 5, Math.toRadians(45));
     private final Pose2d barcodeBottomPositionTwo = new Pose2d(15, -5, Math.toRadians(45));
     private final Pose2d storageUnit = new Pose2d(30,-24, Math.toRadians(90));
@@ -82,14 +82,19 @@ public class BlueCarousel extends LinearOpMode
 
         drive.followTrajectory(toBarcode);
         int barcodeLevel = utilities.getBarcodeLevelBlueSide();
-        utilities.moveArm(utilities.positions[barcodeLevel]);
+        if (barcodeLevel != 0) { utilities.moveArm(utilities.positions[barcodeLevel]); }
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+        if (barcodeLevel == 0)
+        {
+            utilities.moveArm(utilities.positions[barcodeLevel]);
+            utilities.wait(750, telemetry);
+        }
         utilities.eliminateOscillations();
-        utilities.dropCargo(utilities.CARGO_DROP_TIME, telemetry);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel],telemetry);
 
         switch (path)
         {
@@ -211,7 +216,7 @@ public class BlueCarousel extends LinearOpMode
         {
             if (gamepad1.dpad_up && buttonTime.time() > lockoutTime)
             {
-                initialWaitTime = Math.min(10000, initialWaitTime + 1000);
+                initialWaitTime = Math.min(30000, initialWaitTime + 1000);
                 buttonTime.reset();
             }
             else if (gamepad1.dpad_down && buttonTime.time() > lockoutTime)

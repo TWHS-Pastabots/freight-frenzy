@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 @TeleOp(name = "Rigatoni")
@@ -18,7 +17,9 @@ public class Rigatoni extends OpMode
     int currentPosition = 0;
     int lastPosition = -100;
     int armMotorTwoOffset = 0;
+    int outtakePowerIndex = 1;
     double slowConstant = .6;
+    double[] outtakePowers = {-.3, -.5, -.8};
     boolean usePowerScaling = true;
 
     boolean justMoved = false;
@@ -29,18 +30,16 @@ public class Rigatoni extends OpMode
     double rightFrontPower;
     double rightRearPower;
 
-    boolean autoStrafeRight = false;
-    boolean autoStrafeLeft = false;
     boolean autoDriveForward = false;
     boolean autoDriveBackward = false;
 
-    final int MAX_AUTO_STRAFE_TIME = 1350;
     final int MAX_AUTO_DRIVE_TIME = 950;
 
     ElapsedTime armTime = null;
     ElapsedTime buttonTime = null;
     ElapsedTime autoDriveTime = null;
     ElapsedTime carouselTime = null;
+    ElapsedTime outtakePowerButtonTime = null;
 
     public void init()
     {
@@ -51,6 +50,7 @@ public class Rigatoni extends OpMode
         buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         autoDriveTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         carouselTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        outtakePowerButtonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -127,8 +127,6 @@ public class Rigatoni extends OpMode
 
         double finalSlowConstantOffset = slowConstantPositiveOffset + slowConstantNegativeOffset;
 
-        turn();
-
         autoDrive(x, y, rx);
 
         hardware.leftFront.setPower(leftFrontPower * (slowConstant + finalSlowConstantOffset));
@@ -141,34 +139,14 @@ public class Rigatoni extends OpMode
     {
         rx = rx * .45;
 
-        if (gamepad1.dpad_right)
+        if (gamepad1.dpad_up)
         {
-            autoStrafeRight = true;
-            autoStrafeLeft = false;
-            autoDriveForward = false;
-            autoDriveBackward = false;
-            autoDriveTime.reset();
-        }
-        else if (gamepad1.dpad_left)
-        {
-            autoStrafeRight = false;
-            autoStrafeLeft = true;
-            autoDriveForward = false;
-            autoDriveBackward = false;
-            autoDriveTime.reset();
-        }
-        else if (gamepad1.dpad_up)
-        {
-            autoStrafeRight = false;
-            autoStrafeLeft = false;
             autoDriveForward = true;
             autoDriveBackward = false;
             autoDriveTime.reset();
         }
         else if (gamepad1.dpad_down)
         {
-            autoStrafeRight = false;
-            autoStrafeLeft = false;
             autoDriveForward = false;
             autoDriveBackward = true;
             autoDriveTime.reset();
@@ -176,27 +154,11 @@ public class Rigatoni extends OpMode
 
         if (x != 0.0 || y != 0.0 || gamepad1.right_stick_button)
         {
-            autoStrafeRight = false;
-            autoStrafeLeft = false;
             autoDriveForward = false;
             autoDriveBackward = false;
         }
 
-        if (autoStrafeRight && autoDriveTime.time() < MAX_AUTO_STRAFE_TIME)
-        {
-            leftFrontPower = 1 - rx;
-            leftRearPower = -1 - rx;
-            rightFrontPower = -1 + rx;
-            rightRearPower = 1 + rx;
-        }
-        else if (autoStrafeLeft && autoDriveTime.time() < MAX_AUTO_STRAFE_TIME)
-        {
-            leftFrontPower = -1 - rx;
-            leftRearPower = 1 - rx;
-            rightFrontPower = 1 + rx;
-            rightRearPower = -1 + rx;
-        }
-        else if (autoDriveForward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
+        if (autoDriveForward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
         {
             double power = .85;
             leftFrontPower = power - rx;
@@ -211,24 +173,6 @@ public class Rigatoni extends OpMode
             leftRearPower = power - rx;
             rightFrontPower = power + rx;
             rightRearPower = power + rx;
-        }
-    }
-
-    private void turn()
-    {
-        if (gamepad1.right_bumper)
-        {
-            leftFrontPower = -.2;
-            leftRearPower = -.2;
-            rightRearPower = .2;
-            rightFrontPower = .2;
-        }
-        else if (gamepad1.left_bumper)
-        {
-            leftFrontPower = .2;
-            leftRearPower = .2;
-            rightRearPower = -.2;
-            rightFrontPower = -.2;
         }
     }
 
@@ -335,7 +279,7 @@ public class Rigatoni extends OpMode
         }
 
         // Resets zero position for calibration
-        if (gamepad2.dpad_down)
+        if (gamepad2.square)
         {
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -377,13 +321,29 @@ public class Rigatoni extends OpMode
 
     private void operateIntake()
     {
+        if (gamepad2.dpad_up && outtakePowerButtonTime.time() > 500)
+        {
+            outtakePowerIndex = Math.min(outtakePowers.length - 1, outtakePowerIndex + 1);
+            outtakePowerButtonTime.reset();
+        }
+        else if (gamepad2.dpad_down && outtakePowerButtonTime.time() > 500)
+        {
+            outtakePowerIndex = Math.max(0, outtakePowerIndex - 1);
+            outtakePowerButtonTime.reset();
+        }
+        else if ((gamepad2.dpad_right || gamepad2.dpad_left) && outtakePowerButtonTime.time() > 500)
+        {
+            outtakePowerIndex = 1;
+            outtakePowerButtonTime.reset();
+        }
+
         if (gamepad2.right_bumper)
         {
             hardware.intakeMotor.setPower(.9);
         }
         else if (gamepad2.left_bumper)
         {
-            hardware.intakeMotor.setPower(-.55);
+            hardware.intakeMotor.setPower(outtakePowers[outtakePowerIndex]);
         }
         else
         {

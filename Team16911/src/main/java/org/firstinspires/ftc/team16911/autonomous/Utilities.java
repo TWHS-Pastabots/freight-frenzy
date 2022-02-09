@@ -9,8 +9,9 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 public class Utilities
 {
-    public final int[] positions = {110, 170, 225};
-    public final int CARGO_DROP_TIME = 1100;
+    public final int[] positions = {110, 170, 215};
+    public final int CARGO_DROP_TIME = 1200;
+    public final double[] DROP_POWERS = {.9, .885, .725};
     private RigatoniHardware hardware;
     private final int MAX_TRIGGER_DISTANCE = 10;
 
@@ -19,9 +20,9 @@ public class Utilities
         this.hardware = hardware;
     }
 
-    public void dropCargo(int waitTime, Telemetry telemetry)
+    public void dropCargo(int waitTime, double power, Telemetry telemetry)
     {
-        hardware.intakeMotor.setPower(-.775);
+        hardware.intakeMotor.setPower(-power);
         wait(waitTime, telemetry);
         hardware.intakeMotor.setPower(0);
     }

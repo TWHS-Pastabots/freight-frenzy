@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.team16911.drive.DriveConstants;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
@@ -17,16 +18,18 @@ public class RedWarehouse extends LinearOpMode
     private SampleMecanumDrive drive;
 
     private int initialWaitTime = 0;
-    private int maxAttempts = 2;
-    private double blockPickupPositionY = -41.5;
     private boolean goForNewBlock = true;
 
     private final Pose2d barcode = new Pose2d(20, .5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(16.8, 19.25, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(17, 19.25, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(17.25, 19.25, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(18, 19.25, 0);
     private final Pose2d hubLevelThreePose = new Pose2d(23, 19.25, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, -20, 0);
     private final Pose2d warehouse = new Pose2d(-.25, -32, 0);
+
+    private double blockPickupPositionY = -40;
+    private double blockPickupPositionX = 7;
+    private double returnSetupPositionX = 4;
 
     private Trajectory toBarcode;
     private Utilities utilities;
@@ -63,23 +66,34 @@ public class RedWarehouse extends LinearOpMode
 
         drive.followTrajectory(toBarcode);
         int barcodeLevel = utilities.getBarcodeLevelRedSide();
-        utilities.moveArm(utilities.positions[barcodeLevel]);
+        if (barcodeLevel != 0) { utilities.moveArm(utilities.positions[barcodeLevel]); }
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("Left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+        if (barcodeLevel == 0)
+        {
+            utilities.moveArm(utilities.positions[barcodeLevel]);
+            utilities.wait(750, telemetry);
+        }
         utilities.eliminateOscillations();
-        utilities.dropCargo(utilities.CARGO_DROP_TIME, telemetry);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel], telemetry);
 
         drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
 
-        int attempts = 0;
-        while (goForNewBlock && 30000 - autonomousTime.time() > 10000 && attempts < maxAttempts)
+        if (goForNewBlock && 30000 - autonomousTime.time() > 10000)
+        {
+            pickAndDropNewBlock(hardware);
+        }
+
+        blockPickupPositionY -= 4.5;
+        blockPickupPositionX -= 2;
+        returnSetupPositionX -= 2;
+
+        if (30000 - autonomousTime.time() > 8000)
         {
             pickupNewBlock(hardware);
-            blockPickupPositionY -= 2;
-            attempts++;
         }
     }
 
@@ -122,35 +136,42 @@ public class RedWarehouse extends LinearOpMode
         fromHubTrajectories[2] = fromHubLevelThree;
     }
 
-    private void pickupNewBlock(RigatoniHardware hardware)
+    private void pickAndDropNewBlock(RigatoniHardware hardware)
     {
-        final double blockPickupPositionX = 7;
-        final double returnSetupPositionX = 4;
-
         final Pose2d blockPickupOne = new Pose2d(7, -37, Math.toRadians(-90));
-        final Pose2d blockPickupTwo = new Pose2d(blockPickupPositionX, blockPickupPositionY, Math.toRadians(-90));
-        final Pose2d returnTrajectorySetup = new Pose2d(returnSetupPositionX, -33, 0);
-        final Pose2d toHub = new Pose2d(23, 21.75, 0);
-        final Vector2d toHubReturn = new Vector2d(-.25, 10);
+        final Pose2d blockPickupTwo = new Pose2d(blockPickupPositionX, blockPickupPositionY + 4, Math.toRadians(-90));
+        final Pose2d blockPickupThree = new Pose2d(blockPickupPositionX, blockPickupPositionY, Math.toRadians(-90));
+        final Pose2d returnTrajectorySetup = new Pose2d(returnSetupPositionX, -36, 0);
+        final Pose2d toHub = new Pose2d(23, 20, 0);
+        final Vector2d toHubReturn = new Vector2d(-.25, -10);
         final Vector2d warehouse = new Vector2d(-.25, -32);
 
         drive.update();
 
         utilities.moveArm(10);
+        utilities.wait(750, telemetry);
         utilities.intakeCargo();
 
         Trajectory blockPickupTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(0))
                 .splineToSplineHeading(blockPickupOne, Math.toRadians(-90))
-                .splineToSplineHeading(blockPickupTwo, Math.toRadians(-90)).build();
+                .splineToSplineHeading(blockPickupTwo, Math.toRadians(-90))
+                .splineToSplineHeading(blockPickupThree, Math.toRadians(-90),
+                        SampleMecanumDrive.getVelocityConstraint(
+                                7, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)).build();
 
         drive.followTrajectory(blockPickupTrajectory);
         drive.update();
 
         utilities.stopIntake();
-        utilities.moveArm(utilities.positions[2]);
+        utilities.moveArm(utilities.positions[2] + 10);
 
-        double distanceFromWall = hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
-        double yPose = -distanceFromWall + 57;
+        double distanceOne = hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
+        double distanceTwo =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
+        double distanceThree =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
+        double distanceFromWall = (distanceOne + distanceTwo + distanceThree) / 3.0;
+        double yPose = -distanceFromWall + 61;
+        yPose = Math.min(48, yPose);
         drive.setPoseEstimate(new Pose2d(blockPickupPositionX, -yPose, Math.toRadians(-90)));
         drive.update();
 
@@ -163,17 +184,65 @@ public class RedWarehouse extends LinearOpMode
         drive.followTrajectory(toHubTrajectory);
         drive.update();
 
-        double backDistance = hardware.backDistanceSensor.getDistance(DistanceUnit.INCH);
-        backDistance = backDistance - 2.5;
-        drive.setPoseEstimate(new Pose2d(backDistance, 21.75, 0));
+        distanceOne = hardware.backDistanceSensor.getDistance(DistanceUnit.INCH);
+        distanceTwo =  hardware.backDistanceSensor.getDistance(DistanceUnit.INCH);
+        distanceThree =  hardware.backDistanceSensor.getDistance(DistanceUnit.INCH);
+        double backDistance = (distanceOne + distanceTwo + distanceThree) / 3.0;
+        backDistance = backDistance - 6;
+        backDistance = Math.max(27, backDistance);
+        drive.setPoseEstimate(new Pose2d(backDistance, 20, 0));
 
-        utilities.dropCargo(utilities.CARGO_DROP_TIME, telemetry);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[1],telemetry);
 
-        Trajectory returnToWarehouse = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(-150))
+        Trajectory returnToWarehouse = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(-140))
                 .splineToConstantHeading(toHubReturn, Math.toRadians(-90))
                 .splineToConstantHeading(warehouse, Math.toRadians(-90)).build();
 
         drive.followTrajectory(returnToWarehouse);
+    }
+
+    private void pickupNewBlock(RigatoniHardware hardware)
+    {
+        final Pose2d blockPickupOne = new Pose2d(blockPickupPositionX, -37, Math.toRadians(-90));
+        final Pose2d blockPickupTwo = new Pose2d(blockPickupPositionX, blockPickupPositionY + 4, Math.toRadians(-90));
+        final Pose2d blockPickupThree = new Pose2d(blockPickupPositionX, blockPickupPositionY, Math.toRadians(-90));
+        final Pose2d returnTrajectorySetup = new Pose2d(returnSetupPositionX, -36, 0);
+        final Pose2d warehouse = new Pose2d(-.25, -36, 0);
+
+        drive.update();
+
+        utilities.moveArm(10);
+        utilities.wait(750, telemetry);
+        utilities.intakeCargo();
+
+        Trajectory blockPickupTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(0))
+                .splineToSplineHeading(blockPickupOne, Math.toRadians(-90))
+                .splineToSplineHeading(blockPickupTwo, Math.toRadians(-90))
+                .splineToSplineHeading(blockPickupThree, Math.toRadians(-90),
+                        SampleMecanumDrive.getVelocityConstraint(
+                                7, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)).build();
+
+        drive.followTrajectory(blockPickupTrajectory);
+        drive.update();
+
+        utilities.stopIntake();
+
+        double distanceOne = hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
+        double distanceTwo =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
+        double distanceThree =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
+        double distanceFromWall = (distanceOne + distanceTwo + distanceThree) / 3.0;
+        double yPose = -distanceFromWall + 63;
+        yPose = Math.min(48, yPose);
+        drive.setPoseEstimate(new Pose2d(blockPickupPositionX, -yPose, Math.toRadians(-90)));
+        drive.update();
+
+        Trajectory returnTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(90))
+                .splineToSplineHeading(returnTrajectorySetup, Math.toRadians(140))
+                .splineToLinearHeading(warehouse, Math.toRadians(90)).build();
+
+        drive.followTrajectory(returnTrajectory);
+        drive.update();
     }
 
     private void configuration()
@@ -202,18 +271,9 @@ public class RedWarehouse extends LinearOpMode
                 goForNewBlock = !goForNewBlock;
                 buttonTime.reset();
             }
-            else if (gamepad1.dpad_left)
-            {
-                maxAttempts = Math.max(0, maxAttempts - 1);
-            }
-            else if (gamepad1.dpad_right)
-            {
-                maxAttempts = Math.max(2, maxAttempts + 1);
-            }
 
             telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
             telemetry.addData("Go For New BLock", goForNewBlock);
-            if (goForNewBlock) {telemetry.addData("Max Attempts", maxAttempts);}
             telemetry.update();
         }
 

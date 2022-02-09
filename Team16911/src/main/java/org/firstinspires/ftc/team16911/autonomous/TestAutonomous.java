@@ -68,7 +68,7 @@ public class TestAutonomous extends LinearOpMode
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
         utilities.eliminateOscillations();
-        utilities.dropCargo(utilities.CARGO_DROP_TIME, telemetry);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel],telemetry);
 
         drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
 

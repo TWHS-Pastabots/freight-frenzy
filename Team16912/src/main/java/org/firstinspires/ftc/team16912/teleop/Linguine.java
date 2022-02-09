@@ -184,4 +184,5 @@ public class Linguine extends LinearOpMode {
 
         else if (dir == 'r') robot.cSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
     }
+
 }

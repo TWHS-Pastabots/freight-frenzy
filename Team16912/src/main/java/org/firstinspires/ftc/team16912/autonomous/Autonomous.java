@@ -22,7 +22,7 @@ public class Autonomous extends LinearOpMode {
 
     ElapsedTime runTime = new ElapsedTime();
 
-    Trajectory start, toShipment, moveBack, toCarousel, toWarehouse, toFinish, toSetup;
+    Trajectory start, toShipment, moveBack, toCarousel, toWarehouse, toFinish, toSetup, redBlocks, blueBlocks;
 
     Pose2d startPose;
 
@@ -71,6 +71,7 @@ public class Autonomous extends LinearOpMode {
             telemetry.addData("Left Brightness: ", pipeline.R1Y);
             telemetry.addData("Middle Brightness: ", pipeline.R2Y);
             telemetry.addData("Right Brightness: ", pipeline.R3Y);
+            telemetry.addData("Deliver To", pipeline.getAnalysis());
             telemetry.update();
         }
 
@@ -103,7 +104,8 @@ public class Autonomous extends LinearOpMode {
 
             closeClaw();
             goToFinish();
-            pickupBlock(1);
+            //pickupBlock(1);
+
         }
 
     }
@@ -120,7 +122,7 @@ public class Autonomous extends LinearOpMode {
 
             case ("RED"): {
                 toShipment = drive.trajectoryBuilder(start.end())
-                        .lineToLinearHeading(PoseStorage.RedHub)
+                        .lineToConstantHeading(PoseStorage.RedHub)
                         .build();
                 moveBack = drive.trajectoryBuilder(toShipment.end())
                         .forward(-12)
@@ -131,7 +133,7 @@ public class Autonomous extends LinearOpMode {
 
                     case ("LEFT"): {
                         toCarousel = drive.trajectoryBuilder(moveBack.end())
-                                .lineToLinearHeading(PoseStorage.RedCarousel)
+                                .lineToConstantHeading(PoseStorage.RedCarousel)
                                 .build();
                         toFinish = drive.trajectoryBuilder(toCarousel.end())
                                 .lineToLinearHeading(PoseStorage.RedStorageUnit)
@@ -148,6 +150,10 @@ public class Autonomous extends LinearOpMode {
 
                         toWarehouse = drive.trajectoryBuilder(toSetup.end())
                                 .strafeRight(50)
+                                .build();
+
+                        redBlocks = drive.trajectoryBuilder(toWarehouse.end())
+                                .splineToSplineHeading(PoseStorage.RedWarehouseBlocks, -145.0)
                                 .build();
                         break;
                     }
@@ -421,20 +427,75 @@ public class Autonomous extends LinearOpMode {
         if (count != 0) {
             for (int i = 0; i < count; i++) {
                 if(alliance.equals("RED")) {
-                    drive.followTrajectory(
-                            drive.trajectoryBuilder(toWarehouse.end())
-                            .forward(10)
-                            .build()
-                    );
 
-                    drive.turn(Math.toRadians(-110));
+                    drive.followTrajectory(redBlocks);
+
+                    runArmTo(250);
+                    openClaw();
+
+                    closeClaw();
+                    sleep(500);
+                    runArmTo(-1000);
 
                     drive.followTrajectory(
                             drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .forward(7)
+                            .splineToLinearHeading(toWarehouse.end(), 100.0)
                             .build()
                     );
+
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .strafeLeft(55)
+                            .build()
+                    );
+
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() + 14, drive.getPoseEstimate().getHeading() + Math.PI))
+                            .build()
+                    );
+
+                    runArmTo(-2590);
                 }
+
+                else
+                {
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(toWarehouse.end())
+                                    .forward(10)
+                                    .build()
+                    );
+
+                    drive.turn(Math.toRadians(105));
+
+                    runArmTo(250);
+                    openClaw();
+
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(drive.getPoseEstimate())
+                                    .forward(7)
+                                    .build()
+                    );
+
+                    closeClaw();
+                    sleep(500);
+                    runArmTo(-1000);
+
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(drive.getPoseEstimate())
+                                    .forward(-7)
+                                    .build()
+                    );
+
+                    drive.turn(Math.toRadians(-105));
+
+                    drive.followTrajectory(
+                            drive.trajectoryBuilder(drive.getPoseEstimate())
+                                    .forward(-10)
+                                    .build()
+                    );
+                }
+
 
             }
         }

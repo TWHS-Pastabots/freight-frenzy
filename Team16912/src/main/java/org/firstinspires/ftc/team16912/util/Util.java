@@ -20,6 +20,7 @@ public class Util {
     }
 
 
+
     // Closes claw
     public static void closeClaw(double seconds) {
         double initTime = runTime.seconds();
@@ -62,5 +63,10 @@ public class Util {
         else if (dir == 'r') robot.cSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+    public static void armUp() { for (DcMotorEx motor : robot.motorArms) motor.setPower(-.75); }
+
+    public static void armDown() { for (DcMotorEx motor : robot.motorArms) motor.setPower(.75); }
+
+    public static void armZero() { for (DcMotorEx motor : robot.motorArms) motor.setPower(0); }
 
 }

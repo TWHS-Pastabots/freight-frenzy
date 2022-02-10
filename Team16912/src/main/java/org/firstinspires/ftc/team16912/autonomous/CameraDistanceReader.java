@@ -74,7 +74,7 @@ public class CameraDistanceReader extends LinearOpMode {
 
     private void centerRobot()
     {
-        Rect block = pipeline.BLOCK;
+        Rect block = pipeline.BLOCKS.get(0).rect;
         int blockCenter = block.x + (block.width/2);
         double pxpi = block.height/2.0;
         double distToEdge = 0.0;
@@ -124,7 +124,7 @@ public class CameraDistanceReader extends LinearOpMode {
 
         double xtop = (Math.pow((distToEdge - 160), 2));
 
-        Rect block = pipeline.BLOCK;
+        Rect block = pipeline.BLOCKS.get(0).rect;
         int blockCenter = block.x + (block.width/2);
 
         // Left

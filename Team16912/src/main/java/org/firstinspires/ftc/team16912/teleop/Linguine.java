@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.team16912.util.LinguineHardware;
+import org.firstinspires.ftc.team16912.util.Util;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 @TeleOp(name = "Linguine")
@@ -28,26 +29,26 @@ public class Linguine extends LinearOpMode {
     public void runOpMode() {
 
         robot.init(hardwareMap, true);
+        Util.init(hardwareMap);
 
         waitForStart();
 
 
         // Loop
-        while (isActive())
-        {
+        while (isActive()) {
 
             // Mecanum drive code
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double x = -gamepad1.left_stick_x; // Counteract imperfect strafing
             double rx = -gamepad1.right_stick_x;
 
-            double frontLeftPower = y - x -  rx;
+            double frontLeftPower = y - x - rx;
             double backLeftPower = y + x - rx;
             double frontRightPower = y + x + rx;
             double backRightPower = y - x + rx;
 
             if (Math.abs(frontLeftPower) > 1 || Math.abs(backLeftPower) > 1 ||
-                    Math.abs(frontRightPower) > 1 || Math.abs(backRightPower) > 1 ) {
+                    Math.abs(frontRightPower) > 1 || Math.abs(backRightPower) > 1) {
                 // Find the largest power
                 double max;
                 max = Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower));
@@ -72,48 +73,41 @@ public class Linguine extends LinearOpMode {
             else if (gamepad1.square) speedMult = .75;
 
 
-
             // Arm up
-            if (gamepad2.dpad_up) armUp();
+            if (gamepad2.dpad_up) Util.armUp();
 
-            // Arm down
-            else if (gamepad2.dpad_down) armDown();
+                // Arm down
+            else if (gamepad2.dpad_down) Util.armDown();
 
-            // Zero power to the arm
-            else armZero();
+                // Zero power to the arm
+            else Util.armZero();
 
             // Reset Arm
-            if (gamepad2.triangle) runArmToStart();
-
-//            if (gamepad1.dpad_up) tapeUp();
-//            else if (gamepad1.dpad_down) tapeDown();
-//            else if (gamepad1.dpad_left) tapeLeft();
-//            else if (gamepad1.dpad_right) tapeRight();
-//            else {
-//                robot.LRServo.setPower(0);
-//                robot.UDMotor.setPower(0);
-//            }
-//
-//            if (gamepad1.left_trigger > 0) robot.tapeServo.setPower(gamepad1.left_trigger);
-//            else if (gamepad1.right_trigger > 0) robot.tapeServo.setPower(-gamepad1.right_trigger);
-//            else robot.tapeServo.setPower(0);
-
-
-
-
+            if (gamepad2.triangle) Util.runArmTo(0);
 
             // Carousel Spinner
-            if (gamepad2.dpad_right) setSpinnerDirection('f');
-            else if (gamepad2.dpad_left) setSpinnerDirection('r');
+            if (gamepad2.dpad_right) Util.setSpinnerDirection('f');
+            else if (gamepad2.dpad_left) Util.setSpinnerDirection('r');
+
+            //auto duck end game spinner
+            if(gamepad2.cross)
+            {
+                for(int i=0; i<10; i++)
+                {
+                    robot.cSpinner.setVelocity(300);
+                    sleep(1700);
+                    robot.cSpinner.setVelocity(0);
+                    sleep(500);
+                }
+            }
 
             robot.cSpinner.setVelocity(gamepad2.right_trigger * 200);
 
 
-
             // Claw Activation
-            if (gamepad2.square) closeClaw();
+            if (gamepad2.square) Util.closeClaw(.01);
 
-            else if (gamepad2.circle) openClaw();
+            else if (gamepad2.circle) Util.openClaw(.01);
 
 
             // Telemetry
@@ -123,66 +117,4 @@ public class Linguine extends LinearOpMode {
 
 
     }
-
-
-
-    /*
-    Helper arm methods
-     */
-
-
-    // Resets arm to start position
-    private void runArmToStart() {
-
-        // As long as the arm is above this position
-        while (robot.armEncoder.getCurrentPosition() < 0)
-            for (DcMotorEx motor : robot.motorArms) motor.setPower(.5);
-
-    }
-
-    // Arm Up
-    private void armUp() { for (DcMotorEx motor : robot.motorArms) motor.setPower(-.75); }
-
-    // Arm Down
-    private void armDown() { for (DcMotorEx motor : robot.motorArms) motor.setPower(.75); }
-
-    // Zero Power
-    private void armZero() { for (DcMotorEx motor : robot.motorArms) motor.setPower(0); }
-
-
-
-    /*
-    Helper claw methods
-     */
-
-
-    // Closes claw
-    private void closeClaw() { robot.servoClaw.setPosition(.7); }
-
-    // Opens claw
-    private void openClaw() { robot.servoClaw.setPosition(-1); }
-
-
-//    private void tapeUp() { robot.UDMotor.setPower(.3); }
-//    private void tapeDown() { robot.UDMotor.setPower(-.3); }
-//    private void tapeLeft() { robot.LRServo.setPower(-.3); }
-//    private void tapeRight() { robot.LRServo.setPower(.3); }
-//    private void tapeOut(double p) { robot.tapeServo.setPower(p); }
-//    private void tapeIn(double p) { robot.tapeServo.setPower(-p); }
-
-
-
-    /*
-    Spinner Directions
-     */
-
-
-    // Set spinner direction
-    private void setSpinnerDirection(char dir) {
-
-        if (dir == 'f') robot.cSpinner.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        else if (dir == 'r') robot.cSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
-    }
-
 }

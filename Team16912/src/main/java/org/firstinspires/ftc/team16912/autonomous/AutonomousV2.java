@@ -88,9 +88,61 @@ public class AutonomousV2 extends LinearOpMode {
             sleep(waitTime);
 
             deliverShipment();
-            drive.followTrajectory(toCarousel);
-        }
 
+            gotoFinish();
+        }
+    }
+
+    public void gotoFinish()
+    {
+        switch(alliance) {
+
+            case ("RED"): {
+
+
+                switch (side) {
+
+                    case ("LEFT"): {
+
+                        drive.followTrajectory(toCarousel);
+                        Util.setSpinnerDirection('r');
+                        spinCarousel();
+                        break;
+                    }
+
+                    case ("RIGHT"): {
+
+                        drive.followTrajectory(toWarehouseSetup);
+                        drive.followTrajectory(toWarehouse);
+                        break;
+                    }
+                }
+
+
+                break;
+            }
+
+            case ("BLUE"): {
+
+
+
+                switch (side) {
+
+                    case ("LEFT"): {
+
+                        break;
+                    }
+
+                    case ("RIGHT"): {
+                        int i = 0;
+
+                        break;
+                    }
+                }
+
+                break;
+            }
+        }
     }
 
 
@@ -108,7 +160,7 @@ public class AutonomousV2 extends LinearOpMode {
                     case ("LEFT"): {
 
                         toCarousel = drive.trajectoryBuilder(toShipment.end())
-                                .splineToConstantHeading(PoseStorage.RedCarousel, Math.toRadians(180))
+                                .splineToConstantHeading(PoseStorage.RedCarousel, Math.toRadians(190))
                                 .build();
                         break;
                     }
@@ -195,10 +247,10 @@ public class AutonomousV2 extends LinearOpMode {
         }
 
         // set spinner speed
-        robot.cSpinner.setVelocity(200);
+        robot.cSpinner.setVelocity(250);
 
         // wait 2.5 seconds for the duck to fall
-        sleep(3000);
+        sleep(1800);
         robot.cSpinner.setVelocity(0);
 
     }

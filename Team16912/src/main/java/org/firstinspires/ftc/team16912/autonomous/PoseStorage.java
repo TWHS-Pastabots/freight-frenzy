@@ -52,7 +52,7 @@ public class PoseStorage {
         // Component poses
         RedCarousel = new Vector2d(-55.72295700521856,-53.766810012697775);
         BlueCarousel = new Pose2d(-59.43131663678813, 56.86792328414704,Math.toRadians(172.84226364522823));
-        RedHub = new Vector2d( -10,-44);
+        RedHub = new Vector2d( -12,-46);
         BlueHub = new Pose2d( -10.638173890493668, 54.95355503292278, Math.toRadians(90));
         RedStorageUnit = new Pose2d(-60.66711740422015, -36.326774389878032, Math.toRadians(0));
         BlueStorageUnit = new Pose2d(-58.664135706521755, 37.818617399773153, Math.toRadians(5));

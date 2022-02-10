@@ -16,6 +16,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Config
@@ -37,24 +38,11 @@ public class DistancePipeline extends OpenCvPipeline
     static final int REGION_HEIGHT = 20;
 
     public double DISTANCE;
-    public Rect BLOCK;
-
-
-    Point region1_pointA = new Point(
-            REGION_TOPLEFT_ANCHOR_POINT.x,
-            REGION_TOPLEFT_ANCHOR_POINT.y);
-    Point region1_pointB = new Point(
-            REGION_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            REGION_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
-
-
-
-
-
+    public ArrayList<Block> BLOCKS = new ArrayList<>();
 
     @Override
     public Mat processFrame(Mat input) {
+        BLOCKS.clear();
         Mat edges = new Mat(input.rows(), input.cols(), input.type());
         Mat mask = new Mat(input.rows(), input.cols(), input.type());
         Mat YcrCb = new Mat(input.rows(), input.cols(), input.type());
@@ -70,7 +58,6 @@ public class DistancePipeline extends OpenCvPipeline
 
         Imgproc.GaussianBlur(mask, mask, new Size(5, 5), 0);
         Imgproc.Canny(mask, edges, 20, 105);
-        // Imgproc.dilate(edges, edges, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5)));
 
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
@@ -85,21 +72,24 @@ public class DistancePipeline extends OpenCvPipeline
 
                 List<MatOfPoint> conts = new ArrayList<>();
                 conts.add(contour);
-
-                if (points.length == 4 || points.length == 5) {
-                    Rect rect = Imgproc.boundingRect(approx);
-                    Imgproc.drawContours(input, conts, -1, new Scalar(0, 255, 0), 2);
-
-                    DISTANCE = (double) (2 * 420) / rect.height;
-                    BLOCK = rect;
-
-                    return input;
-                }
+                Rect rect = Imgproc.boundingRect(approx);
+                Imgproc.drawContours(input, conts, -1, new Scalar(0, 255, 0), 2);
+                BLOCKS.add(new Block(rect, (double) (2 * 420) / rect.height, area));
             }
-
 
         }
         return input;
+    }
+
+    public Block getClosestBlock()
+    {
+        Block closest = new Block();
+        for(Block b : BLOCKS)
+        {
+            if(b.dist < closest.dist) closest = b;
+        }
+        return closest;
+
     }
 
 }

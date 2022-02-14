@@ -56,89 +56,154 @@ public class Spaghetti extends OpMode {
 
     private void drive()
     {
-        // Mecanum drivecode
-        double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-        double special_y = -gamepad1.left_stick_y *.8;
-        double x = -gamepad1.left_stick_x;// Counteract imperfect strafing
-        double special_x = -gamepad1.left_stick_x *.8;
-        double rx = -gamepad1.right_stick_x;
-        double special_rx = -gamepad1.right_trigger *.6;
+        if(!gamepad1.right_bumper) {
+            // Mecanum drivecode
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double special_y = -gamepad1.left_stick_y * .8;
+            double x = -gamepad1.left_stick_x;// Counteract imperfect strafing
+            double special_x = -gamepad1.left_stick_x * .8;
+            double rx = -gamepad1.right_stick_x;
+            double special_rx = -gamepad1.right_trigger * .6;
 
-        double rightFrontPower = y + x + rx;
-        double rightRearPower = y - x + rx;
-        double leftFrontPower = y - x - rx;
-        double leftRearPower = y + x - rx;
+            double rightFrontPower = y + x + (rx * 0.6);
+            double rightRearPower = y - x + (rx * 0.6);
+            double leftFrontPower = y - x - (rx * 0.6);
+            double leftRearPower = y + x - (rx * 0.6);
 
-        if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
-                Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1 )
-        {
-            // Find the largest power
-            double max;
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));
-            max = Math.max(Math.abs(rightFrontPower), max);
-            max = Math.max(Math.abs(rightRearPower), max);
+            if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
+                    Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1) {
+                // Find the largest power
+                double max;
+                max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));
+                max = Math.max(Math.abs(rightFrontPower), max);
+                max = Math.max(Math.abs(rightRearPower), max);
 
-            // Divide everything by max (it's positive so we don't need to worry
-            // about signs)
-            leftFrontPower /= max;
-            leftRearPower /= max;
-            rightFrontPower /= max;
-            rightRearPower /= max;
+                // Divide everything by max (it's positive so we don't need to worry
+                // about signs)
+                leftFrontPower /= max;
+                leftRearPower /= max;
+                rightFrontPower /= max;
+                rightRearPower /= max;
+            }
+
+            //Slowmode Code
+            if (gamepad1.dpad_down) {
+                leftFrontPower = -.2;
+                leftRearPower = -.2;
+                rightRearPower = -.2;
+                rightFrontPower = -.2;
+
+            } else if (gamepad1.dpad_up) {
+                leftFrontPower = .2;
+                leftRearPower = .2;
+                rightRearPower = .2;
+                rightFrontPower = .2;
+            } else if (gamepad1.dpad_right) {
+                leftFrontPower = .2;
+                leftRearPower = -.2;
+                rightRearPower = .2;
+                rightFrontPower = -.2;
+            } else if (gamepad1.dpad_left) {
+                leftFrontPower = -.2;
+                leftRearPower = .2;
+                rightRearPower = -.2;
+                rightFrontPower = .2;
+            }
+
+            if (gamepad1.right_trigger > 0) {
+                robot.leftFront.setPower(.5);
+                robot.leftRear.setPower(.5);
+                robot.rightRear.setPower(-.5);
+                robot.rightFront.setPower(-.5);
+            }
+
+            if (gamepad1.left_trigger > 0) {
+                robot.leftFront.setPower(-.5);
+                robot.leftRear.setPower(-.5);
+                robot.rightRear.setPower(.5);
+                robot.rightFront.setPower(.5);
+            }
+
+            robot.leftFront.setPower(leftFrontPower * tempSpeedMultiplier);
+            robot.leftRear.setPower(leftRearPower * tempSpeedMultiplier);
+            robot.rightFront.setPower(rightFrontPower * tempSpeedMultiplier);
+            robot.rightRear.setPower(rightRearPower * tempSpeedMultiplier);
+
         }
-
-        //Slowmode Code
-        if (gamepad1.dpad_down)
+        if(gamepad1.right_bumper)
         {
-            leftFrontPower = -.3;
-            leftRearPower = -.3;
-            rightRearPower = -.3;
-            rightFrontPower = -.3;
+            // Mecanum drivecode
+            double y = gamepad1.left_stick_y; // Remember, this is reversed!
+            double special_y = gamepad1.left_stick_y * .8;
+            double x = gamepad1.left_stick_x;// Counteract imperfect strafing
+            double special_x = gamepad1.left_stick_x * .8;
+            double rx = -gamepad1.right_stick_x;
+            double special_rx = gamepad1.right_trigger * .6;
 
-        }
-        else if (gamepad1.dpad_up)
-        {
-            leftFrontPower = .3;
-            leftRearPower = .3;
-            rightRearPower = .3;
-            rightFrontPower = .3;
-        }
+            double rightFrontPower = (y*.2) + (x*.2) + (rx * 0.2);
+            double rightRearPower = (y*.2) - (x*.2) + (rx * 0.2);
+            double leftFrontPower = (y*.2) - (x*.2) - (rx * 0.2);
+            double leftRearPower = (y*.2) + (x*.2) - (rx * 0.2);
 
-        else if (gamepad1.dpad_right)
-        {
-            leftFrontPower = .3;
-            leftRearPower = -.3;
-            rightRearPower = .3;
-            rightFrontPower = -.3;
-        }
+            if (Math.abs(leftFrontPower) > 1 || Math.abs(leftRearPower) > 1 ||
+                    Math.abs(rightFrontPower) > 1 || Math.abs(rightRearPower) > 1) {
+                // Find the largest power
+                double max;
+                max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));
+                max = Math.max(Math.abs(rightFrontPower), max);
+                max = Math.max(Math.abs(rightRearPower), max);
 
-        else if (gamepad1.dpad_left)
-        {
-            leftFrontPower = -.3;
-            leftRearPower = .3;
-            rightRearPower = -.3;
-            rightFrontPower = .3;
-        }
+                // Divide everything by max (it's positive so we don't need to worry
+                // about signs)
+                leftFrontPower /= max;
+                leftRearPower /= max;
+                rightFrontPower /= max;
+                rightRearPower /= max;
+            }
 
-        if(gamepad1.right_trigger > 0)
-        {
-            robot.leftFront.setPower(-.4);
-            robot.leftRear.setPower(-.4);
-            robot.rightRear.setPower(.4);
-            robot.rightFront.setPower(.4);
-        }
+            /*//Slowmode Code
+            if (gamepad1.dpad_down) {
+                leftFrontPower = .2;
+                leftRearPower = .2;
+                rightRearPower = .2;
+                rightFrontPower = .2;
 
-        if (gamepad1.left_trigger > 0)
-        {
-            robot.leftFront.setPower(.4);
-            robot.leftRear.setPower(.4);
-            robot.rightRear.setPower(.4);
-            robot.rightFront.setPower(.4);
-        }
+            } else if (gamepad1.dpad_up) {
+                leftFrontPower = -.2;
+                leftRearPower = -.2;
+                rightRearPower = -.2;
+                rightFrontPower = -.2;
+            } else if (gamepad1.dpad_right) {
+                leftFrontPower = -.2;
+                leftRearPower = .2;
+                rightRearPower = -.2;
+                rightFrontPower = .2;
+            } else if (gamepad1.dpad_left) {
+                leftFrontPower = .2;
+                leftRearPower = -.2;
+                rightRearPower = .2;
+                rightFrontPower = -.2;
+            }
 
-        robot.leftFront.setPower(leftFrontPower*tempSpeedMultiplier);
-        robot.leftRear.setPower(leftRearPower*tempSpeedMultiplier);
-        robot.rightFront.setPower(rightFrontPower*tempSpeedMultiplier);
-        robot.rightRear.setPower(rightRearPower*tempSpeedMultiplier);
+            if (gamepad1.right_trigger > 0) {
+                robot.leftFront.setPower(-.5);
+                robot.leftRear.setPower(-.5);
+                robot.rightRear.setPower(.5);
+                robot.rightFront.setPower(.5);
+            }
+
+            if (gamepad1.left_trigger > 0) {
+                robot.leftFront.setPower(.5);
+                robot.leftRear.setPower(.5);
+                robot.rightRear.setPower(-.5);
+                robot.rightFront.setPower(-.5);
+            }*/
+
+            robot.leftFront.setPower(leftFrontPower * tempSpeedMultiplier);
+            robot.leftRear.setPower(leftRearPower * tempSpeedMultiplier);
+            robot.rightFront.setPower(rightFrontPower * tempSpeedMultiplier);
+            robot.rightRear.setPower(rightRearPower * tempSpeedMultiplier);
+        }
 
 
     }
@@ -157,8 +222,8 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(gamepad2.right_trigger * .4);
-            robot.armMotorTwo.setPower(gamepad2.right_trigger * .4);
+            robot.armMotorOne.setPower(gamepad2.right_trigger * -.6);
+            robot.armMotorTwo.setPower(gamepad2.right_trigger * -.6);
 
             justMoved = true;
         }
@@ -170,8 +235,8 @@ public class Spaghetti extends OpMode {
             robot.armMotorOne.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             robot.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            robot.armMotorOne.setPower(gamepad2.left_trigger * -.4);
-            robot.armMotorTwo.setPower(gamepad2.left_trigger * -.4);
+            robot.armMotorOne.setPower(gamepad2.left_trigger * .6);
+            robot.armMotorTwo.setPower(gamepad2.left_trigger * .6);
 
             justMoved = true;
         }
@@ -237,22 +302,20 @@ public class Spaghetti extends OpMode {
         if (gamepad2.right_bumper)
         {
             //robot.spinnyWheel.setDirection(DcMotorEx.Direction.FORWARD);
-            robot.rightSpinnyWheel.setPower(.6);
-            robot.leftSpinnyWheel.setPower(0.6);
+            robot.spinnyWheel.setPower(.6);
+            //robot.leftSpinnyWheel.setPower(0.6);
         }
 
         else if (gamepad2.left_bumper)
         {
-            robot.rightSpinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
-            robot.leftSpinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
-            robot.rightSpinnyWheel.setPower(-.6);
-            robot.leftSpinnyWheel.setPower(-0.6);
+            robot.spinnyWheel.setDirection(DcMotorEx.Direction.REVERSE);
+            robot.spinnyWheel.setPower(-.6);
         }
 
         else
         {
-            robot.rightSpinnyWheel.setPower(0.0);
-            robot.leftSpinnyWheel.setPower(0.0);
+            robot.spinnyWheel.setPower(0.0);
+            //robot.leftSpinnyWheel.setPower(0.0);
         }
     }
 

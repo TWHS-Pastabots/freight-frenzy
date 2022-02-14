@@ -105,8 +105,7 @@ public class AutonomousTime extends LinearOpMode {
 
     private void spinCarousel()
     {
-        robot.leftSpinnyWheel.setPower(.4);
-        robot.rightSpinnyWheel.setPower(0.4);
+        robot.spinnyWheel.setPower(0.4);
     }
 
     private void stay()

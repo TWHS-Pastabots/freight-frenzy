@@ -65,7 +65,7 @@ public class DriveConstants {
      */
 
     public static final double MAX_MULTIPLIER = 0.9;
-    public static double MAX_VEL = 72 * MAX_MULTIPLIER;
+    public static double MAX_VEL = 36;
     //public static double MAX_VEL = 49.865997944449454 * MAX_MULTIPLIER;
     public static double MAX_ACCEL = 30 * MAX_MULTIPLIER;
     //public static double MAX_ANG_VEL = 0.21111111342906952;

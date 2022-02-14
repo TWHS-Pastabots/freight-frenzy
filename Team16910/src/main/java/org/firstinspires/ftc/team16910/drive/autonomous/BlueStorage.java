@@ -9,9 +9,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.team16910.drive.autonomous.Coordinates;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvInternalCamera;
+
+import java.security.spec.PSSParameterSpec;
 
 @Autonomous(preselectTeleOp = "Storage BLUE")
 public class BlueStorage extends LinearOpMode
@@ -25,41 +33,76 @@ public class BlueStorage extends LinearOpMode
     SpaghettiHardware robot = null;
     SampleMecanumDrive drive = null;
     helpMethods helpMethods;
+    BarcodeReader reader;
+    OpenCvInternalCamera camera;
 
-    /*
-    path:
-    close grabber
-    move forward just a bit
-    move right
-    spin carousel
-    move to carousel approach
-    move to hub_pos
-    move arm forward
-    release grabber
-    move arm backward
-    rotate left 90
-    move to warehouse pos
-     */
+    public static Pose2d BlueWarehouseBarcode,BlueWarehouseHub_3, BlueWarehouseHub, BlueWarehouseEnd_3, BlueWarehouseEnd;
+    public static Pose2d BlueStorageBarcode,BlueStorageCarousel, BlueStorageHub_3, BlueStorageHub, BlueStorageEnd_3, BlueStorageEnd;
+
+    public static Pose2d RedWarehouseBarcode,RedWarehouseHub_3, RedWarehouseHub, RedWarehouseEnd_3, RedWarehouseEnd;
+    public static Pose2d RedStorageBarcode, RedStorageCarousel, RedStorageHub_3, RedStorageHub, RedStorageEnd_3, RedStorageEnd;
+
+    public static void Positions()
+    {
+
+        BlueWarehouseBarcode = new Pose2d(27.102410493136468, 25.8890852672091, 0);
+        BlueWarehouseHub_3 = new Pose2d(-20.37210776664967, -22.922848844623836, Math.toRadians(180)); //Third level needs robot to be different orientation then for lvl 1 and 2
+        BlueWarehouseHub = new Pose2d(20.37210776664967, 22.922848844623836, 0);
+        BlueWarehouseEnd_3 = new Pose2d(-18.641856780246332, 72.96895702032774, Math.toRadians(-90));//If we end at lvl 3
+        BlueWarehouseEnd = new Pose2d (18.641856780246332, 72.96895702032774, Math.toRadians(90));
+
+        BlueStorageCarousel = new Pose2d (-5.1327873025844015, -25.261654154033103, Math.toRadians(180));
+        BlueStorageBarcode = new Pose2d (4, 24.422398284891067, 0);
+        BlueStorageHub_3 = new Pose2d(20.093903824570501, 23.754585428696576, 0);
+        BlueStorageHub = new Pose2d(-20.093903824570501, 23.754585428696576, Math.toRadians(180));
+        BlueStorageEnd_3 = new Pose2d (-26.706247391511965, -27.18861475380927, Math.toRadians(180));
+        BlueStorageEnd = new Pose2d (26.706247391511965, -27.18861475380927, 0);
 
 
-    private final Pose2d move_Forward = new Pose2d(-8.013438741993097, -0.028127556611040036, 0);
-    //private final Pose2d carousel_approach = new Pose2d(-8.013438741993097, -10.324558386544119, Math.toRadians(180));
-    private final Pose2d carousel_pos = new Pose2d(-5.06136975539866, 20.991465591563607, Math.toRadians(180));
-    private final Pose2d hub_approach = new Pose2d(-21.102410493136468, 25.8890852672091, Math.toRadians(180));
-    private final Pose2d hub_pos = new Pose2d(-19.37210776664967, -20.922848844623836, Math.toRadians(180));
-    private final Pose2d warehouse_approach = new Pose2d(-18.107768895372946, -18.16996569873317, Math.toRadians(270));
-    private final Pose2d storage_pos = new Pose2d(-8.013438741993097, 30.991465591563607, Math.toRadians(270));
 
-    //Positions
+        RedWarehouseBarcode = new Pose2d(-27.102410493136468, 25.8890852672091, 0);
+        RedWarehouseHub_3 = new Pose2d(20.37210776664967, -22.922848844623836, Math.toRadians(180)); //Third level needs robot to be different orientation then for lvl 1 and 2
+        RedWarehouseHub = new Pose2d(-20.37210776664967, 22.922848844623836, 0);
+        RedWarehouseEnd_3 = new Pose2d(18.641856780246332, 72.96895702032774, Math.toRadians(-90));//If we end at lvl 3
+        RedWarehouseEnd = new Pose2d (-18.641856780246332, 72.96895702032774, Math.toRadians(90));
+
+        RedStorageCarousel = new Pose2d (5.1327873025844015, -25.261654154033103, Math.toRadians(180));
+        RedStorageBarcode = new Pose2d (-4, 24.422398284891067, 0);
+        RedStorageHub_3 = new Pose2d(-20.093903824570501, 23.754585428696576, 0);
+        RedStorageHub = new Pose2d(20.093903824570501, 23.754585428696576, Math.toRadians(180));
+        RedStorageEnd_3 = new Pose2d (26.706247391511965, -27.18861475380927, Math.toRadians(180));
+        RedStorageEnd = new Pose2d (-26.706247391511965, -27.18861475380927, 0);
+    }
 
     //Trajectories
-    private TrajectorySequence carousel_traj;
+    private TrajectorySequence scan_traj;
+    private TrajectorySequence hub_traj_3;
     private TrajectorySequence hub_traj;
-    private TrajectorySequence storage_traj;
+    private TrajectorySequence warehouse_traj;
+    //private TrajectorySequence warehouse_traj_3;
+    private TrajectorySequence carousel_traj;
 
     @Override
-    public void runOpMode() throws InterruptedException
-    {
+    public void runOpMode() throws InterruptedException {
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        reader = new BarcodeReader();
+        camera.setPipeline(reader);
+
+        camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addData("Error", "*Camera could not be opened*");
+                telemetry.update();
+            }
+        });
 
         // All Motors
         robot = new SpaghettiHardware();
@@ -72,11 +115,9 @@ public class BlueStorage extends LinearOpMode
         robot.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        blueWarehouseTraj();
 
-        blueStorageTraj();
-
-        while (!isStarted())
-        {
+        while (!isStarted()) {
             telemetry.addData("Arm Target", target_pos);
             telemetry.update();
         }
@@ -84,78 +125,74 @@ public class BlueStorage extends LinearOpMode
         waitForStart();
         if (!opModeIsActive()) return;
         robot.grabberServo.setPosition(1);
-        helpMethods.waitFor(1);
-        //drive.followTrajectorySequence(carousel_approach);
-        drive.followTrajectorySequence(carousel_traj);
-        //spin the thing
-        helpMethods.waitFor(1);
-        robot.leftSpinnyWheel.setPower(0.6);
-        robot.rightSpinnyWheel.setPower(0.6);
-        helpMethods.waitFor(3);
-        robot.leftSpinnyWheel.setPower(0);
-        robot.rightSpinnyWheel.setPower(0);
-        //move to driving the stuff
-        drive.followTrajectorySequence(hub_traj);
-        //bringing the arm up
-        /*
-        robot.armMotorOne.setPower(-0.5);
-        robot.armMotorTwo.setPower(-0.5);
-        helpMethods.waitFor(1.4);
-        robot.armMotorOne.setPower(0);
-        robot.armMotorTwo.setPower(0);
-        helpMethods.waitFor(1.7);
-        robot.grabberServo.setPosition(-1);
-        //waiting
-        helpMethods.waitFor(2);
-        //bringing the arm down
-        robot.armMotorOne.setPower(0.5);
-        robot.armMotorOne.setPower(0.5);
-        helpMethods.waitFor(0.5);
-        robot.armMotorOne.setPower(0);
-        robot.armMotorTwo.setPower(0);
-        */
-        robot.armMotorOne.setPower(-0.6);
-        robot.armMotorTwo.setPower(-0.6);
-
-        robot.armMotorOne.setTargetPosition(-140);
-        robot.armMotorTwo.setTargetPosition(-140);
-
-        robot.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        helpMethods.waitFor(2);
-        robot.grabberServo.setPosition(-1);
-        helpMethods.waitFor(1);
-        robot.grabberServo.setPosition(1);
-
-        robot.armMotorOne.setPower(0.6);
-        robot.armMotorTwo.setPower(0.6);
-
-        robot.armMotorOne.setTargetPosition(10);
-        robot.armMotorTwo.setTargetPosition(10);
-
-        robot.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        drive.followTrajectorySequence(storage_traj);
-
+        spinSpinnyWheel();
+        deliverFreight();
+        driveToEnd();
     }
-    private void blueStorageTraj()
+
+    public void spinSpinnyWheel()
     {
+        drive.followTrajectorySequence(carousel_traj);
+
+        robot.spinnyWheel.setPower(-0.6);
+        helpMethods.waitFor(3);
+    }
+
+    public void deliverFreight()
+    {
+        int armPose = reader.getAnalysis();
+
+        drive.followTrajectorySequence(scan_traj);
+
+        robot.armMotorOne.setPower(0.2);
+        robot.armMotorTwo.setPower(0.2);
+        robot.armMotorOne.setTargetPosition(armPose);
+        robot.armMotorTwo.setTargetPosition(armPose);
+
+        if(armPose == -4200)
+        {
+            drive.followTrajectorySequence(hub_traj_3);
+        }
+
+        else
+        {
+            drive.followTrajectorySequence(hub_traj);
+        }
+    }
+
+    public void driveToEnd()
+    {
+        drive.followTrajectorySequence(warehouse_traj);
+    }
+
+
+    private void blueWarehouseTraj()
+    {
+        scan_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(BlueStorageBarcode)
+                .build();
+
+        hub_traj_3 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(BlueStorageHub_3)
+                .build();
+
+        hub_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(BlueStorageHub)
+                .build();
+
         carousel_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(move_Forward)
-                .turn(Math.toRadians(180))
-                //.lineToLinearHeading(carousel_approach)
-                .lineToLinearHeading(carousel_pos)
+                .lineToLinearHeading(BlueStorageCarousel)
                 .build();
-        hub_traj = drive.trajectorySequenceBuilder(carousel_traj.end())
-                .lineToLinearHeading(hub_approach)
-                .lineToLinearHeading(hub_pos)
+
+
+        /*warehouse_traj_3 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(BlueWarehouseEnd_3)
+                .build();*/
+
+        warehouse_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(BlueStorageEnd)
                 .build();
-        storage_traj = drive.trajectorySequenceBuilder(hub_traj.end())
-                .turn(Math.toRadians(90))
-                .lineToLinearHeading(storage_pos)
-                .build();
+
     }
 
 

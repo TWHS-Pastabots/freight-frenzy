@@ -35,6 +35,7 @@ public class BlueStorage extends LinearOpMode
     helpMethods helpMethods;
     BarcodeReader reader;
     OpenCvInternalCamera camera;
+    int startWaitTime = 0;
 
     public static Pose2d BlueWarehouseBarcode,BlueWarehouseHub_3, BlueWarehouseHub, BlueWarehouseEnd_3, BlueWarehouseEnd;
     public static Pose2d BlueStorageBarcode,BlueStorageCarousel, BlueStorageHub_3, BlueStorageHub, BlueStorageEnd_3, BlueStorageEnd;
@@ -122,8 +123,10 @@ public class BlueStorage extends LinearOpMode
             telemetry.update();
         }
 
+        telemetry.addData("Time Delay: ", startWaitTime);
         waitForStart();
         if (!opModeIsActive()) return;
+        helpMethods.waitFor(startWaitTime);
         robot.grabberServo.setPosition(1);
         spinSpinnyWheel();
         deliverFreight();

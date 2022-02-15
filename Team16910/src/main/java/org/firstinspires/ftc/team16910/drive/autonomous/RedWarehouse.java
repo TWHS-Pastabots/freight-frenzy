@@ -29,6 +29,7 @@ public class RedWarehouse extends LinearOpMode
     boolean justMoved = true;
     ElapsedTime arm_time = null;
     int target_pos = 0;
+    int startWaitTime = 0;
 
     SpaghettiHardware robot = null;
     SampleMecanumDrive drive = null;
@@ -121,8 +122,10 @@ public class RedWarehouse extends LinearOpMode
             telemetry.update();
         }
 
+        telemetry.addData("Time Delay: ", startWaitTime);
         waitForStart();
         if (!opModeIsActive()) return;
+        helpMethods.waitFor(startWaitTime);
         robot.grabberServo.setPosition(1);
         deliverFreight();
         driveToEnd();

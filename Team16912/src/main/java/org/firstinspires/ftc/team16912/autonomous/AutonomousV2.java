@@ -23,12 +23,13 @@ public class AutonomousV2 extends LinearOpMode {
 
     ElapsedTime runTime = new ElapsedTime();
 
-    Trajectory toShipment, toWarehouseSetup, toWarehouse, toCarousel;
+    Trajectory toShipment, toWarehouseSetup, toWarehouse, toCarousel, toBlockPickup;
 
     Pose2d startPose;
 
     private String alliance = "BLUE", side = "LEFT";
     private int waitTime = 0;
+    private int blockToPickUp = 0;
 
 
     OpenCvInternalCamera webcam;
@@ -65,7 +66,7 @@ public class AutonomousV2 extends LinearOpMode {
         PoseStorage.initPoses();
 
 
-        while (!gamepad1.triangle) {
+        while (!gamepad1.cross) {
             telemetry.addData("Left Brightness: ", pipeline.R1Y);
             telemetry.addData("Middle Brightness: ", pipeline.R2Y);
             telemetry.addData("Right Brightness: ", pipeline.R3Y);
@@ -74,23 +75,30 @@ public class AutonomousV2 extends LinearOpMode {
         }
 
         config();
-        drive.setPoseEstimate(startPose);
 
+        drive.setPoseEstimate(startPose);
 
         initTrajectories();
 
-        Util.closeClaw(.5);
+        // Closes claw to grip freight at start
+        Util.closeClaw(.01);
 
         waitForStart();
 
         if (isStarted()) {
 
             sleep(waitTime);
-
+            // Scans barcode and delivers freight to correct level
             deliverShipment();
-
+            // Goes to either warehouse or spins carousel
             gotoFinish();
         }
+    }
+
+    public void PickUpBlock()
+    {
+        Util.closeClaw(.5);
+        Util.runArmTo(-1000);
     }
 
     public void gotoFinish()
@@ -110,10 +118,23 @@ public class AutonomousV2 extends LinearOpMode {
                         break;
                     }
 
-                    case ("RIGHT"): {
+                    case ("RIGHT"):
+                    {
+                        if(blockToPickUp == 0)
+                        {
+                            drive.followTrajectory(toWarehouseSetup);
+                            drive.followTrajectory(toWarehouse);
+                        }
 
-                        drive.followTrajectory(toWarehouseSetup);
-                        drive.followTrajectory(toWarehouse);
+                        // Pick up blocks amount of times set in config
+                        for(int i = 0; i < blockToPickUp; i++)
+                        {
+                            drive.followTrajectory(toWarehouseSetup);
+                            drive.followTrajectory(toWarehouse);
+                            drive.followTrajectory(toBlockPickup);
+                            PickUpBlock();
+                        }
+
                         break;
                     }
                 }
@@ -153,6 +174,9 @@ public class AutonomousV2 extends LinearOpMode {
             case ("RED"): {
                 toShipment = drive.trajectoryBuilder(drive.getPoseEstimate())
                         .lineToConstantHeading(PoseStorage.RedHub)
+                        .addTemporalMarker(.1, ()-> {
+                            Util.runArmTo(pipeline.getAnalysis());
+                        })
                         .build();
 
                 switch (side) {
@@ -170,7 +194,7 @@ public class AutonomousV2 extends LinearOpMode {
                         toWarehouseSetup = drive.trajectoryBuilder(toShipment.end())
                                 .lineToLinearHeading(PoseStorage.RedWarehouseSetup)
                                 .addTemporalMarker(.25, ()-> {
-                                    Util.runArmTo(-1000);
+                                    Util.runArmTo(0);
                                 })
                                 .build();
 
@@ -178,6 +202,12 @@ public class AutonomousV2 extends LinearOpMode {
                                 .strafeRight(40)
                                 .build();
 
+                        toBlockPickup = drive.trajectoryBuilder(toWarehouse.end())
+                                .lineToLinearHeading(PoseStorage.RedWarehouseBlocks)
+                                .addTemporalMarker(.01, ()->{
+                                    Util.runArmTo(250);
+                                })
+                                .build();
                         break;
                     }
                 }
@@ -222,15 +252,10 @@ public class AutonomousV2 extends LinearOpMode {
 
         // Claw actions
         Util.openClaw(.5);
-        sleep(50);
-        Util.closeClaw(1);
-        sleep(50);
     }
 
-    private void spinCarousel() {
-
-
-
+    private void spinCarousel()
+    {
         switch (alliance) {
 
             case "BLUE": {
@@ -265,6 +290,7 @@ public class AutonomousV2 extends LinearOpMode {
         int sideIndex = 0;
 
         double LastClick = runTime.milliseconds();
+        sleep(400);
 
         // Alliance Config
         while (!gamepad1.cross)
@@ -327,6 +353,31 @@ public class AutonomousV2 extends LinearOpMode {
             }
 
             telemetry.addLine("Waiting " + waitTime/1000 + " seconds on start" + "\nPress X to start");
+            telemetry.update();
+            LastClick = runTime.milliseconds();
+        }
+
+        telemetry.clearAll();
+        telemetry.addLine("Wait Time Confirmed");
+        telemetry.update();
+        sleep(500);
+        telemetry.clear();
+
+        while (!gamepad1.cross)
+        {
+            if(runTime.milliseconds() - LastClick < 200) continue;
+
+            if (gamepad1.dpad_up)
+            {
+                blockToPickUp++;
+            }
+
+            else if (gamepad1.dpad_down)
+            {
+                if(blockToPickUp > 0) blockToPickUp--;
+            }
+
+            telemetry.addLine("Blocks To Pick Up " + blockToPickUp + "\nPress X to start");
             telemetry.update();
             LastClick = runTime.milliseconds();
         }

@@ -26,9 +26,9 @@ public class LinguineHardware extends RobotHardware {
 
     public Encoder armEncoder = null;
 
-//    public CRServo tapeServo = null;
-//    public CRServo LRServo = null;
-//    public DcMotorEx UDMotor = null;
+    public CRServo tapeServo = null;
+    public CRServo LRServo = null;
+    public CRServo UDMotor = null;
 
     @Override
     public void init(HardwareMap hardwareMap, boolean shouldInitializeComponents) {
@@ -63,9 +63,9 @@ public class LinguineHardware extends RobotHardware {
 
         servoClaw = hardwareMap.get(Servo.class, LinguineIds.SERVO_CLAW);
 
-//        UDMotor = hardwareMap.get(DcMotorEx.class, LinguineIds.UD_MOTOR);
-//        LRServo = hardwareMap.get(CRServo.class, LinguineIds.LR_SERVO);
-//        tapeServo = hardwareMap.get(CRServo.class, LinguineIds.TAPE_SERVO);
+        UDMotor = hardwareMap.get(CRServo.class, LinguineIds.UD_MOTOR);
+        LRServo = hardwareMap.get(CRServo.class, LinguineIds.LR_SERVO);
+        tapeServo = hardwareMap.get(CRServo.class, LinguineIds.TAPE_SERVO);
 
         armEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LinguineIds.MOTOR_ARM_1));
 //        UDMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

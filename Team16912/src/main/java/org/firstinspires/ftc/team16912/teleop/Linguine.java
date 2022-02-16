@@ -103,11 +103,24 @@ public class Linguine extends LinearOpMode {
 
             robot.cSpinner.setVelocity(gamepad2.right_trigger * 200);
 
-
             // Claw Activation
             if (gamepad2.square) Util.closeClaw(.01);
 
             else if (gamepad2.circle) Util.openClaw(.01);
+
+            // Tape Stuff
+            if(gamepad1.dpad_up) robot.UDMotor.setPower(-.2);
+            else if(gamepad1.dpad_down) robot.UDMotor.setPower(.2);
+            else robot.UDMotor.setPower(0);
+
+            if(gamepad1.dpad_left) robot.LRServo.setPower(-.2);
+            else if(gamepad1.dpad_right) robot.LRServo.setPower(.2);
+            else robot.LRServo.setPower(0);
+
+            if (gamepad1.left_trigger > 0) robot.tapeServo.setPower(gamepad1.left_trigger);
+            else if (gamepad1.right_trigger > 0) robot.tapeServo.setPower(-gamepad1.right_trigger);
+            else robot.tapeServo.setPower(0);
+
 
 
             // Telemetry

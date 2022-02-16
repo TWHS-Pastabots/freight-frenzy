@@ -240,8 +240,6 @@ public class Autonomous extends LinearOpMode {
 
     private void spinCarousel() {
 
-
-
         switch (alliance) {
 
             case "BLUE": {

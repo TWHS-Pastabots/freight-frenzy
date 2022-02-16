@@ -58,13 +58,13 @@ public class PoseStorage {
         BlueStorageUnit = new Pose2d(-58.664135706521755, 37.818617399773153, Math.toRadians(5));
 
         // Warehouse poses
-        RedWarehouseSetup = new Pose2d(0, -60, Math.toRadians(90));
+        RedWarehouseSetup = new Pose2d(0, -66, Math.toRadians(90));
         RedWarehouse = new Pose2d();
         BlueWarehouseSetup = new Pose2d(-10.638173890493668, 69, Math.toRadians(280));
         BlueWarehouse = new Pose2d();
         BluePickup = new Pose2d();
         RedPickup = new Pose2d();
-        RedWarehouseBlocks = new Pose2d(48, -48, Math.toRadians(-45));
+        RedWarehouseBlocks = new Pose2d(57, -48, Math.toRadians(-30));
         BlueWarehouseBlocks = new Pose2d(55, 60, Math.toRadians(15));
 
     }

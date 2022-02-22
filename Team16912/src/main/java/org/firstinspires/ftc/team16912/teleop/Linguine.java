@@ -2,13 +2,8 @@ package org.firstinspires.ftc.team16912.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 import org.firstinspires.ftc.team16912.util.LinguineHardware;
 import org.firstinspires.ftc.team16912.util.Util;
-import org.firstinspires.ftc.teamcode.util.Encoder;
 
 @TeleOp(name = "Linguine")
 public class Linguine extends LinearOpMode {
@@ -76,10 +71,10 @@ public class Linguine extends LinearOpMode {
             // Arm up
             if (gamepad2.dpad_up) Util.armUp();
 
-                // Arm down
+            // Arm down
             else if (gamepad2.dpad_down) Util.armDown();
 
-                // Zero power to the arm
+            // Zero power to the arm
             else Util.armZero();
 
             // Reset Arm
@@ -89,7 +84,7 @@ public class Linguine extends LinearOpMode {
             if (gamepad2.dpad_right) Util.setSpinnerDirection('f');
             else if (gamepad2.dpad_left) Util.setSpinnerDirection('r');
 
-            //auto duck end game spinner
+            // Auto duck end game spinner
             if(gamepad2.cross)
             {
                 for(int i=0; i<10; i++)
@@ -105,18 +100,19 @@ public class Linguine extends LinearOpMode {
 
             // Claw Activation
             if (gamepad2.square) Util.closeClaw(.01);
-
             else if (gamepad2.circle) Util.openClaw(.01);
 
-            // Tape Stuff
+            // Move tape measure up or down
             if(gamepad1.dpad_up) robot.UDMotor.setPower(-.2);
             else if(gamepad1.dpad_down) robot.UDMotor.setPower(.2);
             else robot.UDMotor.setPower(0);
 
+            // Rotate tape measure left or right
             if(gamepad1.dpad_left) robot.LRServo.setPower(-.2);
             else if(gamepad1.dpad_right) robot.LRServo.setPower(.2);
             else robot.LRServo.setPower(0);
 
+            // Send tape in or out
             if (gamepad1.left_trigger > 0) robot.tapeServo.setPower(gamepad1.left_trigger);
             else if (gamepad1.right_trigger > 0) robot.tapeServo.setPower(-gamepad1.right_trigger);
             else robot.tapeServo.setPower(0);

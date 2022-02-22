@@ -15,7 +15,7 @@ public class BarcodePipeline extends OpenCvPipeline {
     public enum ObjectPosition
     {
         LEFT(-4200), // Deliver Bottom
-        CENTER(-3000), // Deliver Middle
+        CENTER(-3200), // Deliver Middle
         RIGHT(-3650); // Deliver Top
 
         private int encoderPos = 0;

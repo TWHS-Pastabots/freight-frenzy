@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
+import org.opencv.core.Mat;
+
 import java.net.PortUnreachableException;
 
 @Config
@@ -11,12 +13,11 @@ public class PoseStorage {
 
     // Positions as Pose2d
     public static Pose2d RedLeft, RedRight, BlueLeft, BlueRight;
-    public static Pose2d BlueCarousel, BlueHub, RedStorageUnit,
-            BlueStorageUnit, RedWarehouse, BlueWarehouse, RedWarehouseSetup, BlueWarehouseSetup,
-            BluePickup, RedPickup,
+    public static Pose2d RedStorageUnit,  RedCarousel, BlueCarousel,
+            BlueStorageUnit, RedWarehouseSetupB, BlueWarehouseSetup,
             RedWarehouseBlocks, BlueWarehouseBlocks;
 
-    public static Vector2d RedHub, RedCarousel;
+    public static Vector2d RedHubL, RedHubR, BlueHub, RedWarehouseSetupA;
 
     public static Pose2d DetStartPose(int allI, int sideI)
     {
@@ -50,20 +51,18 @@ public class PoseStorage {
 
 
         // Component poses
-        RedCarousel = new Vector2d(-55.72295700521856,-53.766810012697775);
-        BlueCarousel = new Pose2d(-59.43131663678813, 56.86792328414704,Math.toRadians(172.84226364522823));
-        RedHub = new Vector2d( -12,-46);
-        BlueHub = new Pose2d( -10.638173890493668, 54.95355503292278, Math.toRadians(90));
-        RedStorageUnit = new Pose2d(-60.66711740422015, -36.326774389878032, Math.toRadians(0));
+        RedCarousel = new Pose2d(-55, -53, Math.toRadians(270));
+        BlueCarousel = new Pose2d(-59.43131663678813, 56.86792328414704, Math.toRadians(135));
+        RedHubL = new Vector2d( -15,-43);
+        RedHubR = new Vector2d(-7, -45);
+        BlueHub = new Vector2d( -10.638173890493668, 44);
+        RedStorageUnit = new Pose2d(-60.66711740422015, -35, Math.toRadians(0));
         BlueStorageUnit = new Pose2d(-58.664135706521755, 37.818617399773153, Math.toRadians(5));
 
         // Warehouse poses
-        RedWarehouseSetup = new Pose2d(0, -66, Math.toRadians(90));
-        RedWarehouse = new Pose2d();
+        RedWarehouseSetupA = new Vector2d(0, -55);
+        RedWarehouseSetupB = new Pose2d(0, -64, Math.toRadians(90));
         BlueWarehouseSetup = new Pose2d(-10.638173890493668, 69, Math.toRadians(280));
-        BlueWarehouse = new Pose2d();
-        BluePickup = new Pose2d();
-        RedPickup = new Pose2d();
         RedWarehouseBlocks = new Pose2d(57, -48, Math.toRadians(-30));
         BlueWarehouseBlocks = new Pose2d(55, 60, Math.toRadians(15));
 

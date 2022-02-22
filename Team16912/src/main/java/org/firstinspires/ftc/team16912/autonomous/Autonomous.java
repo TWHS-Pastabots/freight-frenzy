@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team16912.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,7 +13,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-
+@Disabled
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "LinguineAutonomousV1")
 public class Autonomous extends LinearOpMode {
 
@@ -122,7 +123,7 @@ public class Autonomous extends LinearOpMode {
 
             case ("RED"): {
                 toShipment = drive.trajectoryBuilder(start.end())
-                        .lineToConstantHeading(PoseStorage.RedHub)
+                        .lineToConstantHeading(PoseStorage.RedHubL)
                         .build();
                 moveBack = drive.trajectoryBuilder(toShipment.end())
                         .forward(-12)
@@ -133,7 +134,7 @@ public class Autonomous extends LinearOpMode {
 
                     case ("LEFT"): {
                         toCarousel = drive.trajectoryBuilder(moveBack.end())
-                                .lineToConstantHeading(PoseStorage.RedCarousel)
+                                .lineToLinearHeading(PoseStorage.RedCarousel)
                                 .build();
                         toFinish = drive.trajectoryBuilder(toCarousel.end())
                                 .lineToLinearHeading(PoseStorage.RedStorageUnit)
@@ -144,7 +145,7 @@ public class Autonomous extends LinearOpMode {
                     case ("RIGHT"): {
 
                         toSetup = drive.trajectoryBuilder(moveBack.end())
-                                .lineToLinearHeading(PoseStorage.RedWarehouseSetup)
+                                .lineToConstantHeading(PoseStorage.RedWarehouseSetupA)
                                 .addTemporalMarker(.25, this::runArmToStart)
                                 .build();
 
@@ -166,7 +167,7 @@ public class Autonomous extends LinearOpMode {
             case ("BLUE"): {
 
                 toShipment = drive.trajectoryBuilder(start.end())
-                        .lineToLinearHeading(PoseStorage.BlueHub)
+                        .lineToConstantHeading(PoseStorage.BlueHub)
                         .build();
 
                 moveBack = drive.trajectoryBuilder(toShipment.end())

@@ -50,11 +50,9 @@ public class helpMethods
         double startTime = moveTime.seconds();
 
         while (moveTime.seconds() - startTime < time) {
-            robot.rightSpinnyWheel.setPower(power);
-            robot.leftSpinnyWheel.setPower(power);
+            robot.spinnyWheel.setPower(power);
         }
-        robot.leftSpinnyWheel.setPower(0);
-        robot.rightSpinnyWheel.setPower(0);
+        robot.spinnyWheel.setPower(0);
     }
 
     public static void moveArmv2(SpaghettiHardware robot, int armUp)

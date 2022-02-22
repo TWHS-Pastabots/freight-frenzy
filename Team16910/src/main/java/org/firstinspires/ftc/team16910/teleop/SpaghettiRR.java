@@ -36,18 +36,15 @@ public class SpaghettiRR extends LinearOpMode {
             // Carousel Code
             if (gamepad2.left_bumper)
             {
-                robot.leftSpinnyWheel.setPower(-0.6);
-                robot.rightSpinnyWheel.setPower(-0.6);
+                robot.spinnyWheel.setPower(-0.6);
             }
             else if (gamepad2.right_bumper)
             {
-                robot.leftSpinnyWheel.setPower(0.6);
-                robot.rightSpinnyWheel.setPower(0.6);
+                robot.spinnyWheel.setPower(0.6);
             }
             else
             {
-                robot.leftSpinnyWheel.setPower(0.0);
-                robot.rightSpinnyWheel.setPower(0.0);
+                robot.spinnyWheel.setPower(0.0);
             }
 
             // SET DRIVE TRAIN POWER

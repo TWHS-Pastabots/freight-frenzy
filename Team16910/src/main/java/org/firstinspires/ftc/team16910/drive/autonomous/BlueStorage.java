@@ -38,7 +38,7 @@ public class BlueStorage extends LinearOpMode
     int startWaitTime = 0;
 
     public static Pose2d BlueWarehouseBarcode,BlueWarehouseHub_3, BlueWarehouseHub, BlueWarehouseEnd_3, BlueWarehouseEnd;
-    public static Pose2d BlueStorageBarcode,BlueStorageCarousel, BlueStorageHub_3, BlueStorageHub, BlueStorageEnd_3, BlueStorageEnd;
+    public static Pose2d BlueStorageBarcode,BlueStorageCarousel, BlueStorageHub_3, BlueStorageHubApproach, BlueStorageHub, BlueStorageEnd;
 
     public static Pose2d RedWarehouseBarcode,RedWarehouseHub_3, RedWarehouseHub, RedWarehouseEnd_3, RedWarehouseEnd;
     public static Pose2d RedStorageBarcode, RedStorageCarousel, RedStorageHub_3, RedStorageHub, RedStorageEnd_3, RedStorageEnd;
@@ -52,12 +52,12 @@ public class BlueStorage extends LinearOpMode
         BlueWarehouseEnd_3 = new Pose2d(-18.641856780246332, 72.96895702032774, Math.toRadians(-90));//If we end at lvl 3
         BlueWarehouseEnd = new Pose2d (18.641856780246332, 72.96895702032774, Math.toRadians(90));
 
-        BlueStorageCarousel = new Pose2d (-5.1327873025844015, -25.261654154033103, Math.toRadians(180));
+        BlueStorageCarousel = new Pose2d ( -0.7903279673816092,  23.597237269651234, Math.toRadians(180));
         BlueStorageBarcode = new Pose2d (4, 24.422398284891067, 0);
-        BlueStorageHub_3 = new Pose2d(20.093903824570501, 23.754585428696576, 0);
-        BlueStorageHub = new Pose2d(-20.093903824570501, 23.754585428696576, Math.toRadians(180));
-        BlueStorageEnd_3 = new Pose2d (-26.706247391511965, -27.18861475380927, Math.toRadians(180));
-        BlueStorageEnd = new Pose2d (26.706247391511965, -27.18861475380927, 0);
+        BlueStorageHub_3 = new Pose2d(-15.932383343462828,  -25.73856866425003, Math.toRadians(180));
+        BlueStorageHubApproach = new Pose2d ( -15.833455218445653,  -25.501051561159723, 0);
+        BlueStorageHub = new Pose2d(-26.733416119168876, -22.11591122428841, 0);
+        BlueStorageEnd = new Pose2d ( -21.86613994016752, 31.3381255422029, Math.toRadians(180));
 
 
 
@@ -79,7 +79,7 @@ public class BlueStorage extends LinearOpMode
     private TrajectorySequence scan_traj;
     private TrajectorySequence hub_traj_3;
     private TrajectorySequence hub_traj;
-    private TrajectorySequence warehouse_traj;
+    private TrajectorySequence storage_traj;
     //private TrajectorySequence warehouse_traj_3;
     private TrajectorySequence carousel_traj;
 
@@ -111,11 +111,13 @@ public class BlueStorage extends LinearOpMode
 
         // Drive Motors
         drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(new Pose2d());
         drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         robot.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        Positions();
         blueWarehouseTraj();
 
         while (!isStarted()) {
@@ -128,8 +130,8 @@ public class BlueStorage extends LinearOpMode
         if (!opModeIsActive()) return;
         helpMethods.waitFor(startWaitTime);
         robot.grabberServo.setPosition(1);
-        spinSpinnyWheel();
         deliverFreight();
+        spinSpinnyWheel();
         driveToEnd();
     }
 
@@ -138,7 +140,7 @@ public class BlueStorage extends LinearOpMode
         drive.followTrajectorySequence(carousel_traj);
 
         robot.spinnyWheel.setPower(-0.6);
-        helpMethods.waitFor(3);
+        helpMethods.waitFor(1);
     }
 
     public void deliverFreight()
@@ -147,13 +149,16 @@ public class BlueStorage extends LinearOpMode
 
         drive.followTrajectorySequence(scan_traj);
 
-        robot.armMotorOne.setPower(0.2);
-        robot.armMotorTwo.setPower(0.2);
+        robot.armMotorOne.setPower(-0.2);
+        robot.armMotorTwo.setPower(-0.2);
         robot.armMotorOne.setTargetPosition(armPose);
         robot.armMotorTwo.setTargetPosition(armPose);
 
-        if(armPose == -4200)
+        if(armPose == 4200)
         {
+            hub_traj_3 = drive.trajectorySequenceBuilder(scan_traj.end())
+                    .lineToLinearHeading(BlueStorageHub_3)
+                    .build();
             drive.followTrajectorySequence(hub_traj_3);
         }
 
@@ -165,25 +170,25 @@ public class BlueStorage extends LinearOpMode
 
     public void driveToEnd()
     {
-        drive.followTrajectorySequence(warehouse_traj);
+        drive.followTrajectorySequence(storage_traj);
     }
 
 
     private void blueWarehouseTraj()
     {
-        scan_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+        scan_traj = drive.trajectorySequenceBuilder(new Pose2d(0,0,0))
                 .lineToLinearHeading(BlueStorageBarcode)
                 .build();
 
-        hub_traj_3 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+        hub_traj_3 = drive.trajectorySequenceBuilder(scan_traj.end())
                 .lineToLinearHeading(BlueStorageHub_3)
                 .build();
 
-        hub_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+        hub_traj = drive.trajectorySequenceBuilder(scan_traj.end())
                 .lineToLinearHeading(BlueStorageHub)
                 .build();
 
-        carousel_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+        carousel_traj = drive.trajectorySequenceBuilder(hub_traj.end())
                 .lineToLinearHeading(BlueStorageCarousel)
                 .build();
 
@@ -192,7 +197,7 @@ public class BlueStorage extends LinearOpMode
                 .lineToLinearHeading(BlueWarehouseEnd_3)
                 .build();*/
 
-        warehouse_traj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+        storage_traj = drive.trajectorySequenceBuilder(carousel_traj.end())
                 .lineToLinearHeading(BlueStorageEnd)
                 .build();
 

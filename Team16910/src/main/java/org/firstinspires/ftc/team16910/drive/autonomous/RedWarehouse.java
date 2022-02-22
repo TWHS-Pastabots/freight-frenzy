@@ -115,6 +115,7 @@ public class RedWarehouse extends LinearOpMode
         robot.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        Positions();
         blueWarehouseTraj();
 
         while (!isStarted()) {
@@ -144,7 +145,10 @@ public class RedWarehouse extends LinearOpMode
 
         if(armPose == -4200)
         {
-            drive.followTrajectorySequence(hub_traj_3);
+            hub_traj = drive.trajectorySequenceBuilder(scan_traj.end())
+                    .lineToLinearHeading(BlueWarehouseHub_3)
+                    .build();
+            drive.followTrajectorySequence(hub_traj);
         }
 
         else

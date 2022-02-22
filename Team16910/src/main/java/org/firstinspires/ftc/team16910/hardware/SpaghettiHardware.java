@@ -21,8 +21,6 @@ public class SpaghettiHardware
     public DcMotorEx spinnyWheel = null;
     public DcMotorEx armMotorOne = null;
     public DcMotorEx armMotorTwo = null;
-    public CRServo stabilizingServoOne = null;
-    public CRServo stabilizingServoTwo = null;
     //public Servo doorServo = null;
     public Servo grabberServo = null;
     public DcMotorEx[] motors;
@@ -45,9 +43,9 @@ public class SpaghettiHardware
 
         // Set Motors to Run in Right Direction
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
-        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
-        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         motors = new DcMotorEx[]{leftFront, leftRear, rightFront, rightRear, spinnyWheel};
 
@@ -71,8 +69,6 @@ public class SpaghettiHardware
         armMotorTwo = hardwareMap.get(DcMotorEx.class, SpaghettiIds.ARM_MOTOR_TWO);
 
         // Maps Servo Motors
-        stabilizingServoOne = hardwareMap.get(CRServo.class, SpaghettiIds.STABILIZING_SERVO_ONE);
-        stabilizingServoTwo = hardwareMap.get(CRServo.class, SpaghettiIds.STABILIZING_SERVO_TWO);
         //doorServo = hardwareMap.get(Servo.class, SpaghettiIds.DOOR_SERVO);
         grabberServo = hardwareMap.get(Servo.class, SpaghettiIds.GRABBER_SERVO);
 

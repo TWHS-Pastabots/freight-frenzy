@@ -14,9 +14,9 @@ public class BarcodeReader extends OpenCvPipeline {
      */
     public enum ObjectPosition
     {
-        LEFT(-4200), // Deliver Bottom
-        CENTER(-3000), // Deliver Middle
-        RIGHT(-3650); // Deliver Top
+        LEFT(4200), // Deliver Bottom
+        CENTER(3000), // Deliver Middle
+        RIGHT(3650); // Deliver Top
 
         private int armPose = 0;
 
@@ -142,8 +142,8 @@ public class BarcodeReader extends OpenCvPipeline {
         /*
          * Find the minimum brightness (black) of the 3 averages
          */
-        int minOneTwo = Math.min(R1Y, R2Y);
-        int minY = Math.min(R3Y, minOneTwo);
+        int maxOneTwo = Math.max(R1Y, R2Y);
+        int maxY = Math.max(R3Y, maxOneTwo);
 
 
         /*
@@ -151,7 +151,7 @@ public class BarcodeReader extends OpenCvPipeline {
          * figure out which sample region that value was from
          */
 
-        if (minY == R1Y) // Was it from region 1?
+        if (maxY == R1Y) // Was it from region 1?
         {
             position = ObjectPosition.LEFT; // Record our analysis
 
@@ -166,7 +166,7 @@ public class BarcodeReader extends OpenCvPipeline {
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
         }
-        if (minY == R2Y){
+        if (maxY == R2Y){
             position = ObjectPosition.RIGHT; // Record our analysis
 
             /*
@@ -180,7 +180,7 @@ public class BarcodeReader extends OpenCvPipeline {
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
         }
-        if (minY == R3Y) // Was it from region 2?
+        if (maxY == R3Y) // Was it from region 2?
         {
             position = ObjectPosition.CENTER; // Record our analysis
 

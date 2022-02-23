@@ -14,9 +14,9 @@ public class BarcodeReader extends OpenCvPipeline {
      */
     public enum ObjectPosition
     {
-        LEFT(4200), // Deliver Bottom
-        CENTER(3000), // Deliver Middle
-        RIGHT(3650); // Deliver Top
+        LEFT(3900), // Deliver Bottom
+        CENTER(2700), // Deliver Middle
+        RIGHT(3350); // Deliver Top
 
         private int armPose = 0;
 

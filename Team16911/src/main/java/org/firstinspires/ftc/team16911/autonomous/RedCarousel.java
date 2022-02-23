@@ -32,8 +32,8 @@ public class RedCarousel extends LinearOpMode
 
     private final Pose2d carousel = new Pose2d(3.75, 18.5, 0);
     private final Pose2d barcode = new Pose2d(20,-0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(17.25, -27.75, 0);
-    private final Pose2d hubLevelTwo = new Pose2d(18, -27.75, 0);
+    private final Pose2d hubLevelOne = new Pose2d(16.75, -27.75, 0);
+    private final Pose2d hubLevelTwo = new Pose2d(17.5, -27.75, 0);
     private final Pose2d hubLevelThree = new Pose2d(23, -27.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, -60, 0);
     private final Pose2d warehouseBottomPosition = new Pose2d(3, -36, 0);
@@ -52,9 +52,6 @@ public class RedCarousel extends LinearOpMode
 
     public void runOpMode()
     {
-        // Configuration Variables
-        final int startPosition = 60;
-
         // Initialize Hardware
         RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
@@ -63,7 +60,6 @@ public class RedCarousel extends LinearOpMode
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        utilities.moveArm(startPosition);
         buildTrajectories();
 
         configuration();
@@ -73,18 +69,24 @@ public class RedCarousel extends LinearOpMode
         if(!opModeIsActive()) {return;}
 
         utilities.wait(initialWaitTime, telemetry);
+        utilities.moveArm(utilities.positions[1]);
 
         drive.followTrajectory(toCarousel);
         utilities.spinCarouselAndMoveArm(2700, utilities.positions[1], telemetry);
 
         drive.followTrajectory(toBarcode);
         int barcodeLevel = utilities.getBarcodeLevelRedSide();
-        utilities.moveArm(utilities.positions[barcodeLevel]);
+        if (barcodeLevel != 0) { utilities.moveArm(utilities.positions[barcodeLevel]); }
         telemetry.addData("Right Distance", hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
         drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+        if (barcodeLevel == 0)
+        {
+            utilities.moveArm(utilities.positions[barcodeLevel]);
+            utilities.wait(750, telemetry);
+        }
         utilities.eliminateOscillations();
         utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel],telemetry);
 

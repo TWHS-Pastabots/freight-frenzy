@@ -33,7 +33,7 @@ public class RigatoniHardware
         initializeCarousel(hardwareMap);
         initializeIntakeMotor(hardwareMap);
         initializeDistanceSensors(hardwareMap);
-        //initializeCappingServo(hardwareMap);
+        initializeCappingServo(hardwareMap);
     }
 
     private void initializePrimaryMotors(HardwareMap hardwareMap)

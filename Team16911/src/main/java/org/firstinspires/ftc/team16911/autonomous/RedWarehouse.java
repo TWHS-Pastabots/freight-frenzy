@@ -18,14 +18,15 @@ public class RedWarehouse extends LinearOpMode
     private SampleMecanumDrive drive;
 
     private int initialWaitTime = 0;
-    private boolean goForNewBlock = true;
+    private boolean attemptFirstBlock = true;
+    private boolean attemptSecondBlock = true;
 
     private final Pose2d barcode = new Pose2d(20, .5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(17.25, 19.25, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(18, 19.25, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(16.75, 19.25, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(17.5, 19.25, 0);
     private final Pose2d hubLevelThreePose = new Pose2d(23, 19.25, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, -20, 0);
-    private final Pose2d warehouse = new Pose2d(-.25, -32, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, -30, 0);
 
     private double blockPickupPositionY = -40;
     private double blockPickupPositionX = 7;
@@ -39,8 +40,6 @@ public class RedWarehouse extends LinearOpMode
 
     public void runOpMode()
     {
-        // Configuration
-        final int startPosition = 60;
         RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
         utilities = new Utilities(hardware);
@@ -48,7 +47,6 @@ public class RedWarehouse extends LinearOpMode
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        utilities.moveArm(startPosition);
         buildTrajectories();
 
         configuration();
@@ -82,7 +80,7 @@ public class RedWarehouse extends LinearOpMode
 
         drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
 
-        if (goForNewBlock && 30000 - autonomousTime.time() > 10000)
+        if (attemptFirstBlock && 30000 - autonomousTime.time() > 10000)
         {
             pickAndDropNewBlock(hardware);
         }
@@ -91,7 +89,7 @@ public class RedWarehouse extends LinearOpMode
         blockPickupPositionX -= 2;
         returnSetupPositionX -= 2;
 
-        if (30000 - autonomousTime.time() > 8000)
+        if (attemptSecondBlock && 30000 - autonomousTime.time() > 8000)
         {
             pickupNewBlock(hardware);
         }
@@ -266,14 +264,20 @@ public class RedWarehouse extends LinearOpMode
             {
                 initialWaitTime = 0;
             }
+            else if (gamepad1.square && buttonTime.time() > lockoutTime)
+            {
+                attemptFirstBlock = !attemptFirstBlock;
+                buttonTime.reset();
+            }
             else if (gamepad1.triangle && buttonTime.time() > lockoutTime)
             {
-                goForNewBlock = !goForNewBlock;
+                attemptSecondBlock = !attemptSecondBlock;
                 buttonTime.reset();
             }
 
             telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
-            telemetry.addData("Go For New BLock", goForNewBlock);
+            telemetry.addData("Attempt First Block", attemptFirstBlock);
+            telemetry.addData("Attempt Second Block", attemptSecondBlock);
             telemetry.update();
         }
 

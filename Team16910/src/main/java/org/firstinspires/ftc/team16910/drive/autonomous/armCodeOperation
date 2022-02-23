@@ -1,0 +1,25 @@
+
+        robot.armMotorOne.setPower(-0.6);
+        robot.armMotorTwo.setPower(-0.6);
+
+        robot.armMotorOne.setTargetPosition(-140);
+        robot.armMotorTwo.setTargetPosition(-140);
+
+        robot.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        helpMethods.waitFor(2);
+        robot.grabberServo.setPosition(-1);
+        helpMethods.waitFor(1);
+        robot.grabberServo.setPosition(1);
+
+        retract the arm
+
+        robot.armMotorOne.setPower(0.6);
+        robot.armMotorTwo.setPower(0.6);
+
+        robot.armMotorOne.setTargetPosition(10);
+        robot.armMotorTwo.setTargetPosition(10);
+
+        robot.armMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team16912.autonomous;
+package org.firstinspires.ftc.team16910.drive.autonomous;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -8,21 +8,21 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class BarcodePipeline extends OpenCvPipeline {
+public class BarcodeReader extends OpenCvPipeline {
     /*
      * An enum to define the object position
      */
     public enum ObjectPosition
     {
-        LEFT(-4200), // Deliver Bottom
-        CENTER(-3200), // Deliver Middle
-        RIGHT(-3650); // Deliver Top
+        LEFT(3900), // Deliver Bottom
+        CENTER(2700), // Deliver Middle
+        RIGHT(3350); // Deliver Top
 
-        private int encoderPos = 0;
+        private int armPose = 0;
 
-        ObjectPosition(int encoderPos)
+        ObjectPosition(int armPose)
         {
-            this.encoderPos = encoderPos;
+            this.armPose = armPose;
         }
     }
 
@@ -142,8 +142,8 @@ public class BarcodePipeline extends OpenCvPipeline {
         /*
          * Find the minimum brightness (black) of the 3 averages
          */
-        int minOneTwo = Math.min(R1Y, R2Y);
-        int minY = Math.min(R3Y, minOneTwo);
+        int maxOneTwo = Math.max(R1Y, R2Y);
+        int maxY = Math.max(R3Y, maxOneTwo);
 
 
         /*
@@ -151,7 +151,7 @@ public class BarcodePipeline extends OpenCvPipeline {
          * figure out which sample region that value was from
          */
 
-        if (minY == R1Y) // Was it from region 1?
+        if (maxY == R1Y) // Was it from region 1?
         {
             position = ObjectPosition.LEFT; // Record our analysis
 
@@ -166,7 +166,7 @@ public class BarcodePipeline extends OpenCvPipeline {
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
         }
-        if (minY == R2Y){
+        if (maxY == R2Y){
             position = ObjectPosition.RIGHT; // Record our analysis
 
             /*
@@ -180,7 +180,7 @@ public class BarcodePipeline extends OpenCvPipeline {
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
         }
-        if (minY == R3Y) // Was it from region 2?
+        if (maxY == R3Y) // Was it from region 2?
         {
             position = ObjectPosition.CENTER; // Record our analysis
 
@@ -208,7 +208,7 @@ public class BarcodePipeline extends OpenCvPipeline {
      * Call this from the OpMode thread to obtain the latest analysis
      */
     public int getAnalysis() {
-        return position.encoderPos;
+        return position.armPose;
     }
 
 }

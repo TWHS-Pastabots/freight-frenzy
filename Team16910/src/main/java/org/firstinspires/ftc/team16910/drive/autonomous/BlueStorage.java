@@ -1,25 +1,18 @@
 package org.firstinspires.ftc.team16910.drive.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.checkerframework.checker.units.qual.C;
-import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.team16910.drive.autonomous.Coordinates;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
-
-import java.security.spec.PSSParameterSpec;
 
 @Autonomous(preselectTeleOp = "Storage BLUE")
 public class BlueStorage extends LinearOpMode
@@ -54,8 +47,8 @@ public class BlueStorage extends LinearOpMode
 
         BlueStorageCarousel = new Pose2d ( -0.7903279673816092,  23.597237269651234, Math.toRadians(180));
         BlueStorageBarcode = new Pose2d (4, 24.422398284891067, 0);
-        BlueStorageHub_3 = new Pose2d(-15.932383343462828,  -25.73856866425003, Math.toRadians(180));
-        BlueStorageHubApproach = new Pose2d ( -15.833455218445653,  -25.501051561159723, 0);
+        BlueStorageHub_3 = new Pose2d(-25.73856866425003,  -15.932383343462828, Math.toRadians(180));
+        BlueStorageHubApproach = new Pose2d ( -15.833455218445653,  -15.833455218445653, 0);
         BlueStorageHub = new Pose2d(-26.733416119168876, -22.11591122428841, 0);
         BlueStorageEnd = new Pose2d ( -21.86613994016752, 31.3381255422029, Math.toRadians(180));
 
@@ -118,7 +111,7 @@ public class BlueStorage extends LinearOpMode
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         Positions();
-        blueWarehouseTraj();
+        blueStorageTraj();
 
         while (!isStarted()) {
             telemetry.addData("Arm Target", target_pos);
@@ -130,17 +123,41 @@ public class BlueStorage extends LinearOpMode
         if (!opModeIsActive()) return;
         helpMethods.waitFor(startWaitTime);
         robot.grabberServo.setPosition(1);
-        deliverFreight();
-        spinSpinnyWheel();
-        driveToEnd();
+        drive.followTrajectorySequence(carousel_traj);
+        robot.spinnyWheel.setPower(-0.6);
+        helpMethods.waitFor(1);
+        int armPose = reader.getAnalysis();
+
+        drive.followTrajectorySequence(scan_traj);
+
+        robot.armMotorOne.setPower(-0.2);
+        robot.armMotorTwo.setPower(-0.2);
+        robot.armMotorOne.setTargetPosition(armPose);
+        robot.armMotorTwo.setTargetPosition(armPose);
+
+        if(armPose == 4200)
+        {
+            hub_traj_3 = drive.trajectorySequenceBuilder(scan_traj.end())
+                    .lineToLinearHeading(BlueStorageHub_3)
+                    .build();
+            drive.followTrajectorySequence(hub_traj_3);
+        }
+
+        else
+        {
+            drive.followTrajectorySequence(hub_traj);
+        }
+        helpMethods.waitFor(1);
+        drive.followTrajectorySequence(storage_traj);
     }
 
-    public void spinSpinnyWheel()
+    /*public void spinSpinnyWheel()
     {
         drive.followTrajectorySequence(carousel_traj);
 
         robot.spinnyWheel.setPower(-0.6);
         helpMethods.waitFor(1);
+        drive.followTrajectorySequence(storage_traj);
     }
 
     public void deliverFreight()
@@ -171,10 +188,10 @@ public class BlueStorage extends LinearOpMode
     public void driveToEnd()
     {
         drive.followTrajectorySequence(storage_traj);
-    }
+    }*/
 
 
-    private void blueWarehouseTraj()
+    private void blueStorageTraj()
     {
         scan_traj = drive.trajectorySequenceBuilder(new Pose2d(0,0,0))
                 .lineToLinearHeading(BlueStorageBarcode)

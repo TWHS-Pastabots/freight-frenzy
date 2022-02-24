@@ -1,25 +1,18 @@
 package org.firstinspires.ftc.team16910.drive.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.team16910.drive.autonomous.Coordinates;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
-
-import java.security.spec.PSSParameterSpec;
 
 @Autonomous(preselectTeleOp = "Storage RED")
 public class RedStorage extends LinearOpMode
@@ -119,7 +112,7 @@ public class RedStorage extends LinearOpMode
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         Positions();
-        blueWarehouseTraj();
+        redWarehouseTraj();
 
         while (!isStarted()) {
             telemetry.addData("Arm Target", target_pos);
@@ -132,7 +125,9 @@ public class RedStorage extends LinearOpMode
         helpMethods.waitFor(startWaitTime);
         robot.grabberServo.setPosition(1);
         deliverFreight();
+        helpMethods.waitFor(1);
         spinSpinnyWheel();
+        helpMethods.waitFor(1);
         driveToEnd();
     }
 
@@ -150,12 +145,12 @@ public class RedStorage extends LinearOpMode
 
         drive.followTrajectorySequence(scan_traj);
 
-        robot.armMotorOne.setPower(0.2);
-        robot.armMotorTwo.setPower(0.2);
+        robot.armMotorOne.setPower(-0.2);
+        robot.armMotorTwo.setPower(-0.2);
         robot.armMotorOne.setTargetPosition(armPose);
         robot.armMotorTwo.setTargetPosition(armPose);
 
-        if(armPose == 4200)
+        if(armPose == 3900)
         {
             hub_traj_3 = drive.trajectorySequenceBuilder(scan_traj.end())
                     .lineToLinearHeading(BlueStorageHub_3)
@@ -175,22 +170,22 @@ public class RedStorage extends LinearOpMode
     }
 
 
-    private void blueWarehouseTraj()
+    private void redWarehouseTraj()
     {
         scan_traj = drive.trajectorySequenceBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(BlueStorageBarcode)
+                .lineToLinearHeading(RedStorageBarcode)
                 .build();
 
         hub_traj_3 = drive.trajectorySequenceBuilder(scan_traj.end())
-                .lineToLinearHeading(BlueStorageHub_3)
+                .lineToLinearHeading(RedStorageHub_3)
                 .build();
 
         hub_traj = drive.trajectorySequenceBuilder(scan_traj.end())
-                .lineToLinearHeading(BlueStorageHub)
+                .lineToLinearHeading(RedStorageHub)
                 .build();
 
         carousel_traj = drive.trajectorySequenceBuilder(hub_traj.end())
-                .lineToLinearHeading(BlueStorageCarousel)
+                .lineToLinearHeading(RedStorageCarousel)
                 .build();
 
 
@@ -199,7 +194,7 @@ public class RedStorage extends LinearOpMode
                 .build();*/
 
         storage_traj = drive.trajectorySequenceBuilder(carousel_traj.end())
-                .lineToLinearHeading(BlueStorageEnd)
+                .lineToLinearHeading(RedStorageEnd)
                 .build();
 
     }

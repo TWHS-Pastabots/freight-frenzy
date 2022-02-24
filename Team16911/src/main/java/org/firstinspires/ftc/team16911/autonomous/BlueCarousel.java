@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -32,10 +31,10 @@ public class BlueCarousel extends LinearOpMode
 
     private int initialWaitTime = 0;
 
-    private final Pose2d carousel = new Pose2d(10, -23.25, Math.toRadians(90));
+    private final Pose2d carousel = new Pose2d(9, -23.25, Math.toRadians(90));
     private final Pose2d barcode = new Pose2d(20,0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(17.25, 27.75, 0);
-    private final Pose2d hubLevelTwo = new Pose2d(18, 27.75, 0);
+    private final Pose2d hubLevelOne = new Pose2d(16, 27.75, 0);
+    private final Pose2d hubLevelTwo = new Pose2d(16.75, 27.75, 0);
     private final Pose2d hubLevelThree = new Pose2d(23, 27.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, 60, 0);
     private final Pose2d warehouseBottomPosition = new Pose2d(3, 36, 0);
@@ -54,9 +53,6 @@ public class BlueCarousel extends LinearOpMode
 
     public void runOpMode()
     {
-        // Configuration Variables
-        final int startPosition = 60;
-
         // Initialize Hardware
         RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
@@ -65,7 +61,6 @@ public class BlueCarousel extends LinearOpMode
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        utilities.moveArm(startPosition);
         buildTrajectories();
 
         configuration();
@@ -75,10 +70,11 @@ public class BlueCarousel extends LinearOpMode
         if(!opModeIsActive()) {return;}
 
         utilities.wait(initialWaitTime, telemetry);
+        utilities.moveArm(utilities.positions[1]);
 
         drive.followTrajectory(toCarousel);
         hardware.carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        utilities.spinCarouselAndMoveArm(2700, utilities.positions[1], telemetry);
+        utilities.spinCarousel(2700, telemetry);
 
         drive.followTrajectory(toBarcode);
         int barcodeLevel = utilities.getBarcodeLevelBlueSide();

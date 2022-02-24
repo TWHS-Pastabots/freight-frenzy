@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.team16912.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16912.util.LinguineHardware;
+import org.firstinspires.ftc.team16912.util.Util;
 import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -63,11 +64,11 @@ public class CameraDistanceReader extends LinearOpMode {
                     .forward(pipeline.DISTANCE - 6)
                     .build();
 
-            openClaw();
+            Util.openClaw(.5);
             drive.followTrajectory(runToBlock);
-            runArmTo(170);
-            closeClaw();
-            runArmTo(-1000);
+            Util.runArmTo(170);
+            Util.closeClaw(.5);
+            Util.runArmTo(-1000);
         }
 
     }
@@ -140,22 +141,6 @@ public class CameraDistanceReader extends LinearOpMode {
         else xcomp = 0;
 
         return ycomp * xcomp;
-    }
-
-    // Closes claw
-    private void closeClaw() { robot.servoClaw.setPosition(.7); }
-
-    // Opens claw
-    private void openClaw() { robot.servoClaw.setPosition(-1); }
-
-    // Return arm to start
-    private void runArmTo(int encoderPos) {
-        while (robot.armEncoder.getCurrentPosition() < encoderPos) {
-            for (DcMotorEx motor : robot.motorArms) {
-                motor.setPower(.5);
-            }
-        }
-        for (DcMotorEx motor : robot.motorArms) motor.setPower(0);
     }
 
 

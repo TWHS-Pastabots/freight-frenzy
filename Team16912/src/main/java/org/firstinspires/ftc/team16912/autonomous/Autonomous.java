@@ -167,7 +167,7 @@ public class Autonomous extends LinearOpMode {
             case ("BLUE"): {
 
                 toShipment = drive.trajectoryBuilder(start.end())
-                        .lineToConstantHeading(PoseStorage.BlueHub)
+                        .lineToConstantHeading(PoseStorage.BlueHubL)
                         .build();
 
                 moveBack = drive.trajectoryBuilder(toShipment.end())
@@ -180,7 +180,7 @@ public class Autonomous extends LinearOpMode {
 
 
                         toSetup = drive.trajectoryBuilder(moveBack.end())
-                                .lineToLinearHeading(PoseStorage.BlueWarehouseSetup)
+                                .lineToLinearHeading(PoseStorage.BlueWarehouseSetupB)
                                 .addTemporalMarker(.25, this::runArmToStart)
                                 .build();
 

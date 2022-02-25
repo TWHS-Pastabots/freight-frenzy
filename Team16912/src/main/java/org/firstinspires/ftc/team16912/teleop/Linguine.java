@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team16912.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.team16912.util.LinguineHardware;
 import org.firstinspires.ftc.team16912.util.Util;
 
@@ -10,6 +12,8 @@ public class Linguine extends LinearOpMode {
 
     // Initialize
     LinguineHardware robot = new LinguineHardware();
+
+    ElapsedTime runTime = new ElapsedTime();
 
     // Variables
     private double speedMult = .75;
@@ -87,12 +91,17 @@ public class Linguine extends LinearOpMode {
             // Auto duck end game spinner
             if(gamepad2.cross)
             {
+                double time = 0.0;
                 for(int i=0; i<10; i++)
                 {
                     robot.cSpinner.setVelocity(300);
-                    sleep(1700);
+                    time = runTime.milliseconds();
+                    while (runTime.milliseconds() - time < 1700){
+                    }
                     robot.cSpinner.setVelocity(0);
-                    sleep(500);
+                    time = runTime.milliseconds();
+                    while (runTime.milliseconds() - time < 500){
+                    }
                 }
             }
 

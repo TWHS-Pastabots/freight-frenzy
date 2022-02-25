@@ -22,20 +22,6 @@ import java.util.List;
 @Config
 public class DistancePipeline extends OpenCvPipeline
 {
-    public static double lower_h = 19.0;
-    public static double lower_s = 0.0;
-    public static double lower_v = 0.0;
-
-    public static double upper_h = 30.0;
-    public static double upper_s = 1000.0;
-    public static double upper_v = 1000.0;
-
-
-    static final Scalar BLUE = new Scalar(0, 0, 255);
-
-    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(0, 180);
-    static final int REGION_WIDTH = 20;
-    static final int REGION_HEIGHT = 20;
 
     public double DISTANCE;
     public ArrayList<Block> BLOCKS = new ArrayList<>();

@@ -9,10 +9,10 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 public class Utilities
 {
-    public final int[] positions = {123, 180, 220};
+    public final int[] positions = {120, 175, 210};
     public final int initialArmPosition = 150;
     public final int CARGO_DROP_TIME = 1200;
-    public final double[] DROP_POWERS = {.725, .9, .725};
+    public final double[] DROP_POWERS = {.85, .85, .725};
     private RigatoniHardware hardware;
     private final int MAX_TRIGGER_DISTANCE = 13;
 

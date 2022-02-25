@@ -30,7 +30,7 @@ public class RedCarousel extends LinearOpMode
 
     private int initialWaitTime = 0;
 
-    private final Pose2d carousel = new Pose2d(3.75, 18.5, 0);
+    private final Pose2d carousel = new Pose2d(3.75, 18.75, 0);
     private final Pose2d barcode = new Pose2d(18.5,-0.18, 0);
     private final Pose2d hubLevelOne = new Pose2d(17.25, -27.75, 0);
     private final Pose2d hubLevelTwo = new Pose2d(17.75, -27.75, 0);

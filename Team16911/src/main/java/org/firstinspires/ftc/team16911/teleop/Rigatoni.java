@@ -19,8 +19,8 @@ public class Rigatoni extends OpMode
     int lastPosition = -100;
     int armMotorTwoOffset = 0;
     int outtakePowerIndex = 1;
-    double slowConstant = .6;
-    double[] outtakePowers = {-.3, -.45, -.8};
+    double slowConstant = .525;
+    double[] outtakePowers = {-.325, -.45, -.7};
     boolean usePowerScaling = true;
 
     boolean justMoved = false;
@@ -128,7 +128,7 @@ public class Rigatoni extends OpMode
         double slowConstantPositiveOffset = (1 - slowConstant) * gamepad1.right_trigger;
         slowConstantPositiveOffset -= slowConstantPositiveOffset * Math.abs(gamepad1.left_stick_y);
 
-        double slowConstantNegativeOffset = -.4 * gamepad1.left_trigger;
+        double slowConstantNegativeOffset = -.3 * gamepad1.left_trigger;
 
         double finalSlowConstantOffset = slowConstantPositiveOffset + slowConstantNegativeOffset;
 
@@ -305,9 +305,9 @@ public class Rigatoni extends OpMode
             hardware.carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
-        if (carouselTime.time() <= 1200)
+        if (carouselTime.time() <= 1300)
         {
-            double power = .0002593 * carouselTime.time() + .625;
+            double power = .000288462 * carouselTime.time() + .55;
             hardware.carouselMotor.setPower(power);
         }
         else
@@ -348,11 +348,11 @@ public class Rigatoni extends OpMode
         }
     }
 
-    private void turnServo() { hardware.cappingServo.setPower(gamepad2.left_stick_y); }
+    private void turnServo() { hardware.cappingServo.setPower(gamepad2.left_stick_y * .25); }
 
     private double getUpwardPower(int currentPosition)
     {
-        return -.0000175 * currentPosition * currentPosition + currentPosition * .0035 + .675;
+        return -.000016 * currentPosition * currentPosition + currentPosition * .0032 + .675;
     }
 
     private double getDownwardPower(int currentPosition)

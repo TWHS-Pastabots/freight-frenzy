@@ -165,7 +165,7 @@ public class Rigatoni extends OpMode
 
         if (autoDriveForward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
         {
-            double power = .85;
+            double power = .8;
             leftFrontPower = power - rx;
             leftRearPower = power - rx;
             rightFrontPower = power + rx;
@@ -173,7 +173,7 @@ public class Rigatoni extends OpMode
         }
         else if (autoDriveBackward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
         {
-            double power = -.85;
+            double power = -.8;
             leftFrontPower = power - rx;
             leftRearPower = power - rx;
             rightFrontPower = power + rx;

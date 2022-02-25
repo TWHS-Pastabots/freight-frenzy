@@ -16,7 +16,7 @@ public class BarcodePipeline extends OpenCvPipeline {
     {
         LEFT(-4170), // Deliver Bottom
         CENTER(-3050), // Deliver Middle
-        RIGHT(-3800); // Deliver Top
+        RIGHT(-3850); // Deliver Top
 
         private int encoderPos = 0;
 

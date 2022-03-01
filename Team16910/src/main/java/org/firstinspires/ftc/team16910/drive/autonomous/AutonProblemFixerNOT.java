@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team16910.drive.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,10 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.team16910.util.Encoder;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(preselectTeleOp = "Auton Test")
@@ -40,7 +37,7 @@ public class AutonProblemFixerNOT extends LinearOpMode
     }
 
     //Trajectories
-    private TrajectorySequence test_traj;
+    private Trajectory test_traj;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,12 +49,6 @@ public class AutonProblemFixerNOT extends LinearOpMode
         // Drive Motors
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d(0,0,0));
-        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //robot.leftFront.setDirection(DcMotorEx.Direction.REVERSE);
-        robot.leftRear.setDirection(DcMotorEx.Direction.REVERSE);
-        robot.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        robot.rightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         robot.armMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.armMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -75,15 +66,14 @@ public class AutonProblemFixerNOT extends LinearOpMode
         if (!opModeIsActive()) return;
         helpMethods.waitFor(startWaitTime);
         robot.grabberServo.setPosition(1);
-        drive.followTrajectorySequence(test_traj);
+        drive.followTrajectory(test_traj);
 
     }
 
     private void test()
     {
-        test_traj = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .lineToLinearHeading(TestPose)
-                .build();
+        test_traj = drive.trajectoryBuilder(new Pose2d(), Math.toRadians(0))
+                .lineToLinearHeading(TestPose).build();
     }
 
 

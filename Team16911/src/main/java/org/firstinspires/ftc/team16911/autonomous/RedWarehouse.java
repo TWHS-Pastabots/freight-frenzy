@@ -18,14 +18,15 @@ public class RedWarehouse extends LinearOpMode
     private SampleMecanumDrive drive;
 
     private int initialWaitTime = 0;
-    private boolean goForNewBlock = true;
+    private boolean attemptFirstBlock = true;
+    private boolean attemptSecondBlock = true;
 
-    private final Pose2d barcode = new Pose2d(20, .5, 0);
+    private final Pose2d barcode = new Pose2d(18.5, .5, 0);
     private final Pose2d hubLevelOnePose = new Pose2d(17.25, 19.25, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(18, 19.25, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(17.75, 19.25, 0);
     private final Pose2d hubLevelThreePose = new Pose2d(23, 19.25, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, -20, 0);
-    private final Pose2d warehouse = new Pose2d(-.25, -32, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, -30, 0);
 
     private double blockPickupPositionY = -40;
     private double blockPickupPositionX = 7;
@@ -39,8 +40,6 @@ public class RedWarehouse extends LinearOpMode
 
     public void runOpMode()
     {
-        // Configuration
-        final int startPosition = 60;
         RigatoniHardware hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
         utilities = new Utilities(hardware);
@@ -48,7 +47,6 @@ public class RedWarehouse extends LinearOpMode
         // Initialize Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        utilities.moveArm(startPosition);
         buildTrajectories();
 
         configuration();
@@ -62,7 +60,7 @@ public class RedWarehouse extends LinearOpMode
         ElapsedTime autonomousTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         utilities.wait(initialWaitTime, telemetry);
-        utilities.moveArm(utilities.positions[1]);
+        utilities.moveArm(utilities.initialArmPosition);
 
         drive.followTrajectory(toBarcode);
         int barcodeLevel = utilities.getBarcodeLevelRedSide();
@@ -82,7 +80,7 @@ public class RedWarehouse extends LinearOpMode
 
         drive.followTrajectory(fromHubTrajectories[barcodeLevel]);
 
-        if (goForNewBlock && 30000 - autonomousTime.time() > 10000)
+        if (attemptFirstBlock && 30000 - autonomousTime.time() > 10000)
         {
             pickAndDropNewBlock(hardware);
         }
@@ -91,7 +89,7 @@ public class RedWarehouse extends LinearOpMode
         blockPickupPositionX -= 2;
         returnSetupPositionX -= 2;
 
-        if (30000 - autonomousTime.time() > 8000)
+        if (attemptSecondBlock && 30000 - autonomousTime.time() > 8000)
         {
             pickupNewBlock(hardware);
         }
@@ -170,8 +168,8 @@ public class RedWarehouse extends LinearOpMode
         double distanceTwo =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceThree =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceFromWall = (distanceOne + distanceTwo + distanceThree) / 3.0;
-        double yPose = -distanceFromWall + 61;
-        yPose = Math.min(48, yPose);
+        double yPose = -distanceFromWall + 60;
+        yPose = Math.min(48, Math.abs(yPose));
         drive.setPoseEstimate(new Pose2d(blockPickupPositionX, -yPose, Math.toRadians(-90)));
         drive.update();
 
@@ -188,8 +186,8 @@ public class RedWarehouse extends LinearOpMode
         distanceTwo =  hardware.backDistanceSensor.getDistance(DistanceUnit.INCH);
         distanceThree =  hardware.backDistanceSensor.getDistance(DistanceUnit.INCH);
         double backDistance = (distanceOne + distanceTwo + distanceThree) / 3.0;
-        backDistance = backDistance - 6;
-        backDistance = Math.max(27, backDistance);
+        backDistance = backDistance - 1;
+        backDistance = Math.min(27, backDistance);
         drive.setPoseEstimate(new Pose2d(backDistance, 20, 0));
 
         utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[1],telemetry);
@@ -232,8 +230,8 @@ public class RedWarehouse extends LinearOpMode
         double distanceTwo =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceThree =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceFromWall = (distanceOne + distanceTwo + distanceThree) / 3.0;
-        double yPose = -distanceFromWall + 63;
-        yPose = Math.min(48, yPose);
+        double yPose = -distanceFromWall + 60;
+        yPose = Math.min(48, Math.abs(yPose));
         drive.setPoseEstimate(new Pose2d(blockPickupPositionX, -yPose, Math.toRadians(-90)));
         drive.update();
 
@@ -266,14 +264,20 @@ public class RedWarehouse extends LinearOpMode
             {
                 initialWaitTime = 0;
             }
+            else if (gamepad1.square && buttonTime.time() > lockoutTime)
+            {
+                attemptFirstBlock = !attemptFirstBlock;
+                buttonTime.reset();
+            }
             else if (gamepad1.triangle && buttonTime.time() > lockoutTime)
             {
-                goForNewBlock = !goForNewBlock;
+                attemptSecondBlock = !attemptSecondBlock;
                 buttonTime.reset();
             }
 
             telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
-            telemetry.addData("Go For New BLock", goForNewBlock);
+            telemetry.addData("Attempt First Block", attemptFirstBlock);
+            telemetry.addData("Attempt Second Block", attemptSecondBlock);
             telemetry.update();
         }
 

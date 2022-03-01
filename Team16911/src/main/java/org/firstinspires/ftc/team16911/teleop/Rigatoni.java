@@ -6,20 +6,21 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 @TeleOp(name = "Rigatoni")
 public class Rigatoni extends OpMode
 {
     RigatoniHardware hardware = null;
+    SampleMecanumDrive drive = null;
 
-    int maxPosition = 230;
     int currentPosition = 0;
     int lastPosition = -100;
     int armMotorTwoOffset = 0;
     int outtakePowerIndex = 1;
     double slowConstant = .6;
-    double[] outtakePowers = {-.3, -.5, -.8};
+    double[] outtakePowers = {-.3, -.45, -.8};
     boolean usePowerScaling = true;
 
     boolean justMoved = false;
@@ -46,6 +47,7 @@ public class Rigatoni extends OpMode
         // Initialize Hardware
         hardware = new RigatoniHardware();
         hardware.init(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
         armTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         buttonTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         autoDriveTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -80,8 +82,11 @@ public class Rigatoni extends OpMode
         moveArm();
         spinCarousel();
         operateIntake();
-        //turnServo();
+        turnServo();
+        autoTurn();
 
+        telemetry.addData("Using Power Scaling", usePowerScaling);
+        telemetry.addData("Current Outtake Power", outtakePowers[outtakePowerIndex]);
         telemetry.update();
     }
 
@@ -160,7 +165,7 @@ public class Rigatoni extends OpMode
 
         if (autoDriveForward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
         {
-            double power = .85;
+            double power = .8;
             leftFrontPower = power - rx;
             leftRearPower = power - rx;
             rightFrontPower = power + rx;
@@ -168,12 +173,17 @@ public class Rigatoni extends OpMode
         }
         else if (autoDriveBackward && autoDriveTime.time() < MAX_AUTO_DRIVE_TIME)
         {
-            double power = -.85;
+            double power = -.8;
             leftFrontPower = power - rx;
             leftRearPower = power - rx;
             rightFrontPower = power + rx;
             rightRearPower = power + rx;
         }
+    }
+
+    private void autoTurn()
+    {
+        if (gamepad1.triangle) { drive.turn(Math.toRadians(90)); }
     }
 
     private void moveArm()
@@ -265,32 +275,19 @@ public class Rigatoni extends OpMode
             hardware.armMotorTwo.setPower(1);
         }
 
-        // Runs to highest position
-        if (gamepad2.triangle)
-        {
-            hardware.armMotorOne.setTargetPosition(maxPosition);
-            hardware.armMotorTwo.setTargetPosition(maxPosition + armMotorTwoOffset);
-
-            hardware.armMotorOne.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            hardware.armMotorTwo.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-            hardware.armMotorOne.setPower(.8);
-            hardware.armMotorTwo.setPower(.8);
-        }
-
         // Resets zero position for calibration
-        if (gamepad2.square)
+        if (gamepad2.triangle)
         {
             hardware.armMotorOne.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             hardware.armMotorTwo.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        telemetry.addData("Using Power Scaling", usePowerScaling);
+        /*telemetry.addData("Using Power Scaling", usePowerScaling);
         telemetry.addData("Arm One Pos", hardware.armMotorOne.getCurrentPosition());
         telemetry.addData("Arm One Target", hardware.armMotorOne.getTargetPosition());
         telemetry.addData("Arm Two Pos", hardware.armMotorTwo.getCurrentPosition());
         telemetry.addData("Arm Two Target", hardware.armMotorTwo.getTargetPosition());
-        telemetry.addData("Current Position", currentPosition);
+        telemetry.addData("Current Position", currentPosition);*/
     }
 
 
@@ -331,7 +328,7 @@ public class Rigatoni extends OpMode
             outtakePowerIndex = Math.max(0, outtakePowerIndex - 1);
             outtakePowerButtonTime.reset();
         }
-        else if ((gamepad2.dpad_right || gamepad2.dpad_left) && outtakePowerButtonTime.time() > 500)
+        else if (gamepad2.square && outtakePowerButtonTime.time() > 500)
         {
             outtakePowerIndex = 1;
             outtakePowerButtonTime.reset();
@@ -351,10 +348,7 @@ public class Rigatoni extends OpMode
         }
     }
 
-    private void turnServo()
-    {
-        hardware.cappingServo.setPower(gamepad2.right_stick_y);
-    }
+    private void turnServo() { hardware.cappingServo.setPower(gamepad2.left_stick_y); }
 
     private double getUpwardPower(int currentPosition)
     {
@@ -366,3 +360,4 @@ public class Rigatoni extends OpMode
         return -.00001 * currentPosition * currentPosition + currentPosition * .002 - .1;
     }
 }
+

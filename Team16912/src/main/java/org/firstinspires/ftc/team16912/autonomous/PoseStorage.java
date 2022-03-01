@@ -14,10 +14,10 @@ public class PoseStorage {
     // Positions as Pose2d
     public static Pose2d RedLeft, RedRight, BlueLeft, BlueRight;
     public static Pose2d RedStorageUnit,  RedCarousel, BlueCarousel,
-            BlueStorageUnit, RedWarehouseSetupB, BlueWarehouseSetup,
+            BlueStorageUnit, RedWarehouseSetupB, BlueWarehouseSetupB,
             RedWarehouseBlocks, BlueWarehouseBlocks;
 
-    public static Vector2d RedHubL, RedHubR, BlueHub, RedWarehouseSetupA;
+    public static Vector2d RedHubL, RedHubR, BlueHubR, BlueHubL, RedWarehouseSetupA, BlueWarehouseSetupA;
 
     public static Pose2d DetStartPose(int allI, int sideI)
     {
@@ -49,20 +49,27 @@ public class PoseStorage {
         BlueLeft = new Pose2d(13.04860248750233, 64.287627195530014, Math.toRadians(90));
         BlueRight = new Pose2d(-35.04860248750233, 64.287627195530014, Math.toRadians(90));
 
-
         // Component poses
         RedCarousel = new Pose2d(-55, -53, Math.toRadians(270));
-        BlueCarousel = new Pose2d(-59.43131663678813, 56.86792328414704, Math.toRadians(135));
+        BlueCarousel = new Pose2d(-61.5, 52, Math.toRadians(145));
+
+        // Shipping Hubs
         RedHubL = new Vector2d( -15,-43);
-        RedHubR = new Vector2d(-7, -45);
-        BlueHub = new Vector2d( -10.638173890493668, 44);
+        RedHubR = new Vector2d(-9, -45);
+        BlueHubL = new Vector2d( -9, 43);
+        BlueHubR = new Vector2d( -15, 45);
+
+        // Storage Units
         RedStorageUnit = new Pose2d(-60.66711740422015, -35, Math.toRadians(0));
-        BlueStorageUnit = new Pose2d(-58.664135706521755, 37.818617399773153, Math.toRadians(5));
+        BlueStorageUnit = new Pose2d(-58, 34, Math.toRadians(20));
 
         // Warehouse poses
-        RedWarehouseSetupA = new Vector2d(0, -55);
+        RedWarehouseSetupA = new Vector2d(0, -50);
         RedWarehouseSetupB = new Pose2d(0, -64, Math.toRadians(90));
-        BlueWarehouseSetup = new Pose2d(-10.638173890493668, 69, Math.toRadians(280));
+        BlueWarehouseSetupA = new Vector2d(8, 45);
+        BlueWarehouseSetupB = new Pose2d(0, 67, Math.toRadians(280));
+
+        // Warehouse blocks
         RedWarehouseBlocks = new Pose2d(57, -48, Math.toRadians(-30));
         BlueWarehouseBlocks = new Pose2d(55, 60, Math.toRadians(15));
 

@@ -60,11 +60,11 @@ public class Spaghetti extends OpMode {
     {
         if(!gamepad1.right_bumper) {
             // Mecanum drivecode
-            double y = gamepad1.left_stick_y; // Remember, this is reversed!
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double special_y = -gamepad1.left_stick_y * .8;
-            double rx = gamepad1.left_stick_x;// Counteract imperfect strafing
+            double x = -gamepad1.left_stick_x;// Counteract imperfect strafing
             double special_x = -gamepad1.left_stick_x * .8;
-            double x = -gamepad1.right_stick_x;
+            double rx = -gamepad1.right_stick_x;
             double special_rx = -gamepad1.right_trigger * .6;
 
             double rightFrontPower = y + x + (rx * 0.6);
@@ -90,26 +90,26 @@ public class Spaghetti extends OpMode {
 
             //Slowmode Code
             if (gamepad1.dpad_up) {
-                leftFrontPower = -.2;
-                leftRearPower = -.2;
-                rightRearPower = -.2;
-                rightFrontPower = -.2;
+                leftFrontPower = .2;
+                leftRearPower = .2;
+                rightRearPower = .2;
+                rightFrontPower = .2;
 
             } else if (gamepad1.dpad_down) {
-                leftFrontPower = .2;
-                leftRearPower = .2;
-                rightRearPower = .2;
-                rightFrontPower = .2;
-            } else if (gamepad1.dpad_right) {
                 leftFrontPower = -.2;
                 leftRearPower = -.2;
-                rightRearPower = .2;
-                rightFrontPower = .2;
-            } else if (gamepad1.dpad_left) {
-                leftFrontPower = .2;
-                leftRearPower = .2;
                 rightRearPower = -.2;
                 rightFrontPower = -.2;
+            } else if (gamepad1.dpad_right) {
+                leftFrontPower = .2;
+                leftRearPower = -.2;
+                rightRearPower = .2;
+                rightFrontPower = -.2;
+            } else if (gamepad1.dpad_left) {
+                leftFrontPower = -.2;
+                leftRearPower = .2;
+                rightRearPower = -.2;
+                rightFrontPower = .2;
             }
 
             if (gamepad1.right_trigger > 0) {
@@ -135,11 +135,11 @@ public class Spaghetti extends OpMode {
         if(gamepad1.right_bumper)
         {
             // Mecanum drivecode
-            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double y = gamepad1.left_stick_y; // Remember, this is reversed!
             double special_y = gamepad1.left_stick_y * .8;
-            double rx = -gamepad1.left_stick_x;// Counteract imperfect strafing
+            double x = gamepad1.left_stick_x;// Counteract imperfect strafing
             double special_x = gamepad1.left_stick_x * .8;
-            double x = -gamepad1.right_stick_x;
+            double rx = -gamepad1.right_stick_x;
             double special_rx = gamepad1.right_trigger * .6;
 
             double rightFrontPower = (y*.2) + (x*.2) + (rx * 0.2);

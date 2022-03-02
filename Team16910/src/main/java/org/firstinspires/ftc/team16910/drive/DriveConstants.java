@@ -64,13 +64,11 @@ public class DriveConstants {
      * inches.
      */
 
-    public static final double MAX_MULTIPLIER = 0.9;
-    public static double MAX_VEL = 36;
-    //public static double MAX_VEL = 49.865997944449454 * MAX_MULTIPLIER;
+    private static final double MAX_MULTIPLIER = .825;
+    public static double MAX_VEL = rpmToVelocity(MAX_RPM) * MAX_MULTIPLIER;
     public static double MAX_ACCEL = 30 * MAX_MULTIPLIER;
-    //public static double MAX_ANG_VEL = 0.21111111342906952;
-    public static double MAX_ANG_VEL = 1;
-    public static double MAX_ANG_ACCEL = Math.toRadians(180);
+    public static double MAX_ANG_VEL = Math.toRadians(180) * MAX_MULTIPLIER;
+    public static double MAX_ANG_ACCEL = Math.toRadians(180) * MAX_MULTIPLIER;
 
 
     public static double encoderTicksToInches(double ticks) {

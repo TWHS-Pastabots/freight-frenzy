@@ -23,7 +23,7 @@ public class AutonomousV2 extends LinearOpMode {
 
     ElapsedTime runTime = new ElapsedTime();
 
-    Trajectory toShipment, toWarehouseSetupA, toWarehouseSetupB, toWarehouse, toCarousel, toBlockPickup, toFinish;
+    Trajectory toShipment, toWarehouseSetupA, toWarehouseSetupB, toWarehouse, toWarehousePark,toCarousel, toBlockPickup, toFinish;
 
     Pose2d startPose;
 
@@ -127,6 +127,7 @@ public class AutonomousV2 extends LinearOpMode {
                             Util.runArmTo(-200);
                             drive.followTrajectory(toWarehouseSetupB);
                             drive.followTrajectory(toWarehouse);
+                            drive.followTrajectory(toWarehousePark);
                         }
 
                         // Pick up blocks amount of times set in config
@@ -138,6 +139,7 @@ public class AutonomousV2 extends LinearOpMode {
                             drive.followTrajectory(toWarehouse);
                             drive.followTrajectory(toBlockPickup);
                             PickUpBlock();
+
                         }
 
                         break;
@@ -157,6 +159,7 @@ public class AutonomousV2 extends LinearOpMode {
                             Util.runArmTo(-200);
                             drive.followTrajectory(toWarehouseSetupB);
                             drive.followTrajectory(toWarehouse);
+                            drive.followTrajectory(toWarehousePark);
                         }
 
                         // Pick up blocks amount of times set in config
@@ -231,6 +234,10 @@ public class AutonomousV2 extends LinearOpMode {
                                 .strafeRight(40)
                                 .build();
 
+                        toWarehousePark = drive.trajectoryBuilder(toWarehouse.end())
+                                .forward(24)
+                                .build();
+
                         toBlockPickup = drive.trajectoryBuilder(toWarehouse.end())
                                 .lineToLinearHeading(PoseStorage.RedWarehouseBlocks)
                                 .addTemporalMarker(.01, ()-> Util.runArmTo(250))
@@ -264,6 +271,9 @@ public class AutonomousV2 extends LinearOpMode {
                         toWarehouse = drive.trajectoryBuilder(toWarehouseSetupB.end())
                                 .strafeLeft(40)
                                 .build();
+                        toWarehousePark = drive.trajectoryBuilder(toWarehouse.end())
+                                .forward(24)
+                                .build();
 
                         toBlockPickup = drive.trajectoryBuilder(toWarehouse.end())
                                 .lineToLinearHeading(PoseStorage.BlueWarehouseBlocks)
@@ -293,7 +303,6 @@ public class AutonomousV2 extends LinearOpMode {
             }
         }
     }
-
 
     private void deliverShipment()
     {

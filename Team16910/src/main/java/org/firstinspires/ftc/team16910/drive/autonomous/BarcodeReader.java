@@ -14,9 +14,9 @@ public class BarcodeReader extends OpenCvPipeline {
      */
     public enum ObjectPosition
     {
-        LEFT(3900), // Deliver Bottom
-        CENTER(2700), // Deliver Middle
-        RIGHT(3350); // Deliver Top
+        LEFT(-23), // Deliver Bottom
+        CENTER(-200), // Deliver Middle
+        RIGHT(-46); // Deliver Top
 
         private int armPose = 0;
 
@@ -142,8 +142,8 @@ public class BarcodeReader extends OpenCvPipeline {
         /*
          * Find the minimum brightness (black) of the 3 averages
          */
-        int maxOneTwo = Math.max(R1Y, R2Y);
-        int maxY = Math.max(R3Y, maxOneTwo);
+        int maxOneTwo = Math.min(R1Y, R2Y);
+        int maxY = Math.min(R3Y, maxOneTwo);
 
 
         /*

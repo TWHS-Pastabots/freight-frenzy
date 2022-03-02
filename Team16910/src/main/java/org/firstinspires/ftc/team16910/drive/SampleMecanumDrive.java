@@ -52,8 +52,8 @@ import static org.firstinspires.ftc.team16910.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(3, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(3, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(4, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1.121139073;
     //public static double LATERAL_MULTIPLIER = 1.148325359; (brings the distance up to 60 for FeedForward, just in case)
@@ -273,7 +273,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
         leftFront.setPower(v);
-        leftRear.setPower(v1);
+        leftRear.setPower(v1/2);
         rightRear.setPower(v2);
         rightFront.setPower(v3);
     }

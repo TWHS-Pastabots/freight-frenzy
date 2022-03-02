@@ -51,12 +51,12 @@ public class PoseStorage {
 
         // Component poses
         RedCarousel = new Pose2d(-55, -53, Math.toRadians(270));
-        BlueCarousel = new Pose2d(-60, 52, Math.toRadians(145));
+        BlueCarousel = new Pose2d(-61.5, 52, Math.toRadians(145));
 
         // Shipping Hubs
         RedHubL = new Vector2d( -15,-43);
-        RedHubR = new Vector2d(-7, -45);
-        BlueHubL = new Vector2d( -9, 41);
+        RedHubR = new Vector2d(-9, -45);
+        BlueHubL = new Vector2d( -9, 43);
         BlueHubR = new Vector2d( -15, 45);
 
         // Storage Units
@@ -66,8 +66,8 @@ public class PoseStorage {
         // Warehouse poses
         RedWarehouseSetupA = new Vector2d(0, -50);
         RedWarehouseSetupB = new Pose2d(0, -64, Math.toRadians(90));
-        BlueWarehouseSetupA = new Vector2d(0, 50);
-        BlueWarehouseSetupB = new Pose2d(0, 67, Math.toRadians(270));
+        BlueWarehouseSetupA = new Vector2d(8, 45);
+        BlueWarehouseSetupB = new Pose2d(0, 67, Math.toRadians(280));
 
         // Warehouse blocks
         RedWarehouseBlocks = new Pose2d(57, -48, Math.toRadians(-30));

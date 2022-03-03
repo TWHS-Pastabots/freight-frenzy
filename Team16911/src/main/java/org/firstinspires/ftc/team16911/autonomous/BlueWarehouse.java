@@ -22,9 +22,9 @@ public class BlueWarehouse extends LinearOpMode
     private boolean attemptSecondBlock = true;
 
     private final Pose2d barcode = new Pose2d(18.5, -.5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(16.5, -19.25, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(17, -19.25, 0);
-    private final Pose2d hubLevelThreePose = new Pose2d(23, -19.25, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(16.5, -19.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(17, -19.75, 0);
+    private final Pose2d hubLevelThreePose = new Pose2d(23, -19.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, 20, 0);
     private final Pose2d warehouse = new Pose2d(-.25, 30, 0);
 
@@ -137,7 +137,7 @@ public class BlueWarehouse extends LinearOpMode
         final Pose2d blockPickupTwo = new Pose2d(blockPickupPositionX, blockPickupPositionY - 4, Math.toRadians(90));
         final Pose2d blockPickupThree = new Pose2d(blockPickupPositionX, blockPickupPositionY, Math.toRadians(90));
         final Pose2d returnTrajectorySetup = new Pose2d(returnSetupPositionX, 36, 0);
-        final Pose2d toHub = new Pose2d(23, -19.25, 0);
+        final Pose2d toHub = new Pose2d(23, -19.75, 0);
         final Vector2d toHubReturn = new Vector2d(-.25, 10);
         final Vector2d warehouse = new Vector2d(-.25, 32);
 
@@ -159,13 +159,13 @@ public class BlueWarehouse extends LinearOpMode
         drive.update();
 
         utilities.stopIntake();
-        utilities.moveArm(utilities.positions[2] + 5);
+        utilities.moveArm(utilities.positions[2] + 7);
 
         double distanceOne = hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceTwo =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceThree =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceFromWall = (distanceOne + distanceTwo + distanceThree) / 3.0;
-        double yPose = -distanceFromWall + 59;
+        double yPose = -distanceFromWall + 60.75;
         yPose = Math.min(48, Math.abs(yPose));
         if (yPose >= 48 || yPose <= 30)
         {
@@ -195,7 +195,7 @@ public class BlueWarehouse extends LinearOpMode
         }
         drive.setPoseEstimate(new Pose2d(backDistance, -20, 0));
 
-        utilities.dropCargo(utilities.CARGO_DROP_TIME + 1700, utilities.DROP_POWERS[1],telemetry);
+        utilities.dropCargo(utilities.CARGO_DROP_TIME + 1000, utilities.DROP_POWERS[1],telemetry);
 
         Trajectory returnToWarehouse = drive.trajectoryBuilder(drive.getPoseEstimate(), Math.toRadians(140))
                 .splineToConstantHeading(toHubReturn, Math.toRadians(90))

@@ -28,7 +28,7 @@ public class BlueWarehouse extends LinearOpMode
     private final Pose2d warehouseOutside = new Pose2d(-.25, 20, 0);
     private final Pose2d warehouse = new Pose2d(-.25, 30, 0);
 
-    private double blockPickupPositionY = 40;
+    private double blockPickupPositionY = 41.5;
     private double blockPickupPositionX = 7;
     private double returnSetupPositionX = 4;
 
@@ -80,11 +80,10 @@ public class BlueWarehouse extends LinearOpMode
         if (attemptFirstBlock && 30000 - autonomousTime.time() > 10000)
         {
             pickAndDropNewBlock(hardware);
+            blockPickupPositionY += 4.5;
+            blockPickupPositionX -= 2;
+            returnSetupPositionX -= 2;
         }
-
-        blockPickupPositionY += 4.5;
-        blockPickupPositionX -= 2;
-        returnSetupPositionX -= 2;
 
         if (attemptSecondBlock && 30000 - autonomousTime.time() > 8000)
         {
@@ -139,11 +138,11 @@ public class BlueWarehouse extends LinearOpMode
         final Pose2d returnTrajectorySetup = new Pose2d(returnSetupPositionX, 36, 0);
         final Pose2d toHub = new Pose2d(23, -19.75, 0);
         final Vector2d toHubReturn = new Vector2d(-.25, 10);
-        final Vector2d warehouse = new Vector2d(-.25, 32);
+        final Vector2d warehouse = new Vector2d(-.25, 34);
 
         drive.update();
 
-        utilities.moveArm(10);
+        utilities.moveArm(7);
         utilities.wait(750, telemetry);
         utilities.intakeCargo();
 
@@ -165,7 +164,7 @@ public class BlueWarehouse extends LinearOpMode
         double distanceTwo =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceThree =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceFromWall = (distanceOne + distanceTwo + distanceThree) / 3.0;
-        double yPose = -distanceFromWall + 60.75;
+        double yPose = -distanceFromWall + 60;
         yPose = Math.min(48, Math.abs(yPose));
         if (yPose >= 48 || yPose <= 30)
         {

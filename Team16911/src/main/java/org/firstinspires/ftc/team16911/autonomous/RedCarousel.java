@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -22,33 +23,34 @@ public class RedCarousel extends LinearOpMode
     private static final String WAREHOUSE_DIRECT_ROUTE = WAREHOUSE + DIRECT_ROUTE;
     private static final String WAREHOUSE_BOTTOM_ROUTE = WAREHOUSE + BOTTOM_ROUTE;
     private static final String STORAGE_DIRECT_ROUTE = STORAGE_UNIT + DIRECT_ROUTE;
-    private static final String STORAGE_BOTTOM_ROUTE = STORAGE_UNIT + BOTTOM_ROUTE;
     private static final String[] WAREHOUSE_ROUTES = {DIRECT_ROUTE, BOTTOM_ROUTE};
-    private static final String[] STORAGE_ROUTES = {DIRECT_ROUTE, BOTTOM_ROUTE};
+    private static final String[] STORAGE_ROUTES = {DIRECT_ROUTE};
     private static String endPosition = WAREHOUSE;
     private static String route = DIRECT_ROUTE;
 
     private int initialWaitTime = 0;
 
-    private final Pose2d carousel = new Pose2d(3.75, 18.75, 0);
-    private final Pose2d barcode = new Pose2d(18.5,-0.18, 0);
-    private final Pose2d hubLevelOne = new Pose2d(16.8, -27.75, 0);
-    private final Pose2d hubLevelTwo = new Pose2d(17.5, -27.75, 0);
-    private final Pose2d hubLevelThree = new Pose2d(23, -27.75, 0);
+    private final Pose2d carousel = new Pose2d(5, 21.5, 0);
+    private final Pose2d barcode = new Pose2d(18.5,0, 0);
+    private final Pose2d hubLevelOne = new Pose2d(17.55, -27.75, 0);
+    private final Pose2d hubLevelTwo = new Pose2d(17.8, -27.75, 0);
+    private final Pose2d hubLevelThree = new Pose2d(24, -27.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, -60, 0);
     private final Pose2d warehouseBottomPosition = new Pose2d(3, -36, 0);
     private final Pose2d warehouse = new Pose2d(-.25, -81, 0);
-    private final Pose2d barcodeBottomPositionOne = new Pose2d(15, -5, -Math.toRadians(45));
-    private final Pose2d barcodeBottomPositionTwo = new Pose2d(15, 5, -Math.toRadians(45));
-    private final Pose2d storageUnit = new Pose2d(30,24, -Math.toRadians(90));
+    private final Pose2d storageUnit = new Pose2d(28.25,21, -Math.toRadians(90));
+    private final Pose2d storageSide = new Pose2d(44, 11.5, -Math.toRadians(90));
+    private final Pose2d storageHubLevelOne = new Pose2d(44, -3.8, -Math.toRadians(90));
+    private final Pose2d storageHubLevelTwo = new Pose2d(44, -5.35, -Math.toRadians(90));
+    private final Pose2d storageHubLevelThree = new Pose2d(44, -11.7, -Math.toRadians(90));
 
     private Trajectory toCarousel, toBarcode;
 
     private final Trajectory[] toHubTrajectories = new Trajectory[3];
     private final Trajectory[] fromHubDirectTrajectories = new Trajectory[3];
     private final Trajectory[] fromHubBottomTrajectories = new Trajectory[3];
-    private final Trajectory[] toStorageDirectTrajectories = new Trajectory[3];
-    private final Trajectory[] toStorageBottomTrajectories = new Trajectory[3];
+    private final Trajectory[] toStorageHubTrajectories = new Trajectory[3];
+    private final Trajectory[] toStorageTrajectories = new Trajectory[3];
 
     public void runOpMode()
     {
@@ -72,6 +74,7 @@ public class RedCarousel extends LinearOpMode
         utilities.moveArm(utilities.initialArmPosition);
 
         drive.followTrajectory(toCarousel);
+        hardware.carouselMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         utilities.spinCarousel(2700, telemetry);
 
         drive.followTrajectory(toBarcode);
@@ -81,29 +84,40 @@ public class RedCarousel extends LinearOpMode
         telemetry.addData("left Distance", hardware.leftDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
-        drive.followTrajectory(toHubTrajectories[barcodeLevel]);
-        if (barcodeLevel == 0)
-        {
-            utilities.moveArm(utilities.positions[barcodeLevel]);
-            utilities.wait(750, telemetry);
-        }
-        utilities.eliminateOscillations();
-        utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel],telemetry);
-
         switch (path)
         {
             case WAREHOUSE_DIRECT_ROUTE:
+                drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+                if (barcodeLevel == 0)
+                {
+                    utilities.moveArm(utilities.positions[barcodeLevel]);
+                    utilities.wait(750, telemetry);
+                }
+                utilities.eliminateOscillations();
+                utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel],telemetry);
                 drive.followTrajectory(fromHubDirectTrajectories[barcodeLevel]);
                 break;
             case WAREHOUSE_BOTTOM_ROUTE:
+                drive.followTrajectory(toHubTrajectories[barcodeLevel]);
+                if (barcodeLevel == 0)
+                {
+                    utilities.moveArm(utilities.positions[barcodeLevel]);
+                    utilities.wait(750, telemetry);
+                }
+                utilities.eliminateOscillations();
+                utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel],telemetry);
                 drive.followTrajectory(fromHubBottomTrajectories[barcodeLevel]);
                 break;
             case STORAGE_DIRECT_ROUTE:
-                drive.followTrajectory(toStorageDirectTrajectories[barcodeLevel]);
-                break;
-            case STORAGE_BOTTOM_ROUTE:
-                drive.followTrajectory(toStorageBottomTrajectories[barcodeLevel]);
-                break;
+                drive.followTrajectory(toStorageHubTrajectories[barcodeLevel]);
+                if (barcodeLevel == 0)
+                {
+                    utilities.moveArm(utilities.positions[barcodeLevel]);
+                    utilities.wait(750, telemetry);
+                }
+                utilities.eliminateOscillations();
+                utilities.dropCargo(utilities.CARGO_DROP_TIME, utilities.DROP_POWERS[barcodeLevel],telemetry);
+                drive.followTrajectory(toStorageTrajectories[barcodeLevel]);
         }
     }
 
@@ -113,8 +127,8 @@ public class RedCarousel extends LinearOpMode
         Trajectory toHubLevelOne, toHubLevelTwo, toHubLevelThree;
         Trajectory fromHubLevelOneDirect, fromHubLevelTwoDirect, fromHubLevelThreeDirect;
         Trajectory fromHubLevelOneBottom, fromHubLevelTwoBottom, fromHubLevelThreeBottom;
-        Trajectory toStorageLevelOneDirect, toStorageLevelTwoDirect, toStorageLevelThreeDirect;
-        Trajectory toStorageLevelOneBottom, toStorageLevelTwoBottom, toStorageLevelThreeBottom;
+        Trajectory toHubOneStorageSide, toHubTwoStorageSide, toHubThreeStorageSide;
+        Trajectory toStorageLevelOne, toStorageLevelTwo, toStorageLevelThree;
 
         toCarousel = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(carousel).build();
@@ -155,29 +169,32 @@ public class RedCarousel extends LinearOpMode
                 .splineToLinearHeading(warehouseBottomPosition, -Math.toRadians(90))
                 .splineToLinearHeading(warehouse, -Math.toRadians(90)).build();
 
-        toStorageLevelOneDirect = drive.trajectoryBuilder(toHubLevelOne.end())
-                .lineToSplineHeading(storageUnit).build();
+        toHubOneStorageSide = drive.trajectoryBuilder(toBarcode.end(), -Math.toRadians(270))
+                .splineToSplineHeading(storageUnit, -Math.toRadians(0))
+                .splineToLinearHeading(storageSide, -Math.toRadians(90))
+                .splineToLinearHeading(storageHubLevelOne, -Math.toRadians(90)).build();
 
-        toStorageLevelTwoDirect = drive.trajectoryBuilder(toHubLevelTwo.end())
-                .lineToSplineHeading(storageUnit).build();
+        toHubTwoStorageSide = drive.trajectoryBuilder(toBarcode.end(), -Math.toRadians(270))
+                .splineToSplineHeading(storageUnit, -Math.toRadians(0))
+                .splineToLinearHeading(storageSide, -Math.toRadians(90))
+                .splineToLinearHeading(storageHubLevelTwo, -Math.toRadians(90)).build();
 
-        toStorageLevelThreeDirect = drive.trajectoryBuilder(toHubLevelThree.end())
-                .lineToSplineHeading(storageUnit).build();
+        toHubThreeStorageSide = drive.trajectoryBuilder(toBarcode.end(), -Math.toRadians(270))
+                .splineToSplineHeading(storageUnit, -Math.toRadians(0))
+                .splineToLinearHeading(storageSide, -Math.toRadians(90))
+                .splineToLinearHeading(storageHubLevelThree, -Math.toRadians(90)).build();
 
-        toStorageLevelOneBottom = drive.trajectoryBuilder(toHubLevelOne.end(), -Math.toRadians(280))
-                .splineToSplineHeading(barcodeBottomPositionOne, -Math.toRadians(270))
-                .splineToSplineHeading(barcodeBottomPositionTwo, -Math.toRadians(270))
-                .splineToSplineHeading(storageUnit, -Math.toRadians(0)).build();
+        toStorageLevelOne = drive.trajectoryBuilder(toHubOneStorageSide.end(), -Math.toRadians(270))
+                .splineToSplineHeading(storageSide, -Math.toRadians(270))
+                .splineToLinearHeading(storageUnit, -Math.toRadians(180)).build();
 
-        toStorageLevelTwoBottom = drive.trajectoryBuilder(toHubLevelTwo.end(), -Math.toRadians(265))
-                .splineToSplineHeading(barcodeBottomPositionOne, -Math.toRadians(270))
-                .splineToSplineHeading(barcodeBottomPositionTwo, -Math.toRadians(270))
-                .splineToSplineHeading(storageUnit, -Math.toRadians(0)).build();
+        toStorageLevelTwo = drive.trajectoryBuilder(toHubTwoStorageSide.end(), -Math.toRadians(270))
+                .splineToSplineHeading(storageSide, -Math.toRadians(270))
+                .splineToLinearHeading(storageUnit, -Math.toRadians(180)).build();
 
-        toStorageLevelThreeBottom = drive.trajectoryBuilder(toHubLevelThree.end(), -Math.toRadians(250))
-                .splineToSplineHeading(barcodeBottomPositionOne, -Math.toRadians(270))
-                .splineToSplineHeading(barcodeBottomPositionTwo, -Math.toRadians(270))
-                .splineToSplineHeading(storageUnit, -Math.toRadians(0)).build();
+        toStorageLevelThree = drive.trajectoryBuilder(toHubThreeStorageSide.end(), -Math.toRadians(270))
+                .splineToSplineHeading(storageSide, -Math.toRadians(270))
+                .splineToLinearHeading(storageUnit, -Math.toRadians(180)).build();
 
         toHubTrajectories[0] = toHubLevelOne;
         toHubTrajectories[1] = toHubLevelTwo;
@@ -191,13 +208,13 @@ public class RedCarousel extends LinearOpMode
         fromHubBottomTrajectories[1] = fromHubLevelTwoBottom;
         fromHubBottomTrajectories[2] = fromHubLevelThreeBottom;
 
-        toStorageDirectTrajectories[0] = toStorageLevelOneDirect;
-        toStorageDirectTrajectories[1] = toStorageLevelTwoDirect;
-        toStorageDirectTrajectories[2] = toStorageLevelThreeDirect;
+        toStorageHubTrajectories[0] = toHubOneStorageSide;
+        toStorageHubTrajectories[1] = toHubTwoStorageSide;
+        toStorageHubTrajectories[2] = toHubThreeStorageSide;
 
-        toStorageBottomTrajectories[0] = toStorageLevelOneBottom;
-        toStorageBottomTrajectories[1] = toStorageLevelTwoBottom;
-        toStorageBottomTrajectories[2] = toStorageLevelThreeBottom;
+        toStorageTrajectories[0] = toStorageLevelOne;
+        toStorageTrajectories[1] = toStorageLevelTwo;
+        toStorageTrajectories[2] = toStorageLevelThree;
     }
 
     private void configuration()
@@ -243,7 +260,8 @@ public class RedCarousel extends LinearOpMode
             }
             else if (gamepad1.square && buttonTime.time() > lockoutTime)
             {
-                index = (index + 1) % STORAGE_ROUTES.length;
+                //index = (index + 1) % STORAGE_ROUTES.length;
+                index = 0;
                 route = STORAGE_ROUTES[index];
                 buttonTime.reset();
             }

@@ -305,9 +305,9 @@ public class Rigatoni extends OpMode
             hardware.carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
-        if (carouselTime.time() <= 1300)
+        if (carouselTime.time() <= 1400)
         {
-            double power = .000288462 * carouselTime.time() + .55;
+            double power = .000289 * carouselTime.time() + .535;
             hardware.carouselMotor.setPower(power);
         }
         else

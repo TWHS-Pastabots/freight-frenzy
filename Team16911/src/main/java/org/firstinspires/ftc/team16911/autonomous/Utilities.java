@@ -9,7 +9,7 @@ import org.firstinspires.ftc.team16911.hardware.RigatoniHardware;
 
 public class Utilities
 {
-    public final int[] positions = {120, 182, 220};
+    public final int[] positions = {124, 188, 237};
     public final int initialArmPosition = 150;
     public final int CARGO_DROP_TIME = 1200;
     public final double[] DROP_POWERS = {.85, .9, .725};

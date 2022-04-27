@@ -20,13 +20,15 @@ public class RedWarehouse extends LinearOpMode
     private int initialWaitTime = 0;
     private boolean attemptFirstBlock = true;
     private boolean attemptSecondBlock = true;
+    private boolean moveUp = true;
 
     private final Pose2d barcode = new Pose2d(18.5, .5, 0);
-    private final Pose2d hubLevelOnePose = new Pose2d(17, 19.75, 0);
-    private final Pose2d hubLevelTwoPose = new Pose2d(17.5, 19.75, 0);
-    private final Pose2d hubLevelThreePose = new Pose2d(23, 19.75, 0);
+    private final Pose2d hubLevelOnePose = new Pose2d(16.9, 19.75, 0);
+    private final Pose2d hubLevelTwoPose = new Pose2d(17.7, 19.75, 0);
+    private final Pose2d hubLevelThreePose = new Pose2d(24, 19.75, 0);
     private final Pose2d warehouseOutside = new Pose2d(-.25, -20, 0);
-    private final Pose2d warehouse = new Pose2d(-.25, -30, 0);
+    private final Pose2d warehouse = new Pose2d(-.25, -33, 0);
+    private final Pose2d finalPosition = new Pose2d(25.5, -33, Math.toRadians(-90));
 
     private double blockPickupPositionY = -41.5;
     private double blockPickupPositionX = 7;
@@ -92,6 +94,14 @@ public class RedWarehouse extends LinearOpMode
         {
             pickupNewBlock(hardware);
         }
+
+        if (moveUp)
+        {
+            Trajectory finalTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    .lineToLinearHeading(finalPosition).build();
+
+            drive.followTrajectory(finalTrajectory);
+        }
     }
 
     private void buildTrajectories()
@@ -139,13 +149,13 @@ public class RedWarehouse extends LinearOpMode
         final Pose2d blockPickupTwo = new Pose2d(blockPickupPositionX, blockPickupPositionY + 4, Math.toRadians(-90));
         final Pose2d blockPickupThree = new Pose2d(blockPickupPositionX, blockPickupPositionY, Math.toRadians(-90));
         final Pose2d returnTrajectorySetup = new Pose2d(returnSetupPositionX, -36, 0);
-        final Pose2d toHub = new Pose2d(23, 19.75, 0);
+        final Pose2d toHub = new Pose2d(24, 18.75, 0);
         final Vector2d toHubReturn = new Vector2d(-.25, -10);
-        final Vector2d warehouse = new Vector2d(-.25, -34);
+        final Vector2d warehouse = new Vector2d(-.25, -35.5);
 
         drive.update();
 
-        utilities.moveArm(7);
+        utilities.moveArm(5);
         utilities.wait(750, telemetry);
         utilities.intakeCargo();
 
@@ -161,7 +171,7 @@ public class RedWarehouse extends LinearOpMode
         drive.update();
 
         utilities.stopIntake();
-        utilities.moveArm(utilities.positions[2] + 7);
+        utilities.moveArm(utilities.positions[2] + 5);
 
         double distanceOne = hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
         double distanceTwo =  hardware.rightDistanceSensor.getDistance(DistanceUnit.INCH);
@@ -281,10 +291,16 @@ public class RedWarehouse extends LinearOpMode
                 attemptSecondBlock = !attemptSecondBlock;
                 buttonTime.reset();
             }
+            else if ((gamepad1.left_bumper || gamepad1.right_bumper) && buttonTime.time() > lockoutTime)
+            {
+                moveUp = !moveUp;
+                buttonTime.reset();
+            }
 
             telemetry.addData("Initial Wait Time", initialWaitTime / 1000);
             telemetry.addData("Attempt First Block", attemptFirstBlock);
             telemetry.addData("Attempt Second Block", attemptSecondBlock);
+            telemetry.addData("Move Up", moveUp);
             telemetry.update();
         }
 

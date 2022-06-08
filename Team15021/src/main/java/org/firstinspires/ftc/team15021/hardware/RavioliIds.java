@@ -10,6 +10,7 @@ public class RavioliIds
     // Arm Motors and Carousel Motor
     public static final String ARM_MOTOR_ONE = "armMotorOne";
     public static final String ARM_MOTOR_TWO = "armMotorTwo";
+    public static final String LIFT_MOTOR_ONE = "liftMotorOne";
 
     // Claw Motors
     public static final String SERVO_MOTOR_ONE = "servoOne";

@@ -8,6 +8,8 @@ public class LinguineIds extends ComponentIds {
     public static final String MOTOR_ARM_1 = "motorArm1";
     public static final String MOTOR_ARM_2 = "motorArm2";
 
+    public static final String LIFT_MOTOR_ONE = "liftMotorOne";
+
     // Carousel Spinner
     public static final String MOTOR_SPINNER = "motorSpinner";
 
